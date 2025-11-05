@@ -22,7 +22,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
   const t = content[language];
 
   // Coordinates for Vodojemy Žlutý Kopec
-  const coordinates = "49.2108,16.5967";
+  const coordinates = "49.1956718,16.5913221";
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates}`;
 
   return (
@@ -43,7 +43,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
             {/* Map iframe */}
             <div className="aspect-video w-full">
               <iframe
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=16.591%2C49.207%2C16.602%2C49.215&layer=mapnik&marker=49.2108%2C16.5967`}
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=16.586%2C49.191%2C16.596%2C49.200&layer=mapnik&marker=49.1956718%2C16.5913221`}
                 className="w-full h-full border-0"
                 title={t.title}
                 loading="lazy"
