@@ -26,7 +26,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-muted">
+    <section id="location-map" className="py-12 sm:py-16 md:py-20 bg-muted">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">

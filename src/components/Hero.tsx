@@ -83,8 +83,10 @@ const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
             {/* Clickable location */}
             <div
               className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
-              onClick={scrollToMap}
-            >
+              onClick={() => {
+                const el = document.getElementById("location-map");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-medium hidden sm:inline">{t.location}</span>
               <span className="font-medium sm:hidden">Brno</span>
