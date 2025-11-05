@@ -51,7 +51,7 @@ const CookiesBanner = ({ language }: CookiesBannerProps) => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4 bg-foreground bg-opacity-80 text-background shadow-2xl animate-slide-in-right">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4 bg-foreground/60 text-background shadow-2xl animate-slide-in-right">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             <div className="flex-1 text-center sm:text-left">
