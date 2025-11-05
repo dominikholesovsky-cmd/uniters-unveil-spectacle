@@ -61,7 +61,7 @@ const Index = () => {
         <meta name="twitter:description" content={seo.description} />
         
         {/* Canonical */}
-        <link rel="canonical" href="https://lovable.dev/projects/2c0df8ec-faf3-436d-83b7-996eb1634067" />
+        <link rel="canonical" href="https://uniters.one" />
       </Helmet>
 
       <main>
