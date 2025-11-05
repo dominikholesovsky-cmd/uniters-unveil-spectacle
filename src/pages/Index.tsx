@@ -72,9 +72,9 @@ const Index = () => {
 
         <Hero language={language} onRegisterClick={handleRegisterClick} />
 
-        <LocationMap language={language} />
-
         <RegistrationForm language={language} />
+
+        <LocationMap language={language} />
 
         <Contact language={language} />
 
