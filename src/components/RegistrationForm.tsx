@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation } from "lucide-react";
+import TermsModal from "./TermsModal";
 
 // Power Automate endpoint URL
 const POWER_AUTOMATE_URL = "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
@@ -60,6 +61,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       openNavigation: "Open Navigation"
     }
   };
+
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const t = content[language];
 
@@ -301,31 +304,38 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   control={form.control}
                   name="gdprConsent"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-2">
-                    <FormControl>
-                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <div className="text-sm">
-                      {language === "cs" ? (
-                        <>
-                          * Souhlasím se zpracováním osobních údajů dle{" "}
-                          <Link to="/terms" className="underline">
-                            zásad ochrany osobních údajů
-                          </Link>{" "}
-                          pro účely registrace.
-                        </>
-                      ) : (
-                        <>
-                          * I agree to the processing of my personal data according to the{" "}
-                          <Link to="/terms" className="underline">
-                            privacy policy
-                          </Link>{" "}
-                          for registration purposes.
-                        </>
-                      )}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                      <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                        {language === "cs"
+                          ? <>
+                              * Souhlasím se zpracováním osobních údajů dle{" "}
+                              <span
+                                className="underline text-primary cursor-pointer"
+                                onClick={() => setIsTermsOpen(true)}
+                              >
+                                zásad ochrany osobních údajů
+                              </span>{" "}
+                              pro účely registrace.
+                            </>
+                          : <>
+                              * I agree to the processing of my personal data according to the{" "}
+                              <span
+                                className="underline text-primary cursor-pointer"
+                                onClick={() => setIsTermsOpen(true)}
+                              >
+                                privacy policy
+                              </span>{" "}
+                              for registration purposes.
+                            </>}
+                      </FormLabel>
+                      <FormMessage />
+                      
+                      {/* Render modalu */}
+                      <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+                    </FormItem>
                   )}
                 />
                 {/* Submit */}
