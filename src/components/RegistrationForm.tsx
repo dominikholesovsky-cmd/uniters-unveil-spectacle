@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation } from "lucide-react";
 
 // Power Automate endpoint URL
-const POWER_AUTOMATE_URL = "YOUR_POWER_AUTOMATE_ENDPOINT_URL_HERE";
+const POWER_AUTOMATE_URL = "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
