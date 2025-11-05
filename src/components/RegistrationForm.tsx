@@ -40,6 +40,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
       successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
+      company: "Firma",
+      companyPlaceholder: "Název firmy",
       openNavigation: "Otevřít navigaci"
     },
     en: {
@@ -58,6 +60,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       submit: "Confirm Registration",
       successTitle: "Registration Confirmed!",
       successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
+      company: "Company",
+      companyPlaceholder: "Company Name",
       openNavigation: "Open Navigation"
     }
   };
@@ -81,6 +85,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       .min(9, { message: language === "cs" ? "Neplatné telefonní číslo" : "Invalid phone number" })
       .max(20),
     plusOne: z.boolean().default(false),
+    company: z.string().trim().max(100).optional(),
     guestName: z.string().trim().max(100).optional(),
     gdprConsent: z.literal(true, {
       errorMap: () => ({
@@ -97,6 +102,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       name: "",
       email: "",
       phone: "",
+      company: "",
       plusOne: false,
       guestName: "",
       gdprConsent: false
@@ -130,6 +136,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           name: values.name,
           email: values.email,
           phone: values.phone,
+          company: values.company || "", 
           plusOne: values.plusOne,
           guestName: values.guestName || "",
           timestamp: new Date().toISOString(),
@@ -254,6 +261,21 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.phone}</FormLabel>
                       <FormControl>
                         <Input type="tel" placeholder={t.phonePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Company */}
+                <FormField
+                  control={form.control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.company}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t.companyPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
