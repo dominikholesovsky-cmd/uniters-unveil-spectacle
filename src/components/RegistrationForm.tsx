@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,6 +34,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       plusOne: "Účast s doprovodem",
       guestName: "Jméno doprovodu",
       guestNamePlaceholder: "Jméno osoby +1",
+      gdprConsent: "Souhlasím se zpracováním osobních údajů pro účely registrace.",
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
       successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
@@ -48,9 +49,10 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "john.doe@example.com",
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
-      plusOne: "Attending with guestš",
+      plusOne: "Attending with guest",
       guestName: "Guest Name",
       guestNamePlaceholder: "Name of +1 person",
+      gdprConsent: "I agree to the processing of my personal data for registration purposes.",
       submit: "Confirm Registration",
       successTitle: "Registration Confirmed!",
       successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
@@ -60,7 +62,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const t = content[language];
 
-   const formSchema = z.object({
+  // ✅ Form schema včetně GDPR souhlasu
+  const formSchema = z.object({
     name: z.string()
       .trim()
       .min(2, { message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters" })
@@ -91,7 +94,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       email: "",
       phone: "",
       plusOne: false,
-      guestName: ""
+      guestName: "",
+      gdprConsent: false
     }
   });
 
@@ -106,6 +110,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       });
       return;
     }
+
+    // ✅ Uložení souhlasu do localStorage
+    localStorage.setItem("gdprConsent", "accepted");
 
     console.log("Sending registration to Power Automate:", values);
 
@@ -204,6 +211,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+                {/* Name */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -211,17 +219,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.name}</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={t.namePlaceholder}
-                          {...field}
-                          className="h-11 sm:h-12 text-sm sm:text-base"
-                        />
+                        <Input placeholder={t.namePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                {/* Email */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -229,18 +234,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.email}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="email"
-                          placeholder={t.emailPlaceholder}
-                          {...field}
-                          className="h-11 sm:h-12 text-sm sm:text-base"
-                        />
+                        <Input type="email" placeholder={t.emailPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                {/* Phone */}
                 <FormField
                   control={form.control}
                   name="phone"
@@ -248,18 +249,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.phone}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="tel"
-                          placeholder={t.phonePlaceholder}
-                          {...field}
-                          className="h-11 sm:h-12 text-sm sm:text-base"
-                        />
+                        <Input type="tel" placeholder={t.phonePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                {/* Plus One */}
                 <FormField
                   control={form.control}
                   name="plusOne"
@@ -271,16 +268,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
                             setShowPlusOneDetails(!!checked);
-                            if (!checked) {
-                              form.setValue("guestName", "");
-                            }
+                            if (!checked) form.setValue("guestName", "");
                           }}
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel className="text-base font-medium cursor-pointer">
-                          {t.plusOne}
-                        </FormLabel>
+                        <FormLabel className="text-base font-medium cursor-pointer">{t.plusOne}</FormLabel>
                       </div>
                     </FormItem>
                   )}
@@ -294,11 +287,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormItem className="animate-fade-in">
                         <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName}</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder={t.guestNamePlaceholder}
-                            {...field}
-                            className="h-11 sm:h-12 text-sm sm:text-base"
-                          />
+                          <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -306,33 +295,25 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   />
                 )}
 
+                {/* GDPR Consent */}
                 <FormField
-                    control={form.control}
-                    name="gdprConsent"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-base font-medium cursor-pointer">
-                            {language === "cs"
-                              ? "Souhlasím se zpracováním osobních údajů pro účely registrace."
-                              : "I agree to the processing of my personal data for registration purposes."}
-                          </FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  control={form.control}
+                  name="gdprConsent"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted">
+                      <FormControl>
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-base font-medium cursor-pointer">{t.gdprConsent}</FormLabel>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
+                {/* Submit */}
+                <Button type="submit" size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground">
                   {t.submit}
                 </Button>
               </form>
