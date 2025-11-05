@@ -30,7 +30,13 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         },
         {
           icon: Music,
-          title: "Živá hudba",
+          title: (
+            <>
+              Živá hudba
+              <br />
+              <br />
+            </>
+          ),
           description: "Užijte si příjemný večer s živou hudbou",
         },
       ],
