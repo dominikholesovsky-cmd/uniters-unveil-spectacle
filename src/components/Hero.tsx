@@ -174,8 +174,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         </div>
       </div>
 
-      {/* SCROLL INDICATOR FIXED LEFT */}
-      <div className="fixed left-0 top-1/2 transform -translate-y-1/2 flex justify-center pl-4">
+      {/* Scroll indicator – pevně v rámci stránky */}
+      <div className="flex justify-start pl-4 mt-8">
         <div className="animate-bounce">
           <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
             <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
