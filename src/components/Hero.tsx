@@ -30,13 +30,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         },
         {
           icon: Music,
-          title: (
-            <>
-              Živá hudba
-              <br />
-              <br />
-            </>
-          ),
+          title: "Živá hudba",
           description: "Užijte si příjemný večer s živou hudbou",
         },
       ],
@@ -71,14 +65,13 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
   const t = content[language] ?? content.cs;
 
-  // scroll funkce
   const scrollToMap = () => {
     const el = document.getElementById("location-map");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-accent">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary via-secondary to-accent text-center px-4 sm:px-6">
       {/* Animated background */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-72 h-48 sm:h-72 bg-accent rounded-full blur-3xl animate-pulse" />
@@ -88,9 +81,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         />
       </div>
 
-      {/* -------------------------------------- */}
-      {/* Scroll indicator – vlevo uvnitř sekce */}
-      {/* -------------------------------------- */}
+      {/* Scroll indicator */}
       <div className="absolute left-0 top-1/2 transform -translate-y-1/2 pl-16">
         <div className="animate-bounce">
           <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
@@ -99,92 +90,70 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         </div>
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 py-8 sm:py-10 md:py-10">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          {/* -------------------------------------- */}
-          {/* TOP PART: Logo + Title + Description */}
-          {/* -------------------------------------- */}
-       <div className="flex flex-col items-center text-center space-y-6 sm:space-y-8">
-              {/* Logo */}
-              <div className="flex justify-center mb-6 sm:mb-8">
-                <img
-                  src={unitersLogo}
-                  alt="Uniters"
-                  className="h-10 sm:h-12 w-auto block"
-                />
-              </div>
+      {/* Main content */}
+      <div className="relative z-10 max-w-4xl w-full flex flex-col items-center space-y-8">
+        {/* Logo */}
+        <img src={unitersLogo} alt="Uniters" className="h-10 sm:h-12 w-auto mb-6 sm:mb-8" />
 
-              {/* Title & Description */}
-              <div className="space-y-3 sm:space-y-4 px-4">
-                <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
-                  {t.title}
-                </h1>
-                <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">
-                  {t.subtitle}
-                </h2>
-                <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">
-                  {t.description}
-                </p>
-              </div>
+        {/* Title & Description */}
+        <div className="space-y-3 sm:space-y-4 px-4">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
+            {t.title}
+          </h1>
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">
+            {t.subtitle}
+          </h2>
+          <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">
+            {t.description}
+          </p>
+        </div>
 
-              {/* EVENT DETAILS */}
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4">
-                <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
-                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="font-medium">{t.date}</span>
-                </div>
-
-                <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="font-medium">{t.time}</span>
-                </div>
-
-                <div
-                  className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
-                  onClick={scrollToMap}
-                >
-                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="font-medium hidden sm:inline">{t.location}</span>
-                  <span className="font-medium sm:hidden">Brno</span>
-                </div>
-              </div>
-
-              {/* CTA BUTTON + FEATURES */}
-              <div className="space-y-10 sm:space-y-12 w-full sm:w-auto">
-                <div className="px-4">
-                  <Button
-                    size="lg"
-                    onClick={onRegisterClick}
-                    className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
-                  >
-                    {t.cta}
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-
-            {/* Features */}
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto px-4">
-              {t.features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
-                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-white/80">
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
-            </div>
+        {/* Event details */}
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8">
+          <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium">{t.date}</span>
           </div>
+          <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium">{t.time}</span>
+          </div>
+          <div
+            className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
+            onClick={scrollToMap}
+          >
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium hidden sm:inline">{t.location}</span>
+            <span className="font-medium sm:hidden">Brno</span>
+          </div>
+        </div>
+
+        {/* CTA Button */}
+        <Button
+          size="lg"
+          onClick={onRegisterClick}
+          className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
+        >
+          {t.cta}
+        </Button>
+
+        {/* Features */}
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl w-full mx-auto mt-10">
+          {t.features.map((feature, index) => (
+            <div
+              key={index}
+              className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
+                <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-white/80">{feature.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
