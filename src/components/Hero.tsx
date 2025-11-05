@@ -63,7 +63,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           </div>
 
           {/* Title */}
-          <div className="space-y-3 sm:space-y-4 px-4">
+          <div className="sm:px-4">
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">{t.title}</h1>
             <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">{t.subtitle}</h2>
             <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">{t.description}</p>
