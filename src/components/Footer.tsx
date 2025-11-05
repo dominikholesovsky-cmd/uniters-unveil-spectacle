@@ -21,7 +21,7 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language];
 
   return (
-    <footer className="bg-foreground text-background py-8 sm:py-10 md:py-12">
+    <footer className="bg-foreground text-background py-6 sm:py-6 md:py-8">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
