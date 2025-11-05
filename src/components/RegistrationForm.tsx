@@ -183,7 +183,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   }
 
   return (
-    <section id="registration" className="py-12 sm:py-16 bg-gradient-to-bl from-primary via-secondary to-accent relative overflow-hidden">
+    <section id="registration" className="py-12 sm:py-16 bg-gradient-to-tr from-primary via-secondary to-accent relative overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
