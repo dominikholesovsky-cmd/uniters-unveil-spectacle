@@ -43,27 +43,27 @@ const Contact = ({ language }: ContactProps) => {
               {t.position}
             </p>
 
-            <div className="flex flex-col gap-4 sm:gap-6 justify-center items-stretch sm:items-center">
-              <a
-                href="tel:+420776285777"
-                className="flex items-center justify-center sm:justify-start gap-3 text-base sm:text-lg text-foreground hover:text-primary transition-colors group w-full"
-              >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <span className="font-medium break-all sm:break-normal">+420 776 285 777</span>
-              </a>
+            <div className="flex flex-row gap-4 sm:gap-6 justify-between items-center w-full">
+            <a
+              href="tel:+420776285777"
+              className="flex items-center gap-3 text-base sm:text-lg text-foreground hover:text-primary transition-colors group"
+            >
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <span className="font-medium break-all sm:break-normal">+420 776 285 777</span>
+            </a>
 
-              <a
-                href="mailto:frederik.bolf@uniters.io"
-                className="flex items-center justify-center sm:justify-start gap-3 text-base sm:text-lg text-foreground hover:text-primary transition-colors group w-full"
-              >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <span className="font-medium break-all sm:break-normal">frederik.bolf@uniters.io</span>
-              </a>
-            </div>
+            <a
+              href="mailto:frederik.bolf@uniters.io"
+              className="flex items-center gap-3 text-base sm:text-lg text-foreground hover:text-primary transition-colors group"
+            >
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <span className="font-medium break-all sm:break-normal">frederik.bolf@uniters.io</span>
+            </a>
+          </div>
           </div>
         </div>
       </div>
