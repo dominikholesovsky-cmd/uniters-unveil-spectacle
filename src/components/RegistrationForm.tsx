@@ -48,7 +48,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "john.doe@example.com",
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
-      plusOne: "Attending with guest",
+      plusOne: "Attending with guestš",
       guestName: "Guest Name",
       guestNamePlaceholder: "Name of +1 person",
       submit: "Confirm Registration",
@@ -60,11 +60,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const t = content[language];
 
-  const formSchema = z.object({
+   const formSchema = z.object({
     name: z.string()
       .trim()
       .min(2, { message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters" })
-      .max(100, { message: language === "cs" ? "Jméno může mít max 100 znaků" : "Name can be max 100 characters" }),
+      .max(100),
     email: z.string()
       .trim()
       .email({ message: language === "cs" ? "Neplatná e-mailová adresa" : "Invalid email address" })
@@ -74,7 +74,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       .min(9, { message: language === "cs" ? "Neplatné telefonní číslo" : "Invalid phone number" })
       .max(20),
     plusOne: z.boolean().default(false),
-    guestName: z.string().trim().max(100).optional()
+    guestName: z.string().trim().max(100).optional(),
+    gdprConsent: z.literal(true, {
+      errorMap: () => ({
+        message: language === "cs" 
+          ? "Musíte souhlasit se zpracováním osobních údajů" 
+          : "You must agree to the processing of personal data"
+      })
+    })
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -298,6 +305,28 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     )}
                   />
                 )}
+
+                <FormField
+                    control={form.control}
+                    name="gdprConsent"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-base font-medium cursor-pointer">
+                            {language === "cs"
+                              ? "Souhlasím se zpracováním osobních údajů pro účely registrace."
+                              : "I agree to the processing of my personal data for registration purposes."}
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
                 <Button
                   type="submit"
