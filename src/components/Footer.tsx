@@ -30,7 +30,7 @@ const Footer = ({ language }: FooterProps) => {
               <img 
                 src={unitersLogo} 
                 alt="Uniters" 
-                className="h-10 sm:h-12 w-auto filter brightness-0 invert"
+                className="h-10 sm:h-12 w-auto"
               />
             </div>
 
