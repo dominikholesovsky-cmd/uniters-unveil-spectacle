@@ -1,3 +1,5 @@
+import { useState } from "react";
+import TermsModal from "./TermsModal"; 
 import unitersLogolight from "@/assets/full-logo_uniters_light.png";
 
 interface FooterProps {
@@ -5,6 +7,8 @@ interface FooterProps {
 }
 
 const Footer = ({ language }: FooterProps) => {
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+
   const content = {
     cs: {
       copyright: "Copyright © Uniters Projects s.r.o. 2026. Všechna práva vyhrazena.",
@@ -42,13 +46,21 @@ const Footer = ({ language }: FooterProps) => {
 
             {/* GDPR Link */}
             <div>
-              <a
-                href="#gdpr"
+              <button
+                type="button"
                 className="text-xs sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
+                onClick={() => setIsTermsOpen(true)}
               >
                 {t.gdpr}
-              </a>
+              </button>
             </div>
+
+            {/* Render modalu */}
+            <TermsModal
+              open={isTermsOpen}
+              onClose={() => setIsTermsOpen(false)}
+              language={language}
+            />
           </div>
         </div>
       </div>
