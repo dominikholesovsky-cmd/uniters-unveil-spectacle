@@ -23,7 +23,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
 
   // Coordinates for Vodojemy Žlutý Kopec
   const coordinates = "49.1956718,16.5913221";
-  const mapsUrl = `https://www.google.com/maps?q=${coordinates}`;
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
 
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-muted">
