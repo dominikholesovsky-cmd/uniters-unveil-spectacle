@@ -10,9 +10,9 @@ interface TermsModalProps {
   onClose: () => void;
 }
 
-const TermsModal: FC<TermsModalProps> = ({ isOpen, onClose }) => {
+const TermsModal: FC<TermsModalProps> = ({ open, onClose }) => {
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl w-full h-[80vh] p-6 sm:p-8 overflow-y-auto">
         <DialogHeader className="sticky top-0 bg-white z-10 mb-4">
           <DialogTitle className="text-2xl sm:text-3xl font-bold text-center">
