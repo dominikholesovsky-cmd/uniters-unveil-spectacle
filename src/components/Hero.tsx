@@ -87,11 +87,11 @@ const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
                 const el = document.getElementById("location-map");
                 if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
+            >
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-medium hidden sm:inline">{t.location}</span>
               <span className="font-medium sm:hidden">Brno</span>
             </div>
-          </div>
 
           {/* Features */}
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mb-6 sm:mb-8 px-4">
