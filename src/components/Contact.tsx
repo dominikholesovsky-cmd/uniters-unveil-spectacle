@@ -67,7 +67,6 @@ const Contact = ({ language }: ContactProps) => {
           </div>
           </div>
         </div>
-      </div>
     </section>
   );
 };
