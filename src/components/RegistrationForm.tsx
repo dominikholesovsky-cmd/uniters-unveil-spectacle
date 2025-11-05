@@ -16,6 +16,8 @@ interface RegistrationFormProps {
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [powerAutomateUrl, setPowerAutomateUrl] = useState("");
+  const [showPlusOneDetails, setShowPlusOneDetails] = useState(false);
 
   const content = {
     cs: {
@@ -28,6 +30,10 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       phone: "Telefon",
       phonePlaceholder: "+420 123 456 789",
       plusOne: "Účast s doprovodem (+1)",
+      guestName: "Jméno doprovodu",
+      guestNamePlaceholder: "Jméno osoby +1",
+      powerAutomateLabel: "Power Automate Endpoint URL",
+      powerAutomatePlaceholder: "https://prod-xx.westeurope.logic.azure.com:443/...",
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
       successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
@@ -44,6 +50,10 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
       plusOne: "Attending with guest (+1)",
+      guestName: "Guest Name",
+      guestNamePlaceholder: "Name of +1 person",
+      powerAutomateLabel: "Power Automate Endpoint URL",
+      powerAutomatePlaceholder: "https://prod-xx.westeurope.logic.azure.com:443/...",
       submit: "Confirm Registration",
       successTitle: "Registration Confirmed!",
       successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
@@ -67,7 +77,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       .trim()
       .min(9, { message: language === "cs" ? "Neplatné telefonní číslo" : "Invalid phone number" })
       .max(20),
-    plusOne: z.boolean().default(false)
+    plusOne: z.boolean().default(false),
+    guestName: z.string().trim().max(100).optional()
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -76,19 +87,72 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       name: "",
       email: "",
       phone: "",
-      plusOne: false
+      plusOne: false,
+      guestName: ""
     }
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Registration data:", values);
-    
-    toast({
-      title: t.successTitle,
-      description: t.successMessage,
-    });
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!powerAutomateUrl) {
+      toast({
+        title: language === "cs" ? "Chyba" : "Error",
+        description: language === "cs" 
+          ? "Zadejte prosím Power Automate endpoint URL" 
+          : "Please enter Power Automate endpoint URL",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    setIsSubmitted(true);
+    if (values.plusOne && !values.guestName?.trim()) {
+      toast({
+        title: language === "cs" ? "Chyba" : "Error",
+        description: language === "cs" 
+          ? "Zadejte prosím jméno doprovodu" 
+          : "Please enter guest name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log("Sending registration to Power Automate:", values);
+
+    try {
+      const response = await fetch(powerAutomateUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          plusOne: values.plusOne,
+          guestName: values.guestName || "",
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send data");
+      }
+
+      toast({
+        title: t.successTitle,
+        description: t.successMessage,
+      });
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error sending to Power Automate:", error);
+      toast({
+        title: language === "cs" ? "Chyba při odesílání" : "Error sending data",
+        description: language === "cs" 
+          ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu." 
+          : "Failed to send registration. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleNavigationClick = () => {
@@ -153,6 +217,20 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           </div>
 
           <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            {/* Power Automate URL Input */}
+            <div className="mb-6 p-4 bg-muted rounded-lg">
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                {t.powerAutomateLabel}
+              </label>
+              <Input
+                type="url"
+                placeholder={t.powerAutomatePlaceholder}
+                value={powerAutomateUrl}
+                onChange={(e) => setPowerAutomateUrl(e.target.value)}
+                className="h-10 text-sm"
+              />
+            </div>
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
@@ -219,7 +297,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            setShowPlusOneDetails(!!checked);
+                            if (!checked) {
+                              form.setValue("guestName", "");
+                            }
+                          }}
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
@@ -230,6 +314,26 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     </FormItem>
                   )}
                 />
+
+                {showPlusOneDetails && (
+                  <FormField
+                    control={form.control}
+                    name="guestName"
+                    render={({ field }) => (
+                      <FormItem className="animate-fade-in">
+                        <FormLabel className="text-lg font-semibold">{t.guestName}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t.guestNamePlaceholder}
+                            {...field}
+                            className="h-12 text-base"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <Button
                   type="submit"

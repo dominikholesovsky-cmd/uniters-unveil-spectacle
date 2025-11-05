@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import Hero from "@/components/Hero";
-import AboutEvent from "@/components/AboutEvent";
 import LocationMap from "@/components/LocationMap";
 import RegistrationForm from "@/components/RegistrationForm";
 import Contact from "@/components/Contact";
@@ -69,8 +68,6 @@ const Index = () => {
         <LanguageToggle language={language} onToggle={toggleLanguage} />
         
         <Hero language={language} onRegisterClick={handleRegisterClick} />
-        
-        <AboutEvent language={language} />
         
         <LocationMap language={language} />
         

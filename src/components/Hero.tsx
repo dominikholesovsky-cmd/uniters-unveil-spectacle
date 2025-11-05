@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock } from "lucide-react";
+import { Calendar, MapPin, Clock, Wine, Music, Info } from "lucide-react";
 import unitersLogo from "@/assets/uniters-logo.jpg";
 
 interface HeroProps {
@@ -16,7 +16,24 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       time: "18:00 - 22:00",
       location: "Vodojemy Žlutý Kopec, Brno",
       cta: "Registrovat se",
-      description: "Exkluzivní akce pro naše hosty"
+      description: "Přidejte se k nám na jedinečný večerní program plný zážitků",
+      features: [
+        {
+          icon: Info,
+          title: "Komentovaná prohlídka",
+          description: "Objevte historii a tajemství vodojemů Žlutý Kopec"
+        },
+        {
+          icon: Wine,
+          title: "Catering & Ochutnávka vína",
+          description: "Vychutnejte si vybrané speciality a kvalitní vína"
+        },
+        {
+          icon: Music,
+          title: "Živá hudba",
+          description: "Užijte si příjemný večer s živou hudbou"
+        }
+      ]
     },
     en: {
       title: "Evening Tour",
@@ -25,7 +42,24 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       time: "6:00 PM - 10:00 PM",
       location: "Žlutý Kopec Water Reservoirs, Brno",
       cta: "Register",
-      description: "Exclusive event for our guests"
+      description: "Join us for a unique evening program full of experiences",
+      features: [
+        {
+          icon: Info,
+          title: "Guided Tour",
+          description: "Discover the history and secrets of Žlutý Kopec"
+        },
+        {
+          icon: Wine,
+          title: "Catering & Wine Tasting",
+          description: "Enjoy selected specialties and quality wines"
+        },
+        {
+          icon: Music,
+          title: "Live Music",
+          description: "Enjoy a pleasant evening with live music"
+        }
+      ]
     }
   };
 
@@ -79,8 +113,29 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
           </div>
 
+          {/* Features */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
+            {t.features.map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-white/80">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
           {/* CTA Button */}
-          <div className="pt-8">
+          <div className="pt-4">
             <Button
               size="lg"
               onClick={onRegisterClick}
