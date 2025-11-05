@@ -77,10 +77,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
           {/* Logo */}
           <div className="flex justify-center mb-6 sm:mb-8">
-            <img
+            <img 
               src={unitersLogo} 
               alt="Uniters" 
-              className="h-12 sm:h-16 md:h-20 w-auto filter brightness-0 invert"
+              className="h-10 sm:h-12 w-auto block filter-none mix-blend-normal"
+              style={{ filter: 'none', mixBlendMode: 'normal' }}
             />
           </div>
 
