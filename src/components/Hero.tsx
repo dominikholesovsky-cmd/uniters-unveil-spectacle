@@ -82,7 +82,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 py-12 sm:py-16 md:py-20">
+      <div className="container relative z-10 mx-auto px-4 py-8 sm:py-10 md:py-10">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           {/* -------------------------------------- */}
           {/* TOP PART: Logo + Title + Description */}
