@@ -10,7 +10,7 @@ interface HeroProps {
 const Hero = ({ language, onRegisterClick }: HeroProps) => {
   const content = {
     cs: {
-      title: "Večerní prohlídka",
+      title: "Uniters Event",
       subtitle: "Vodojemy Žlutý Kopec",
       date: "22. ledna 2026",
       time: "18:00 - 22:00",
@@ -36,7 +36,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       ],
     },
     en: {
-      title: "Evening Tour",
+      title: "Uniters Event",
       subtitle: "Žlutý Kopec Water Tanks",
       date: "January 22, 2026",
       time: "6:00 PM - 10:00 PM",
