@@ -7,12 +7,12 @@ interface FooterProps {
 const Footer = ({ language }: FooterProps) => {
   const content = {
     cs: {
-      copyright: "Copyright © Uniters 2026. Všechna práva vyhrazena.",
+      copyright: "Copyright © Uniters Projects s.r.o. 2026. Všechna práva vyhrazena.",
       ico: "IČO: 14388111",
       gdpr: "Zásady ochrany osobních údajů (GDPR)"
     },
     en: {
-      copyright: "Copyright © Uniters 2026. All rights reserved.",
+      copyright: "Copyright © Uniters Projects s.r.o. 2026. All rights reserved.",
       ico: "Company ID: 14388111",
       gdpr: "Privacy Policy (GDPR)"
     }
