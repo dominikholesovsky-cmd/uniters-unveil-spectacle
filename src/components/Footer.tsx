@@ -1,3 +1,4 @@
+// components/Footer.tsx
 import { useState } from "react";
 import TermsModal from "./TermsModal"; 
 import unitersLogolight from "@/assets/full-logo_uniters_light.png";
@@ -54,15 +55,15 @@ const Footer = ({ language }: FooterProps) => {
                 {t.gdpr}
               </button>
             </div>
-
-            {/* Render modalu */}
-            <TermsModal
-              open={isTermsOpen}
-              onClose={() => setIsTermsOpen(false)}
-              language={language}
-            />
           </div>
         </div>
+
+        {/* Render modalu */}
+        <TermsModal
+          open={isTermsOpen}
+          onClose={() => setIsTermsOpen(false)}
+          language={language}
+        />
       </div>
     </footer>
   );

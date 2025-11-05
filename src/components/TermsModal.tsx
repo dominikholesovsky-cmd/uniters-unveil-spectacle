@@ -1,3 +1,4 @@
+// components/TermsModal.tsx
 import { FC } from "react";
 import {
   Dialog,
@@ -55,7 +56,7 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
   const t = content[language];
 
   return (
-    <Dialog open={open} onOpenChange={(state) => !state && onClose()}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-full h-[80vh] p-6 sm:p-8 overflow-y-auto">
         <DialogHeader className="sticky top-0 bg-white z-10 mb-4">
           <DialogTitle className="text-2xl sm:text-3xl font-bold text-center">
