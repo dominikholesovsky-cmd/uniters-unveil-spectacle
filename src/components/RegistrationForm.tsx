@@ -183,7 +183,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   }
 
   return (
-    <section id="registration" className="py-12 sm:py-16 bg-gradient-to-bl from-primary/90 via-secondary/90 to-accent/90 relative overflow-hidden">
+    <section id="registration" className="py-12 sm:py-16 relative overflow-hidden bg-gradient-to-bl from-white/30 via-primary/70 to-primary/90">
+      {/* Světelný efekt v pravém horním rohu */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
+
+      {/* Tmavý kruh ve spodním levém rohu */}
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
