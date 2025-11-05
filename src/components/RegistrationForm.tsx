@@ -152,7 +152,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
+    const mapsUrl = const mapsUrl = `https://www.google.com/maps/@${coordinates}`;
     window.open(mapsUrl, "_blank");
   };
 
