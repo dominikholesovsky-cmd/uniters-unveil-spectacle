@@ -1,4 +1,4 @@
-import unitersLogo from "@/assets/full-logo_uniters_light.png";
+import unitersLogolight from "@/assets/full-logo_uniters_light.png";
 
 interface FooterProps {
   language: "cs" | "en";
@@ -28,7 +28,7 @@ const Footer = ({ language }: FooterProps) => {
             {/* Logo */}
             <div className="flex-shrink-0">
               <img 
-                src={unitersLogo} 
+                src={unitersLogolight} 
                 alt="Uniters" 
                 className="h-10 sm:h-12 w-auto"
               />
