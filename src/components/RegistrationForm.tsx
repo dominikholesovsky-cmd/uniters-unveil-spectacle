@@ -301,30 +301,31 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   control={form.control}
                   name="gdprConsent"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                      <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
-                        {language === "cs"
-                          ? <>
-                              * Souhlasím se zpracováním osobních údajů dle{" "}
-                              <Link to="/terms" className="underline">
-                                zásad ochrany osobních údajů
-                              </Link>{" "}
-                              pro účely registrace.
-                            </>
-                          : <>
-                              * I agree to the processing of my personal data according to the{" "}
-                              <Link to="/terms" className="underline">
-                                privacy policy
-                              </Link>{" "}
-                              for registration purposes.
-                            </>
-                        }
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
+                    <FormItem className="flex flex-row items-start space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <div className="text-sm">
+                      {language === "cs" ? (
+                        <>
+                          * Souhlasím se zpracováním osobních údajů dle{" "}
+                          <Link to="/terms" className="underline">
+                            zásad ochrany osobních údajů
+                          </Link>{" "}
+                          pro účely registrace.
+                        </>
+                      ) : (
+                        <>
+                          * I agree to the processing of my personal data according to the{" "}
+                          <Link to="/terms" className="underline">
+                            privacy policy
+                          </Link>{" "}
+                          for registration purposes.
+                        </>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
                   )}
                 />
                 {/* Submit */}
