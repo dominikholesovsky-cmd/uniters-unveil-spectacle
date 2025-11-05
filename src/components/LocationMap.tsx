@@ -26,20 +26,20 @@ const LocationMap = ({ language }: LocationMapProps) => {
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates}`;
 
   return (
-    <section className="py-20 bg-muted">
+    <section className="py-12 sm:py-16 md:py-20 bg-muted">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <MapPin className="w-5 h-5" />
-              <p className="text-lg">{t.address}</p>
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+              <p className="text-base sm:text-lg">{t.address}</p>
             </div>
           </div>
 
-          <div className="relative rounded-2xl overflow-hidden shadow-elegant animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in" style={{ animationDelay: "0.2s" }}>
             {/* Map iframe */}
             <div className="aspect-video w-full">
               <iframe
@@ -51,20 +51,20 @@ const LocationMap = ({ language }: LocationMapProps) => {
             </div>
 
             {/* Navigation button overlay */}
-            <div className="absolute bottom-6 right-6">
+            <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
               <Button
                 size="lg"
                 onClick={() => window.open(mapsUrl, "_blank")}
-                className="bg-white text-primary hover:bg-white/90 shadow-lg"
+                className="bg-white text-primary hover:bg-white/90 shadow-lg text-sm sm:text-base px-4 sm:px-6"
               >
-                <Navigation className="w-5 h-5 mr-2" />
+                <Navigation className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 {t.navigate}
               </Button>
             </div>
           </div>
 
           {/* Attribution for OpenStreetMap */}
-          <div className="text-center mt-4 text-sm text-muted-foreground">
+          <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
             <a
               href="https://www.openstreetmap.org/copyright"
               target="_blank"

@@ -9,6 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation } from "lucide-react";
 
+// Power Automate endpoint URL
+const POWER_AUTOMATE_URL = "YOUR_POWER_AUTOMATE_ENDPOINT_URL_HERE";
+
 interface RegistrationFormProps {
   language: "cs" | "en";
 }
@@ -16,7 +19,6 @@ interface RegistrationFormProps {
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [powerAutomateUrl, setPowerAutomateUrl] = useState("");
   const [showPlusOneDetails, setShowPlusOneDetails] = useState(false);
 
   const content = {
@@ -32,8 +34,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       plusOne: "Účast s doprovodem (+1)",
       guestName: "Jméno doprovodu",
       guestNamePlaceholder: "Jméno osoby +1",
-      powerAutomateLabel: "Power Automate Endpoint URL",
-      powerAutomatePlaceholder: "https://prod-xx.westeurope.logic.azure.com:443/...",
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
       successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
@@ -52,8 +52,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       plusOne: "Attending with guest (+1)",
       guestName: "Guest Name",
       guestNamePlaceholder: "Name of +1 person",
-      powerAutomateLabel: "Power Automate Endpoint URL",
-      powerAutomatePlaceholder: "https://prod-xx.westeurope.logic.azure.com:443/...",
       submit: "Confirm Registration",
       successTitle: "Registration Confirmed!",
       successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
@@ -93,17 +91,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!powerAutomateUrl) {
-      toast({
-        title: language === "cs" ? "Chyba" : "Error",
-        description: language === "cs" 
-          ? "Zadejte prosím Power Automate endpoint URL" 
-          : "Please enter Power Automate endpoint URL",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (values.plusOne && !values.guestName?.trim()) {
       toast({
         title: language === "cs" ? "Chyba" : "Error",
@@ -118,7 +105,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     console.log("Sending registration to Power Automate:", values);
 
     try {
-      const response = await fetch(powerAutomateUrl, {
+      const response = await fetch(POWER_AUTOMATE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -168,18 +155,18 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   if (isSubmitted) {
     return (
-      <section id="registration" className="py-20 bg-gradient-to-br from-primary via-secondary to-accent">
+      <section id="registration" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-primary via-secondary to-accent">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-3xl p-12 shadow-2xl text-center animate-scale-in">
-              <CheckCircle2 className="w-20 h-20 text-accent mx-auto mb-6" />
-              <h2 className="text-4xl font-bold text-foreground mb-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl text-center animate-scale-in">
+              <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
                 {t.successTitle}
               </h2>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
                 {t.successMessage}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Button
                   size="lg"
                   onClick={handleNavigationClick}
@@ -204,46 +191,32 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   }
 
   return (
-    <section id="registration" className="py-20 bg-gradient-to-br from-primary via-secondary to-accent">
+    <section id="registration" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-primary via-secondary to-accent">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
-            <p className="text-xl text-white/80">
+            <p className="text-lg sm:text-xl text-white/80 px-4">
               {t.subtitle}
             </p>
           </div>
 
-          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            {/* Power Automate URL Input */}
-            <div className="mb-6 p-4 bg-muted rounded-lg">
-              <label className="text-sm font-semibold text-foreground mb-2 block">
-                {t.powerAutomateLabel}
-              </label>
-              <Input
-                type="url"
-                placeholder={t.powerAutomatePlaceholder}
-                value={powerAutomateUrl}
-                onChange={(e) => setPowerAutomateUrl(e.target.value)}
-                className="h-10 text-sm"
-              />
-            </div>
-
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-semibold">{t.name}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.name}</FormLabel>
                       <FormControl>
                         <Input
                           placeholder={t.namePlaceholder}
                           {...field}
-                          className="h-12 text-base"
+                          className="h-11 sm:h-12 text-sm sm:text-base"
                         />
                       </FormControl>
                       <FormMessage />
@@ -256,13 +229,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-semibold">{t.email}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.email}</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder={t.emailPlaceholder}
                           {...field}
-                          className="h-12 text-base"
+                          className="h-11 sm:h-12 text-sm sm:text-base"
                         />
                       </FormControl>
                       <FormMessage />
@@ -275,13 +248,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-semibold">{t.phone}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.phone}</FormLabel>
                       <FormControl>
                         <Input
                           type="tel"
                           placeholder={t.phonePlaceholder}
                           {...field}
-                          className="h-12 text-base"
+                          className="h-11 sm:h-12 text-sm sm:text-base"
                         />
                       </FormControl>
                       <FormMessage />
@@ -321,12 +294,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     name="guestName"
                     render={({ field }) => (
                       <FormItem className="animate-fade-in">
-                        <FormLabel className="text-lg font-semibold">{t.guestName}</FormLabel>
+                        <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t.guestNamePlaceholder}
                             {...field}
-                            className="h-12 text-base"
+                            className="h-11 sm:h-12 text-sm sm:text-base"
                           />
                         </FormControl>
                         <FormMessage />
@@ -338,7 +311,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   {t.submit}
                 </Button>

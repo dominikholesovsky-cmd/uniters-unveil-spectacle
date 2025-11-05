@@ -21,30 +21,30 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language];
 
   return (
-    <footer className="bg-foreground text-background py-12">
+    <footer className="bg-foreground text-background py-8 sm:py-10 md:py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
             {/* Logo */}
             <div className="flex-shrink-0">
               <img 
                 src={unitersLogo} 
                 alt="Uniters" 
-                className="h-12 w-auto filter brightness-0 invert"
+                className="h-10 sm:h-12 w-auto filter brightness-0 invert"
               />
             </div>
 
             {/* Center content */}
-            <div className="text-center space-y-2">
-              <p className="text-sm opacity-80">{t.copyright}</p>
-              <p className="text-sm opacity-80">{t.ico}</p>
+            <div className="text-center space-y-1 sm:space-y-2">
+              <p className="text-xs sm:text-sm opacity-80">{t.copyright}</p>
+              <p className="text-xs sm:text-sm opacity-80">{t.ico}</p>
             </div>
 
             {/* GDPR Link */}
             <div>
               <a
                 href="#gdpr"
-                className="text-sm hover:text-accent transition-colors inline-block hover:underline"
+                className="text-xs sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
               >
                 {t.gdpr}
               </a>

@@ -23,45 +23,45 @@ const Contact = ({ language }: ContactProps) => {
   const t = content[language];
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-12 sm:py-16 md:py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-12 animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg sm:text-xl text-muted-foreground px-4">
               {t.subtitle}
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl p-8 md:p-12 shadow-elegant border border-border animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            <h3 className="text-2xl font-bold text-card-foreground mb-2">
+          <div className="bg-card rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 shadow-elegant border border-border animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <h3 className="text-xl sm:text-2xl font-bold text-card-foreground mb-1 sm:mb-2">
               {t.name}
             </h3>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
               {t.position}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className="flex flex-col gap-4 sm:gap-6 justify-center items-stretch sm:items-center">
               <a
                 href="tel:+420776285777"
-                className="flex items-center gap-3 text-lg text-foreground hover:text-primary transition-colors group"
+                className="flex items-center justify-center sm:justify-start gap-3 text-base sm:text-lg text-foreground hover:text-primary transition-colors group w-full"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Phone className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <span className="font-medium">+420 776 285 777</span>
+                <span className="font-medium break-all sm:break-normal">+420 776 285 777</span>
               </a>
 
               <a
                 href="mailto:frederik.bolf@uniters.io"
-                className="flex items-center gap-3 text-lg text-foreground hover:text-primary transition-colors group"
+                className="flex items-center justify-center sm:justify-start gap-3 text-base sm:text-lg text-foreground hover:text-primary transition-colors group w-full"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Mail className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <span className="font-medium">frederik.bolf@uniters.io</span>
+                <span className="font-medium break-all sm:break-normal">frederik.bolf@uniters.io</span>
               </a>
             </div>
           </div>
