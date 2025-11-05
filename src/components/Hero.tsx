@@ -82,6 +82,17 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         />
       </div>
 
+      {/* -------------------------------------- */}
+      {/* Scroll indicator – vlevo uvnitř sekce */}
+      {/* -------------------------------------- */}
+      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 pl-4">
+        <div className="animate-bounce">
+          <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+            <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
+          </div>
+        </div>
+      </div>
+
       <div className="container relative z-10 mx-auto px-4 py-8 sm:py-10 md:py-10">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           {/* -------------------------------------- */}
@@ -170,15 +181,6 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator – pevně v rámci stránky */}
-      <div className="flex justify-start pl-4 mt-8">
-        <div className="animate-bounce">
-          <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
           </div>
         </div>
       </div>
