@@ -172,11 +172,10 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
 
             {/* Scroll indicator */}
-            <div className="flex justify-center pt-4">
-              <div className="animate-bounce">
-                <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-                  <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
-                </div>
+          <div className="fixed left-0 top-1/2 transform -translate-y-1/2 flex justify-center pl-4">
+            <div className="animate-bounce">
+              <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+                <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
               </div>
             </div>
           </div>
