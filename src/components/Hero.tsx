@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Wine, Music, Info } from "lucide-react";
-import unitersLogo from "@/assets/uniters-logo.jpg";
+import unitersLogo from "@/assets/full-logo_uniters.png";
 
 interface HeroProps {
   language: "cs" | "en";
