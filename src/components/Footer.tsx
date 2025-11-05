@@ -23,7 +23,7 @@ const Footer = ({ language }: FooterProps) => {
     }
   };
 
-  const t = content[language];
+  const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
     <footer className="bg-foreground text-background py-6 sm:py-6 md:py-8">

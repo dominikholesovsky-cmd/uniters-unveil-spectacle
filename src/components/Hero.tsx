@@ -39,7 +39,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
     }
   };
 
-  const t = content[language];
+  const t = content[language as "cs" | "en"] ?? content.cs;
 
   // scroll funkce
   const scrollToMap = () => {

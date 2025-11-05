@@ -53,7 +53,7 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
     },
   };
 
-  const t = content[language];
+  const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
