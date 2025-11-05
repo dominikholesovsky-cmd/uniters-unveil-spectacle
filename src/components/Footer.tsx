@@ -1,4 +1,4 @@
-import unitersLogo from "@/assets/uniters-logo.jpg";
+import unitersLogo from "@/assets/full-logo_uniters.png";
 
 interface FooterProps {
   language: "cs" | "en";
