@@ -151,8 +151,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   };
 
   const handleNavigationClick = () => {
-    const coordinates = "49.2108,16.5967";
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates}`;
+    const coordinates = "49.1956718,16.5913221";
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
     window.open(mapsUrl, "_blank");
   };
 
