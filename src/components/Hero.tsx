@@ -104,68 +104,65 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           {/* -------------------------------------- */}
           {/* TOP PART: Logo + Title + Description */}
           {/* -------------------------------------- */}
-          <div className="space-y-6 sm:space-y-8">
-            {/* Logo */}
-            <div className="flex justify-center mb-6 sm:mb-8">
-              <img
-                src={unitersLogo}
-                alt="Uniters"
-                className="h-10 sm:h-12 w-auto block"
-              />
+       <div className="flex flex-col items-center text-center space-y-6 sm:space-y-8">
+              {/* Logo */}
+              <div className="flex justify-center mb-6 sm:mb-8">
+                <img
+                  src={unitersLogo}
+                  alt="Uniters"
+                  className="h-10 sm:h-12 w-auto block"
+                />
+              </div>
+
+              {/* Title & Description */}
+              <div className="space-y-3 sm:space-y-4 px-4">
+                <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
+                  {t.title}
+                </h1>
+                <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">
+                  {t.subtitle}
+                </h2>
+                <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">
+                  {t.description}
+                </p>
+              </div>
+
+              {/* EVENT DETAILS */}
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4">
+                <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
+                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="font-medium">{t.date}</span>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="font-medium">{t.time}</span>
+                </div>
+
+                <div
+                  className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
+                  onClick={scrollToMap}
+                >
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="font-medium hidden sm:inline">{t.location}</span>
+                  <span className="font-medium sm:hidden">Brno</span>
+                </div>
+              </div>
+
+              {/* CTA BUTTON + FEATURES */}
+              <div className="space-y-10 sm:space-y-12 w-full sm:w-auto">
+                <div className="px-4">
+                  <Button
+                    size="lg"
+                    onClick={onRegisterClick}
+                    className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
+                  >
+                    {t.cta}
+                  </Button>
+                </div>
+              </div>
             </div>
 
-            {/* Title & Description */}
-            <div className="space-y-3 sm:space-y-4 px-4">
-              <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
-                {t.title}
-              </h1>
-              <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">
-                {t.subtitle}
-              </h2>
-              <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">
-                {t.description}
-              </p>
-            </div>
-          </div>
-
-          {/* -------------------------------------- */}
-          {/* EVENT DETAILS */}
-          {/* -------------------------------------- */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4">
-            <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-medium">{t.date}</span>
-            </div>
-
-            <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-medium">{t.time}</span>
-            </div>
-
-            <div
-              className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
-              onClick={scrollToMap}
-            >
-              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-medium hidden sm:inline">{t.location}</span>
-              <span className="font-medium sm:hidden">Brno</span>
-            </div>
-          </div>
-
-          {/* -------------------------------------- */}
-          {/* CTA BUTTON + FEATURES */}
-          {/* -------------------------------------- */}
-          <div className="space-y-10 sm:space-y-12">
-            {/* CTA */}
-            <div className="px-4">
-              <Button
-                size="lg"
-                onClick={onRegisterClick}
-                className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
-              >
-                {t.cta}
-              </Button>
-            </div>
 
             {/* Features */}
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto px-4">
