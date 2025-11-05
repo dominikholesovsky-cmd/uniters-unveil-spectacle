@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation } from "lucide-react";
 import TermsModal from "./TermsModal";
 
-// Power Automate endpoint URL
 const POWER_AUTOMATE_URL = "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
 
 interface RegistrationFormProps {
@@ -22,6 +20,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPlusOneDetails, setShowPlusOneDetails] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const content = {
     cs: {
@@ -66,11 +65,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     }
   };
 
-  const [isTermsOpen, setIsTermsOpen] = useState(false);
-
   const t = content[language];
 
-  // ✅ Form schema včetně GDPR souhlasu
   const formSchema = z.object({
     name: z.string()
       .trim()
@@ -121,17 +117,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       return;
     }
 
-    // ✅ Uložení souhlasu do localStorage
     localStorage.setItem("gdprConsent", "accepted");
-
-    console.log("Sending registration to Power Automate:", values);
 
     try {
       const response = await fetch(POWER_AUTOMATE_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: values.name,
           email: values.email,
@@ -143,15 +134,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to send data");
-      }
+      if (!response.ok) throw new Error("Failed to send data");
 
-      toast({
-        title: t.successTitle,
-        description: t.successMessage,
-      });
-
+      toast({ title: t.successTitle, description: t.successMessage });
       setIsSubmitted(true);
     } catch (error) {
       console.error("Error sending to Power Automate:", error);
@@ -183,20 +168,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl text-center animate-scale-in">
               <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
-                {t.successTitle}
-              </h2>
-              <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
-                {t.successMessage}
-              </p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">{t.successTitle}</h2>
+              <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">{t.successMessage}</p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <Button
-                  size="lg"
-                  onClick={handleNavigationClick}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
-                >
-                  <Navigation className="w-5 h-5 mr-2" />
-                  {t.openNavigation}
+                <Button size="lg" onClick={handleNavigationClick} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
                 </Button>
               </div>
             </div>
@@ -211,24 +187,21 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 px-4">
-              {t.title}
-            </h2>
-            <p className="text-lg sm:text-xl text-white/80 px-4">
-              {t.subtitle}
-            </p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 px-4">{t.title}</h2>
+            <p className="text-lg sm:text-xl text-white/80 px-4">{t.subtitle}</p>
           </div>
 
           <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+
                 {/* Name */}
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base sm:text-lg font-semibold">{t.name}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.name} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder={t.namePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
@@ -243,7 +216,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base sm:text-lg font-semibold">{t.email}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.email} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input type="email" placeholder={t.emailPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
@@ -258,7 +231,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base sm:text-lg font-semibold">{t.phone}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold">{t.phone} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input type="tel" placeholder={t.phonePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                       </FormControl>
@@ -311,7 +284,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     name="guestName"
                     render={({ field }) => (
                       <FormItem className="animate-fade-in">
-                        <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName}</FormLabel>
+                        <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
                         </FormControl>
@@ -331,35 +304,17 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
                       <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                        <span className="text-red-500">*</span>
                         {language === "cs"
-                          ? <>
-                              * Souhlasím se zpracováním osobních údajů dle{" "}
-                              <span
-                                className="underline text-primary cursor-pointer"
-                                onClick={() => setIsTermsOpen(true)}
-                              >
-                                zásad ochrany osobních údajů
-                              </span>{" "}
-                              pro účely registrace.
-                            </>
-                          : <>
-                              * I agree to the processing of my personal data according to the{" "}
-                              <span
-                                className="underline text-primary cursor-pointer"
-                                onClick={() => setIsTermsOpen(true)}
-                              >
-                                privacy policy
-                              </span>{" "}
-                              for registration purposes.
-                            </>}
+                          ? <> Souhlasím se zpracováním osobních údajů dle <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>zásad ochrany osobních údajů</span> pro účely registrace.</>
+                          : <> I agree to the processing of my personal data according to the <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>privacy policy</span> for registration purposes.</>}
                       </FormLabel>
                       <FormMessage />
-                      
-                      {/* Render modalu */}
                       <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
                     </FormItem>
                   )}
                 />
+
                 {/* Submit */}
                 <Button type="submit" size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground">
                   {t.submit}
