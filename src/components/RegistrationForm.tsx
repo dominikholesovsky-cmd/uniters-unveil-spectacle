@@ -37,8 +37,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
       successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
-      openNavigation: "Otevřít navigaci",
-      registerAnother: "Registrovat další osobu"
+      openNavigation: "Otevřít navigaci"
     },
     en: {
       title: "Registration",
@@ -55,8 +54,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       submit: "Confirm Registration",
       successTitle: "Registration Confirmed!",
       successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
-      openNavigation: "Open Navigation",
-      registerAnother: "Register Another Person"
+      openNavigation: "Open Navigation"
     }
   };
 
@@ -174,13 +172,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 >
                   <Navigation className="w-5 h-5 mr-2" />
                   {t.openNavigation}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={handleRegisterAnother}
-                >
-                  {t.registerAnother}
                 </Button>
               </div>
             </div>
