@@ -306,8 +306,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       </FormControl>
                       <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
                         {language === "cs"
-                          ? "Souhlasím se zpracováním osobních údajů pro účely registrace."
-                          : "I agree to the processing of my personal data for registration purposes."}
+                          ? <>Souhlasím se zpracováním osobních údajů dle <a href="/gdpr" target="_blank" className="underline">zásad ochrany osobních údajů</a> pro účely registrace.</>
+                          : <>I agree to the processing of my personal data according to the <a href="/gdpr" target="_blank" className="underline">privacy policy</a> for registration purposes.</>}
                       </FormLabel>
                       <FormMessage />
                     </FormItem>
