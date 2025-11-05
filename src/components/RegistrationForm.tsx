@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -306,14 +307,26 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       </FormControl>
                       <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
                         {language === "cs"
-                          ? <>* Souhlasím se zpracováním osobních údajů dle <a href="/gdpr" target="_blank" className="underline">zásad ochrany osobních údajů</a> pro účely registrace.</>
-                          : <>* I agree to the processing of my personal data according to the <a href="/gdpr" target="_blank" className="underline">privacy policy</a> for registration purposes.</>}
+                          ? <>
+                              * Souhlasím se zpracováním osobních údajů dle{" "}
+                              <Link to="/terms" className="underline">
+                                zásad ochrany osobních údajů
+                              </Link>{" "}
+                              pro účely registrace.
+                            </>
+                          : <>
+                              * I agree to the processing of my personal data according to the{" "}
+                              <Link to="/terms" className="underline">
+                                privacy policy
+                              </Link>{" "}
+                              for registration purposes.
+                            </>
+                        }
                       </FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 {/* Submit */}
                 <Button type="submit" size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground">
                   {t.submit}
