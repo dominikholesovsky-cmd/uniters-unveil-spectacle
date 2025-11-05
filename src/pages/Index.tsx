@@ -1,13 +1,88 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
+import Hero from "@/components/Hero";
+import AboutEvent from "@/components/AboutEvent";
+import LocationMap from "@/components/LocationMap";
+import RegistrationForm from "@/components/RegistrationForm";
+import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
+import CookiesBanner from "@/components/CookiesBanner";
+import LanguageToggle from "@/components/LanguageToggle";
 
 const Index = () => {
+  const [language, setLanguage] = useState<"cs" | "en">("cs");
+
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === "cs" ? "en" : "cs");
+  };
+
+  const handleRegisterClick = () => {
+    const registrationSection = document.getElementById("registration");
+    registrationSection?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    // Smooth scroll behavior
+    document.documentElement.style.scrollBehavior = "smooth";
+  }, []);
+
+  const seoContent = {
+    cs: {
+      title: "Večerní prohlídka Vodojemů Žlutý Kopec | Uniters Event 22.1.2026",
+      description: "Přidejte se k nám na exkluzivní večerní prohlídku vodojemů Žlutý Kopec s cateringem, ochutnávkou vína a živou hudbou. Registrace na akci pořádanou firmou Uniters.",
+      keywords: "vodojemy žlutý kopec, brno event, uniters, večerní prohlídka, ochutnávka vína, živá hudba, networking"
+    },
+    en: {
+      title: "Evening Tour of Žlutý Kopec Water Reservoirs | Uniters Event 22.1.2026",
+      description: "Join us for an exclusive evening tour of Žlutý Kopec water reservoirs with catering, wine tasting and live music. Registration for an event organized by Uniters.",
+      keywords: "žlutý kopec water reservoirs, brno event, uniters, evening tour, wine tasting, live music, networking"
+    }
+  };
+
+  const seo = seoContent[language];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Helmet>
+        <html lang={language} />
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
+        <meta name="keywords" content={seo.keywords} />
+        <meta name="author" content="Uniters" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content={language === "cs" ? "cs_CZ" : "en_US"} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seo.title} />
+        <meta name="twitter:description" content={seo.description} />
+        
+        {/* Canonical */}
+        <link rel="canonical" href="https://lovable.dev/projects/2c0df8ec-faf3-436d-83b7-996eb1634067" />
+      </Helmet>
+
+      <main>
+        <LanguageToggle language={language} onToggle={toggleLanguage} />
+        
+        <Hero language={language} onRegisterClick={handleRegisterClick} />
+        
+        <AboutEvent language={language} />
+        
+        <LocationMap language={language} />
+        
+        <RegistrationForm language={language} />
+        
+        <Contact language={language} />
+        
+        <Footer language={language} />
+        
+        <CookiesBanner language={language} />
+      </main>
+    </>
   );
 };
 

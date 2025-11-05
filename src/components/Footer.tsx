@@ -1,0 +1,59 @@
+import unitersLogo from "@/assets/uniters-logo.jpg";
+
+interface FooterProps {
+  language: "cs" | "en";
+}
+
+const Footer = ({ language }: FooterProps) => {
+  const content = {
+    cs: {
+      copyright: "Copyright © Uniters 2026. Všechna práva vyhrazena.",
+      ico: "IČO: 14388111",
+      gdpr: "Zásady ochrany osobních údajů (GDPR)"
+    },
+    en: {
+      copyright: "Copyright © Uniters 2026. All rights reserved.",
+      ico: "Company ID: 14388111",
+      gdpr: "Privacy Policy (GDPR)"
+    }
+  };
+
+  const t = content[language];
+
+  return (
+    <footer className="bg-foreground text-background py-12">
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <img 
+                src={unitersLogo} 
+                alt="Uniters" 
+                className="h-12 w-auto filter brightness-0 invert"
+              />
+            </div>
+
+            {/* Center content */}
+            <div className="text-center space-y-2">
+              <p className="text-sm opacity-80">{t.copyright}</p>
+              <p className="text-sm opacity-80">{t.ico}</p>
+            </div>
+
+            {/* GDPR Link */}
+            <div>
+              <a
+                href="#gdpr"
+                className="text-sm hover:text-accent transition-colors inline-block hover:underline"
+              >
+                {t.gdpr}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

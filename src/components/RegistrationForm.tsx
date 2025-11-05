@@ -1,0 +1,250 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { CheckCircle2, Navigation } from "lucide-react";
+
+interface RegistrationFormProps {
+  language: "cs" | "en";
+}
+
+const RegistrationForm = ({ language }: RegistrationFormProps) => {
+  const { toast } = useToast();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const content = {
+    cs: {
+      title: "Registrace",
+      subtitle: "Zarezervujte si místo na akci",
+      name: "Jméno a příjmení",
+      namePlaceholder: "Jan Novák",
+      email: "E-mail",
+      emailPlaceholder: "jan.novak@example.com",
+      phone: "Telefon",
+      phonePlaceholder: "+420 123 456 789",
+      plusOne: "Účast s doprovodem (+1)",
+      submit: "Potvrdit registraci",
+      successTitle: "Registrace potvrzena!",
+      successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
+      openNavigation: "Otevřít navigaci",
+      registerAnother: "Registrovat další osobu"
+    },
+    en: {
+      title: "Registration",
+      subtitle: "Reserve your spot at the event",
+      name: "Full Name",
+      namePlaceholder: "John Doe",
+      email: "Email",
+      emailPlaceholder: "john.doe@example.com",
+      phone: "Phone",
+      phonePlaceholder: "+420 123 456 789",
+      plusOne: "Attending with guest (+1)",
+      submit: "Confirm Registration",
+      successTitle: "Registration Confirmed!",
+      successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
+      openNavigation: "Open Navigation",
+      registerAnother: "Register Another Person"
+    }
+  };
+
+  const t = content[language];
+
+  const formSchema = z.object({
+    name: z.string()
+      .trim()
+      .min(2, { message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters" })
+      .max(100, { message: language === "cs" ? "Jméno může mít max 100 znaků" : "Name can be max 100 characters" }),
+    email: z.string()
+      .trim()
+      .email({ message: language === "cs" ? "Neplatná e-mailová adresa" : "Invalid email address" })
+      .max(255),
+    phone: z.string()
+      .trim()
+      .min(9, { message: language === "cs" ? "Neplatné telefonní číslo" : "Invalid phone number" })
+      .max(20),
+    plusOne: z.boolean().default(false)
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      plusOne: false
+    }
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log("Registration data:", values);
+    
+    toast({
+      title: t.successTitle,
+      description: t.successMessage,
+    });
+
+    setIsSubmitted(true);
+  };
+
+  const handleNavigationClick = () => {
+    const coordinates = "49.2108,16.5967";
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates}`;
+    window.open(mapsUrl, "_blank");
+  };
+
+  const handleRegisterAnother = () => {
+    setIsSubmitted(false);
+    form.reset();
+  };
+
+  if (isSubmitted) {
+    return (
+      <section id="registration" className="py-20 bg-gradient-to-br from-primary via-secondary to-accent">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-3xl p-12 shadow-2xl text-center animate-scale-in">
+              <CheckCircle2 className="w-20 h-20 text-accent mx-auto mb-6" />
+              <h2 className="text-4xl font-bold text-foreground mb-4">
+                {t.successTitle}
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                {t.successMessage}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  onClick={handleNavigationClick}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Navigation className="w-5 h-5 mr-2" />
+                  {t.openNavigation}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={handleRegisterAnother}
+                >
+                  {t.registerAnother}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="registration" className="py-20 bg-gradient-to-br from-primary via-secondary to-accent">
+      <div className="container mx-auto px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-12 animate-fade-in">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              {t.title}
+            </h2>
+            <p className="text-xl text-white/80">
+              {t.subtitle}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-semibold">{t.name}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t.namePlaceholder}
+                          {...field}
+                          className="h-12 text-base"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-semibold">{t.email}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder={t.emailPlaceholder}
+                          {...field}
+                          className="h-12 text-base"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-semibold">{t.phone}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="tel"
+                          placeholder={t.phonePlaceholder}
+                          {...field}
+                          className="h-12 text-base"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="plusOne"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-base font-medium cursor-pointer">
+                          {t.plusOne}
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  {t.submit}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default RegistrationForm;
