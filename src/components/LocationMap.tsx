@@ -21,7 +21,6 @@ const LocationMap = ({ language }: LocationMapProps) => {
 
   const t = content[language];
 
-  // Coordinates for Vodojemy Žlutý Kopec
   const coordinates = "49.1956718,16.5913221";
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
 
@@ -30,9 +29,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
-              {t.title}
-            </h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">{t.title}</h2>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
               <p className="text-base sm:text-lg">{t.address}</p>
@@ -40,17 +37,15 @@ const LocationMap = ({ language }: LocationMapProps) => {
           </div>
 
           <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            {/* Map iframe */}
             <div className="aspect-video w-full">
               <iframe
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=16.586%2C49.191%2C16.596%2C49.200&layer=mapnik&marker=49.1956718%2C16.5913221`}
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=16.586%2C49.191%2C16.596%2C49.200&layer=mapnik&marker=${coordinates}`}
                 className="w-full h-full border-0"
                 title={t.title}
                 loading="lazy"
               />
             </div>
 
-            {/* Navigation button overlay */}
             <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
               <Button
                 size="lg"
@@ -63,14 +58,8 @@ const LocationMap = ({ language }: LocationMapProps) => {
             </div>
           </div>
 
-          {/* Attribution for OpenStreetMap */}
           <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
-            <a
-              href="https://www.openstreetmap.org/copyright"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-            >
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               © OpenStreetMap contributors
             </a>
           </div>
