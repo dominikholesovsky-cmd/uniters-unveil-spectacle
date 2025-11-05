@@ -163,7 +163,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   if (isSubmitted) {
     return (
-      <section id="registration" className="py-12 sm:py-16 bg-gradient-to-br from-primary/90 via-secondary/90 to-accent/90">
+      <section id="registration" className="py-12 sm:py-16 bg-gradient-to-tl from-primary/90 via-secondary/90 to-accent/90">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl text-center animate-scale-in">
