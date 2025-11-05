@@ -78,7 +78,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-secondary to-accent">
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-accent">
       {/* Animated background */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-72 h-48 sm:h-72 bg-accent rounded-full blur-3xl animate-pulse" />

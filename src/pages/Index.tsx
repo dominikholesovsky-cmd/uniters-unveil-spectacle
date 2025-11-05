@@ -22,7 +22,7 @@ const Index = () => {
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
-    document.documentElement.lang = language;
+    document.documentElement.lang = language; // Dynamicky nastavujeme jazyk
   }, [language]);
 
   const seoContent = {
@@ -70,22 +70,16 @@ const Index = () => {
       <main>
         <LanguageToggle language={language} onToggle={toggleLanguage} />
 
-        {/* Wrapper s gradientem */}
-        <div className="relative bg-gradient-to-br from-primary via-secondary to-accent">
+        <Hero language={language} onRegisterClick={handleRegisterClick} />
 
-          {/* Hero sekce s animovaným pozadím */}
-          <Hero language={language} onRegisterClick={handleRegisterClick} />
+        <RegistrationForm language={language} />
 
-          {/* RegistrationForm se transparentní sekcí, overlap pro plynulý přechod */}
-          <div className="-mt-12">
-            <RegistrationForm language={language} />
-          </div>
-        </div>
-
-        {/* Ostatní sekce */}
         <LocationMap language={language} />
+
         <Contact language={language} />
+
         <Footer language={language} />
+
         <CookiesBanner language={language} />
       </main>
     </>

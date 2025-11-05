@@ -163,10 +163,10 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   if (isSubmitted) {
     return (
-      <section id="registration" className="py-8 sm:py-10 md:py-10 bg-transparent">
+      <section id="registration" className="py-12 sm:py-16 bg-gradient-to-br from-primary/90 via-secondary/90 to-accent/90">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl text-center animate-scale-in">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl text-center animate-scale-in">
               <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">{t.successTitle}</h2>
               <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">{t.successMessage}</p>
