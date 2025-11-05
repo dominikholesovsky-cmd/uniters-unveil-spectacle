@@ -14,7 +14,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
     },
     en: {
       title: "Location",
-      address: "Žlutý Kopec Water Reservoirs, Brno",
+      address: "Žlutý Kopec Water Tanks, Brno",
       navigate: "Open Navigation"
     }
   };

@@ -18,21 +18,21 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       cta: "Registrovat se",
       description: "Přidejte se k nám na jedinečný večerní program plný zážitků",
       features: [
-        { icon: Info, title: "Komentovaná prohlídka", description: "Objevte historii a tajemství vodojemů Žlutý Kopec" },
+        { icon: Info, title: "Soukromá komentovaná prohlídka", description: "Objevte historii a tajemství vodojemů Žlutý Kopec" },
         { icon: Wine, title: "Catering & Ochutnávka vína", description: "Vychutnejte si vybrané speciality a kvalitní vína" },
         { icon: Music, title: "Živá hudba", description: "Užijte si příjemný večer s živou hudbou" }
       ]
     },
     en: {
       title: "Evening Tour",
-      subtitle: "Žlutý Kopec Water Reservoirs",
+      subtitle: "Žlutý Kopec Water Tanks",
       date: "January 22, 2026",
       time: "6:00 PM - 10:00 PM",
-      location: "Žlutý Kopec Water Reservoirs, Brno",
+      location: "Žlutý Kopec Water Tanks, Brno",
       cta: "Register",
       description: "Join us for a unique evening program full of experiences",
       features: [
-        { icon: Info, title: "Guided Tour", description: "Discover the history and secrets of Žlutý Kopec" },
+        { icon: Info, title: "Private Guided Tour", description: "Discover the history and secrets of Žlutý Kopec" },
         { icon: Wine, title: "Catering & Wine Tasting", description: "Enjoy selected specialties and quality wines" },
         { icon: Music, title: "Live Music", description: "Enjoy a pleasant evening with live music" }
       ]
