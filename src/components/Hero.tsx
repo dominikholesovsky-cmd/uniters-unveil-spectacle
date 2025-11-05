@@ -91,6 +91,19 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
           </div>
 
+          
+          {/* CTA Button */}
+          <div className="pt-4 sm:pt-4 px-4">
+            <Button
+              size="lg"
+              onClick={onRegisterClick}
+              className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
+            >
+              {t.cta}
+            </Button>
+          </div>
+
+
           {/* Features */}
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mb-6 sm:mb-8 px-4">
             {t.features.map((feature, index) => (
@@ -106,17 +119,6 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
                 <p className="text-xs sm:text-sm text-white/80">{feature.description}</p>
               </div>
             ))}
-          </div>
-
-          {/* CTA Button */}
-          <div className="pt-4 sm:pt-4 px-4">
-            <Button
-              size="lg"
-              onClick={onRegisterClick}
-              className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
-            >
-              {t.cta}
-            </Button>
           </div>
 
           {/* Scroll indicator */}
