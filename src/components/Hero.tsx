@@ -91,9 +91,9 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
           </div>
 
-          
+
           {/* CTA Button */}
-          <div className="pt-4 sm:pt-4 px-4">
+          <div className="px-4">
             <Button
               size="lg"
               onClick={onRegisterClick}
