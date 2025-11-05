@@ -300,13 +300,15 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   control={form.control}
                   name="gdprConsent"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted">
+                    <FormItem>
                       <FormControl>
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="text-base font-medium cursor-pointer">{t.gdprConsent}</FormLabel>
-                      </div>
+                      <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                        {language === "cs"
+                          ? "Souhlasím se zpracováním osobních údajů pro účely registrace."
+                          : "I agree to the processing of my personal data for registration purposes."}
+                      </FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
