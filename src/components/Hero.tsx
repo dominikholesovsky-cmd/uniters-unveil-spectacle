@@ -63,14 +63,14 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           </div>
 
           {/* Title */}
-          <div className="sm:px-4">
+          <div className="space-y-3 sm:space-y-4 px-4">
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">{t.title}</h1>
             <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">{t.subtitle}</h2>
             <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">{t.description}</p>
           </div>
 
           {/* Event details */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4 mt-0">
             <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
               <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-medium">{t.date}</span>
@@ -82,7 +82,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
             {/* Clickable location */}
             <div
-              className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
+              className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer mt-0 hover:bg-white/20 transition-all"
               onClick={scrollToMap}
             >
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
