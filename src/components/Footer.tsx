@@ -27,11 +27,12 @@ const Footer = ({ language }: FooterProps) => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <img 
-                src={unitersLogo} 
-                alt="Uniters" 
-                className="h-10 sm:h-12 w-auto"
-              />
+                <img 
+                  src={unitersLogo} 
+                  alt="Uniters" 
+                  className="h-10 sm:h-12 w-auto block filter-none mix-blend-normal"
+                  style={{ filter: 'none', mixBlendMode: 'normal' }}
+                />
             </div>
 
             {/* Center content */}
