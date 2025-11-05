@@ -143,18 +143,20 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
               onClick={onRegisterClick}
               className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
             >
-              {t.cta}
+                 {t.cta}
             </Button>
           </div>
-        </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute pt-12 bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block">
-        <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-          <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
-        </div>
-      </div>
+          {/* Scroll indicator */}
+          <div className="mt-12 sm:mt-16 flex justify-center">
+            <div className="animate-bounce">
+              <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+                <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
+              </div>
+            </div>
+          </div>
+        </div> 
+      </div> 
     </section>
   );
 };
