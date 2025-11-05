@@ -18,15 +18,16 @@ const BackToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (!isVisible) return null;
-
   return (
     <Button
       onClick={scrollToTop}
       size="icon"
       variant="hero"
-      className="fixed bottom-8 right-8 z-40 rounded-full shadow-2xl animate-fade-in-scale"
       aria-label="Zpět nahoru"
+      className={`fixed bottom-8 right-8 z-50 rounded-full shadow-2xl bg-white text-black
+        transform transition-all duration-300
+        ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"}
+        hover:scale-110 hover:shadow-3xl`}
     >
       <ArrowUp className="w-5 h-5" />
     </Button>
