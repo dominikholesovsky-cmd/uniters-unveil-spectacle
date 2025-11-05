@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Wine, Music, Info } from "lucide-react";
 import unitersLogo from "@/assets/full-logo_uniters.png";
+import { RefObject } from "react";
 
 interface HeroProps {
   language: "cs" | "en";
   onRegisterClick: () => void;
-  scrollToMap: () => void; // scroll funkce
+  mapRef: RefObject<HTMLDivElement>; // ref na LocationMap
 }
 
-const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
+const Hero = ({ language, onRegisterClick, mapRef }: HeroProps) => {
   const content = {
     cs: {
       title: "Večerní prohlídka",
@@ -41,6 +42,10 @@ const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
   };
 
   const t = content[language];
+
+  const scrollToMap = () => {
+    mapRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-secondary to-accent">
