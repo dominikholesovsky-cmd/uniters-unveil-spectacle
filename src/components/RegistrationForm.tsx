@@ -200,7 +200,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   }
 
   return (
-    <section id="registration" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-primary via-secondary to-accent">
+    <section id="registration" className="py-8 sm:py-10 md:py-10 bg-gradient-to-br from-primary via-secondary to-accent">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
