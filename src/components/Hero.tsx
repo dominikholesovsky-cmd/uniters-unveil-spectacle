@@ -5,7 +5,7 @@ import unitersLogo from "@/assets/full-logo_uniters.png";
 interface HeroProps {
   language: "cs" | "en";
   onRegisterClick: () => void;
-  scrollToMap: () => void; // nová funkce pro scroll
+  scrollToMap: () => void; // scroll funkce
 }
 
 const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
@@ -55,11 +55,7 @@ const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
           
           {/* Logo */}
           <div className="flex justify-center mb-6 sm:mb-8">
-            <img 
-              src={unitersLogo} 
-              alt="Uniters" 
-              className="h-10 sm:h-12 w-auto block"
-            />
+            <img src={unitersLogo} alt="Uniters" className="h-10 sm:h-12 w-auto block" />
           </div>
 
           {/* Title */}
@@ -83,20 +79,22 @@ const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
             {/* Clickable location */}
             <div
               className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
-              onClick={() => {
-                const el = document.getElementById("location-map");
-                if (el) el.scrollIntoView({ behavior: "smooth" });
-              }}
+              onClick={scrollToMap}
             >
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-medium hidden sm:inline">{t.location}</span>
               <span className="font-medium sm:hidden">Brno</span>
             </div>
+          </div>
 
           {/* Features */}
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mb-6 sm:mb-8 px-4">
             {t.features.map((feature, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${index * 0.1}s` }}>
+              <div
+                key={index}
+                className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
                   <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
@@ -126,8 +124,8 @@ const Hero = ({ language, onRegisterClick, scrollToMap }: HeroProps) => {
             </div>
           </div>
 
-        </div> 
-      </div> 
+        </div>
+      </div>
     </section>
   );
 };
