@@ -18,10 +18,22 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       cta: "Registrovat se",
       description: "Přidejte se k nám na jedinečný večerní program plný zážitků",
       features: [
-        { icon: Info, title: "Soukromá komentovaná prohlídka", description: "Objevte historii a tajemství vodojemů Žlutý Kopec" },
-        { icon: Wine, title: "Catering & Ochutnávka vína", description: "Vychutnejte si vybrané speciality a kvalitní vína" },
-        { icon: Music, title: "Živá hudba", description: "Užijte si příjemný večer s živou hudbou" }
-      ]
+        {
+          icon: Info,
+          title: "Soukromá komentovaná prohlídka",
+          description: "Objevte historii a tajemství vodojemů Žlutý Kopec",
+        },
+        {
+          icon: Wine,
+          title: "Catering & Ochutnávka vína",
+          description: "Vychutnejte si vybrané speciality a kvalitní vína",
+        },
+        {
+          icon: Music,
+          title: "Živá hudba",
+          description: "Užijte si příjemný večer s živou hudbou",
+        },
+      ],
     },
     en: {
       title: "Evening Tour",
@@ -32,14 +44,26 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       cta: "Register",
       description: "Join us for a unique evening program full of experiences",
       features: [
-        { icon: Info, title: "Private Guided Tour", description: "Discover the history and secrets of Žlutý Kopec" },
-        { icon: Wine, title: "Catering & Wine Tasting", description: "Enjoy selected specialties and quality wines" },
-        { icon: Music, title: "Live Music", description: "Enjoy a pleasant evening with live music" }
-      ]
-    }
+        {
+          icon: Info,
+          title: "Private Guided Tour",
+          description: "Discover the history and secrets of Žlutý Kopec",
+        },
+        {
+          icon: Wine,
+          title: "Catering & Wine Tasting",
+          description: "Enjoy selected specialties and quality wines",
+        },
+        {
+          icon: Music,
+          title: "Live Music",
+          description: "Enjoy a pleasant evening with live music",
+        },
+      ],
+    },
   };
 
-  const t = content[language as "cs" | "en"] ?? content.cs;
+  const t = content[language] ?? content.cs;
 
   // scroll funkce
   const scrollToMap = () => {
@@ -52,35 +76,55 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       {/* Animated background */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-72 h-48 sm:h-72 bg-accent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-64 sm:w-96 h-64 sm:h-96 bg-secondary rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div
+          className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-64 sm:w-96 h-64 sm:h-96 bg-secondary rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 py-12 sm:py-16 md:py-20">
-        <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
-          {/* Logo */}
-          <div className="flex justify-center mb-6 sm:mb-8">
-            <img src={unitersLogo} alt="Uniters" className="h-10 sm:h-12 w-auto block" />
+        <div className="max-w-4xl mx-auto text-center animate-fade-in">
+          {/* -------------------------------------- */}
+          {/* TOP PART: Logo + Title + Description */}
+          {/* -------------------------------------- */}
+          <div className="space-y-6 sm:space-y-8">
+            {/* Logo */}
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <img
+                src={unitersLogo}
+                alt="Uniters"
+                className="h-10 sm:h-12 w-auto block"
+              />
+            </div>
+
+            {/* Title & Description */}
+            <div className="space-y-3 sm:space-y-4 px-4">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
+                {t.title}
+              </h1>
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">
+                {t.subtitle}
+              </h2>
+              <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">
+                {t.description}
+              </p>
+            </div>
           </div>
 
-          {/* Title */}
-          <div className="space-y-3 sm:space-y-4 px-4">
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">{t.title}</h1>
-            <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white/90">{t.subtitle}</h2>
-            <p className="text-xl sm:text-2xl md:text-3xl font-light text-white/90 max-w-2xl mx-auto">{t.description}</p>
-          </div>
-
-          {/* Event details */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4 mt-[-1.5rem] sm:mt-[-2rem]">
+          {/* -------------------------------------- */}
+          {/* EVENT DETAILS */}
+          {/* -------------------------------------- */}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4">
             <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
               <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-medium">{t.date}</span>
             </div>
+
             <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-medium">{t.time}</span>
             </div>
 
-            {/* Clickable location */}
             <div
               className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base cursor-pointer hover:bg-white/20 transition-all"
               onClick={scrollToMap}
@@ -91,45 +135,51 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
           </div>
 
-
-          {/* CTA Button */}
-          <div className="px-4">
-            <Button
-              size="lg"
-              onClick={onRegisterClick}
-              className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
-            >
-              {t.cta}
-            </Button>
-          </div>
-
-
-          {/* Features */}
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mb-6 sm:mb-8 px-4">
-            {t.features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
-                style={{ animationDelay: `${index * 0.1}s` }}
+          {/* -------------------------------------- */}
+          {/* CTA BUTTON + FEATURES + SCROLL INDICATOR */}
+          {/* -------------------------------------- */}
+          <div className="space-y-10 sm:space-y-12">
+            {/* CTA */}
+            <div className="px-4">
+              <Button
+                size="lg"
+                onClick={onRegisterClick}
+                className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
-                  <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">{feature.title}</h3>
-                <p className="text-xs sm:text-sm text-white/80">{feature.description}</p>
-              </div>
-            ))}
-          </div>
+                {t.cta}
+              </Button>
+            </div>
 
-          {/* Scroll indicator */}
-          <div className="mt-12 sm:mt-16 flex justify-center">
-            <div className="animate-bounce">
-              <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-                <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
+            {/* Features */}
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto px-4">
+              {t.features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
+                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-white/80">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Scroll indicator */}
+            <div className="flex justify-center pt-4">
+              <div className="animate-bounce">
+                <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+                  <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
+                </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
