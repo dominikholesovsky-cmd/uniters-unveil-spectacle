@@ -1,4 +1,3 @@
-// components/TermsModal.tsx
 import { FC } from "react";
 import {
   Dialog,
@@ -23,10 +22,16 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
       title: "Podmínky použití a ochrana osobních údajů",
       privacyNotice:
         "V souladu s GDPR zpracováváme vaše osobní údaje pouze pro účely komunikace a poskytování našich služeb. Vaše údaje nikdy nesdílíme s třetími stranami.",
+      section1Title: "1. Zpracování osobních údajů",
+      dataControllerLabel: "Správce údajů:",
       dataController: "Uniters Projects s.r.o., IČO: 14388111, Frederik Bolf",
+      dataScopeLabel: "Rozsah zpracování:",
       dataScope: "údaje z kontaktního formuláře (jméno, e-mail, telefon, zpráva)",
+      dataPurposeLabel: "Účel zpracování:",
       dataPurpose: "komunikace a poskytování služeb",
+      dataLegalBasisLabel: "Právní základ:",
       dataLegalBasis: "souhlas a oprávněný zájem (GDPR)",
+      section2Title: "2. Vaše práva",
       rights:
         "Máte právo na přístup k údajům, opravu, výmaz, omezení zpracování, přenositelnost, odvolání souhlasu a vznesení námitky.",
       contact: "frederik.bolf@uniters.io | +420 776 285 777",
@@ -39,10 +44,16 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
       title: "Terms of Use & Privacy Policy",
       privacyNotice:
         "In accordance with GDPR, we process your personal data only for communication and provision of our services. Your data will never be shared with third parties.",
+      section1Title: "1. Data Processing",
+      dataControllerLabel: "Data Controller:",
       dataController: "Uniters Projects s.r.o., Company ID: 14388111, Frederik Bolf",
+      dataScopeLabel: "Scope of processing:",
       dataScope: "data from the contact form (name, email, phone, message)",
+      dataPurposeLabel: "Purpose of processing:",
       dataPurpose: "communication and provision of services",
+      dataLegalBasisLabel: "Legal basis:",
       dataLegalBasis: "consent and legitimate interest (GDPR)",
+      section2Title: "2. Your Rights",
       rights:
         "You have the right to access, rectify, erase, restrict processing, data portability, withdraw consent, and object.",
       contact: "frederik.bolf@uniters.io | +420 776 285 777",
@@ -53,7 +64,7 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
     },
   };
 
-  const t = content[language as "cs" | "en"] ?? content.cs;
+  const t = content[language] ?? content.cs;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -82,13 +93,21 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
           <Card className="p-4 sm:p-6">
             <div className="flex items-start gap-3 mb-3">
               <User className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <h2 className="text-base sm:text-lg font-bold">{language === "cs" ? "1. Zpracování osobních údajů" : "1. Data Processing"}</h2>
+              <h2 className="text-base sm:text-lg font-bold">{t.section1Title}</h2>
             </div>
             <div className="space-y-1 text-xs sm:text-sm text-foreground/80">
-              <p><strong>{language === "cs" ? "Správce údajů:" : "Data Controller:"}</strong> {t.dataController}</p>
-              <p><strong>{language === "cs" ? "Rozsah zpracování:" : "Scope of processing:"}</strong> {t.dataScope}</p>
-              <p><strong>{language === "cs" ? "Účel zpracování:" : "Purpose of processing:"}</strong> {t.dataPurpose}</p>
-              <p><strong>{language === "cs" ? "Právní základ:" : "Legal basis:"}</strong> {t.dataLegalBasis}</p>
+              <p>
+                <strong>{t.dataControllerLabel}</strong> {t.dataController}
+              </p>
+              <p>
+                <strong>{t.dataScopeLabel}</strong> {t.dataScope}
+              </p>
+              <p>
+                <strong>{t.dataPurposeLabel}</strong> {t.dataPurpose}
+              </p>
+              <p>
+                <strong>{t.dataLegalBasisLabel}</strong> {t.dataLegalBasis}
+              </p>
             </div>
           </Card>
 
@@ -96,7 +115,7 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
           <Card className="p-4 sm:p-6">
             <div className="flex items-start gap-3 mb-3">
               <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <h2 className="text-base sm:text-lg font-bold">{language === "cs" ? "2. Vaše práva" : "2. Your Rights"}</h2>
+              <h2 className="text-base sm:text-lg font-bold">{t.section2Title}</h2>
             </div>
             <div className="text-xs sm:text-sm text-foreground/80">
               <p>{t.rights}</p>
