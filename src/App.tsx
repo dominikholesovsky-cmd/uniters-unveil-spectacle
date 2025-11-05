@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BackToTop from "./components/BackToTop";
+import Terms from "./pages/Terms";
+
 
 const queryClient = new QueryClient();
 
