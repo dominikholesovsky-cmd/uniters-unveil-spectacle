@@ -23,9 +23,9 @@ const Contact = ({ language }: ContactProps) => {
   const t = content[language];
 
   return (
-    <section className="py-8 sm:py-10 md:py-12 bg-muted">
+    <section className="py-8 sm:py-10 md:py-12 bg-muted border-t border-border w-full">
       <div className="container mx-auto px-4">
-       <div className="border-t border-border w-full">
+        <div className="border-t border-border w-full">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8 sm:mb-10 md:mb-12 animate-fade-in">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
@@ -67,7 +67,6 @@ const Contact = ({ language }: ContactProps) => {
             </div>
           </div>
           </div>
-        </div>
        </div> 
     </section>
   );
