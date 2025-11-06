@@ -34,7 +34,7 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
       section2Title: "2. Vaše práva",
       rights:
         "Máte právo na přístup k údajům, opravu, výmaz, omezení zpracování, přenositelnost, odvolání souhlasu a vznesení námitky.",
-      contact: "frederik.bolf@uniters.io | +420 776 285 777",
+      contact: "hello@uniters.io",
       serviceTermsTitle: "Podmínky služeb",
       serviceTerms:
         "Objednávka je závazná po dohodě o termínu. Platba probíhá před nebo po tréninku. Zrušení tréninku min. 24 hodin předem je zdarma.",
@@ -56,7 +56,7 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
       section2Title: "2. Your Rights",
       rights:
         "You have the right to access, rectify, erase, restrict processing, data portability, withdraw consent, and object.",
-      contact: "frederik.bolf@uniters.io | +420 776 285 777",
+      contact: "hello@uniters.io",
       serviceTermsTitle: "Service Terms",
       serviceTerms:
         "Order is binding upon agreement of date. Payment occurs before or after the training. Cancellation at least 24 hours in advance is free.",
