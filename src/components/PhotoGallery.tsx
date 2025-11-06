@@ -19,11 +19,11 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
 
   const content = {
     cs: {
-      title: "Galerie",
+      title: "Místo konání",
       subtitle: "Podívejte se na místo konání akce",
     },
     en: {
-      title: "Gallery",
+      title: "Event Venue",
       subtitle: "Take a look at the event venue",
     },
   };
@@ -62,7 +62,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   });
 
   return (
-    <section id="gallery" className="py-12 sm:py-16 bg-background">
+    <section id="gallery" className="py-12 sm:py-16 bg-muted">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Nadpis */}

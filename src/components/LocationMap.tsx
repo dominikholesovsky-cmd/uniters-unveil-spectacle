@@ -8,12 +8,12 @@ interface LocationMapProps {
 const LocationMap = ({ language }: LocationMapProps) => {
   const content = {
     cs: {
-      title: "Místo konání",
+      title: "Lokalita eventu",
       address: "Vodojemy Žlutý Kopec, Brno",
       navigate: "Otevřít navigaci"
     },
     en: {
-      title: "Location",
+      title: "Event Location",
       address: "Žlutý Kopec Water Tanks, Brno",
       navigate: "Open Navigation"
     }
