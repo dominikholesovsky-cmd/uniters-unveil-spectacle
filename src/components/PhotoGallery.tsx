@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -30,23 +30,24 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
 
   const t = content[language];
 
-  // Placeholder obrázky - nahraďte skutečnými fotkami
+  // Obrázky
   const images = [
     {
-      src: "assets/VODOJEM3.jpg",
+      src: "assets/VODOJEM1.jpg",
       alt: "Water reservoir exterior view",
     },
     {
-      scr: "assets/VODOJEM2.jpg",
+      src: "assets/VODOJEM2.jpg",
       alt: "Historic water tanks",
     },
     {
-      scr: "assets/VODOJEM3.jpg",
+      src: "assets/VODOJEM3.jpg",
       alt: "Evening ambience",
     },
+  ];
 
   // Sledování aktuálního slidu
-  useState(() => {
+  useEffect(() => {
     if (!api) return;
 
     setCurrent(api.selectedScrollSnap());
@@ -54,7 +55,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap());
     });
-  });
+  }, [api]);
 
   return (
     <section id="gallery" className="py-12 sm:py-16 bg-muted">
@@ -110,7 +111,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
                     <Card className="overflow-hidden border-0 shadow-elegant">
                       <div className="aspect-video w-full relative bg-muted">
                         <img
-                          src={image.url}
+                          src={image.src}
                           alt={image.alt}
                           className="w-full h-full object-cover"
                           loading="lazy"
