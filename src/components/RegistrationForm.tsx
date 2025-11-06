@@ -101,7 +101,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       company: "",
       plusOne: false,
       guestName: "",
-      gdprConsent: false
+      gdprConsent: undefined as any
     }
   });
 
@@ -310,7 +310,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                           : <> I agree to the processing of my personal data according to the <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>privacy policy</span> for registration purposes.</>}
                       </FormLabel>
                       <FormMessage />
-                      <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+                      <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} language={language} />
                     </FormItem>
                   )}
                 />

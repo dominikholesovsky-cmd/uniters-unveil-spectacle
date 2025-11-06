@@ -7,6 +7,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import CookiesBanner from "@/components/CookiesBanner";
 import LanguageToggle from "@/components/LanguageToggle";
+import PhotoGallery from "@/components/PhotoGallery";
 
 const Index = () => {
   const [language, setLanguage] = useState<"cs" | "en">("cs");
@@ -73,6 +74,8 @@ const Index = () => {
         <Hero language={language} onRegisterClick={handleRegisterClick} />
 
         <RegistrationForm language={language} />
+
+        <PhotoGallery language={language} />
 
         <LocationMap language={language} />
 

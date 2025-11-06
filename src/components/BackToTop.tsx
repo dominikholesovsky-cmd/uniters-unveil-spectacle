@@ -22,7 +22,7 @@ const BackToTop = () => {
     <Button
       onClick={scrollToTop}
       size="icon"
-      variant="hero"
+      variant="outline"
       aria-label="Zpět nahoru"
       className={`fixed bottom-8 right-8 z-50 rounded-full shadow-2xl bg-white/80 text-black/90
         transform transition-all duration-300

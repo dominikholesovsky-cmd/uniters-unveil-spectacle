@@ -40,7 +40,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
                   href="https://vodojemybrno.cz/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
+                  className="hover:text-primary transition-colors underline decoration-2 underline-offset-4 hover:decoration-primary font-medium"
                 >
                   {t.address}
                 </a>
