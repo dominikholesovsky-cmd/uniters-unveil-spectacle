@@ -21,17 +21,15 @@ const Contact = ({ language }: ContactProps) => {
   return (
     <section className="py-8 sm:py-10 md:py-12 bg-muted border-t border-border w-full">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-card rounded-xl sm:rounded-2xl p-8 sm:p-10 md:p-12 shadow-elegant border border-border animate-fade-in max-w-xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4">
               {t.title}
             </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground px-4">
+            <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10">
               {t.subtitle}
             </p>
-          </div>
-
-          <div className="bg-card rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 shadow-elegant border border-border animate-fade-in max-w-xl mx-auto" style={{ animationDelay: "0.2s" }}>
+            
             <a
               href="mailto:hello@uniters.io"
               className="flex items-center gap-4 text-xl sm:text-2xl text-foreground hover:text-primary transition-colors group justify-center"
@@ -42,8 +40,8 @@ const Contact = ({ language }: ContactProps) => {
               <span className="font-semibold break-all sm:break-normal">hello@uniters.io</span>
             </a>
           </div>
-          </div>
-       </div> 
+        </div>
+      </div>
     </section>
   );
 };
