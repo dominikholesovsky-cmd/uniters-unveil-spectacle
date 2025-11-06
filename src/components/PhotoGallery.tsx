@@ -35,18 +35,9 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
 
   // Obrázky
   const images = [
-    {
-      src: "/images/VODOJEM1.jpg",
-      alt: "Water reservoir exterior view",
-    },
-    {
-      src: "/images/VODOJEM1.jpg",
-      alt: "Historic water tanks",
-    },
-    {
-      src: "/images/VODOJEM1.jpg",
-      alt: "Evening ambience",
-    },
+    { src: VODOJEM1, alt: "Water reservoir exterior view" },
+    { src: VODOJEM2, alt: "Historic water tanks" },
+    { src: VODOJEM3, alt: "Evening ambience" },
   ];
 
   // Sledování aktuálního slidu
