@@ -33,22 +33,17 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   // Placeholder obrázky - nahraďte skutečnými fotkami
   const images = [
     {
-      url: "https://images.unsplash.com/photo-1464207687429-7505649dae38?auto=format&fit=crop&w=1200&q=80",
+      src: "assets/VODOJEM3.jpg",
       alt: "Water reservoir exterior view",
     },
     {
-      url: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
+      scr: "assets/VODOJEM2.jpg",
       alt: "Historic water tanks",
     },
     {
-      url: "https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&w=1200&q=80",
+      scr: "assets/VODOJEM3.jpg",
       alt: "Evening ambience",
     },
-    {
-      url: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80",
-      alt: "Event venue interior",
-    },
-  ];
 
   // Sledování aktuálního slidu
   useState(() => {
