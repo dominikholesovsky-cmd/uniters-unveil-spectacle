@@ -35,16 +35,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
             </h2>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <p className="text-base sm:text-lg">
-                <a
-                  href="https://vodojemybrno.cz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors underline decoration-2 underline-offset-4 hover:decoration-primary font-medium"
-                >
-                  {t.address}
-                </a>
-              </p>
+              <p className="text-base sm:text-lg">{t.address}</p>
             </div>
           </div>
 

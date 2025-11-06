@@ -70,7 +70,33 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground px-4">{t.subtitle}</p>
+            <p className="text-lg sm:text-xl text-muted-foreground px-4">
+              {language === "cs" ? (
+                <>
+                  Podívejte se na{" "}
+                  <a
+                    href="https://vodojemybrno.cz/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary/80 underline decoration-2 underline-offset-4 hover:decoration-primary/80 font-medium transition-colors"
+                  >
+                    místo konání akce
+                  </a>
+                </>
+              ) : (
+                <>
+                  Take a look at the{" "}
+                  <a
+                    href="https://vodojemybrno.cz/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary/80 underline decoration-2 underline-offset-4 hover:decoration-primary/80 font-medium transition-colors"
+                  >
+                    event venue
+                  </a>
+                </>
+              )}
+            </p>
           </div>
 
           {/* Carousel */}
