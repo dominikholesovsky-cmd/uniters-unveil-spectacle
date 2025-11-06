@@ -7,6 +7,9 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import VODOJEM1 from "@/assets/VODOJEM1.jpg";
+import VODOJEM2 from "@/assets/VODOJEM2.jpg";
+import VODOJEM3 from "@/assets/VODOJEM3.jpg";
 import { Card } from "@/components/ui/card";
 
 interface PhotoGalleryProps {
@@ -33,15 +36,15 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   // Obrázky
   const images = [
     {
-      src: "@/assets/VODOJEM1.jpg",
+      src: "VODOJEM1",
       alt: "Water reservoir exterior view",
     },
     {
-      src: "@/assets/VODOJEM2.jpg",
+      src: "VODOJEM2",
       alt: "Historic water tanks",
     },
     {
-      src: "@/assets/VODOJEM3.jpg",
+      src: "VODOJEM3",
       alt: "Evening ambience",
     },
   ];
