@@ -37,38 +37,19 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
     { src: "/images/VODOJEM3.jpg", alt: "Evening ambience" },
   ];
 
-  // Sledování aktuálního slidu + autoplay
+  // Sledování aktuálního slidu + autoplay bez pauzy
   useEffect(() => {
     if (!api) return;
 
     setCurrent(api.selectedScrollSnap());
     api.on("select", () => setCurrent(api.selectedScrollSnap()));
 
-    let interval: NodeJS.Timeout | null = null;
+    // Autoplay každé 3 sekundy
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 3000);
 
-    const startAutoplay = () => {
-      if (interval) return;
-      interval = setInterval(() => api.scrollNext(), 3000); // 3 vteřiny
-    };
-
-    const stopAutoplay = () => {
-      if (interval) {
-        clearInterval(interval);
-        interval = null;
-      }
-    };
-
-    startAutoplay();
-
-    const container = api.containerNode();
-    container.addEventListener("mouseenter", stopAutoplay);
-    container.addEventListener("mouseleave", startAutoplay);
-
-    return () => {
-      stopAutoplay();
-      container.removeEventListener("mouseenter", stopAutoplay);
-      container.removeEventListener("mouseleave", startAutoplay);
-    };
+    return () => clearInterval(interval);
   }, [api]);
 
   return (
