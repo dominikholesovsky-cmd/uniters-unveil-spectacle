@@ -8,12 +8,12 @@ interface LocationMapProps {
 const LocationMap = ({ language }: LocationMapProps) => {
   const content = {
     cs: {
-      title: "Místo konání",
+      title: "Lokalita eventu",
       address: "Vodojemy Žlutý Kopec, Brno",
       navigate: "Otevřít navigaci"
     },
     en: {
-      title: "Location",
+      title: "Event Location",
       address: "Žlutý Kopec Water Tanks, Brno",
       navigate: "Open Navigation"
     }
@@ -35,16 +35,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
             </h2>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <p className="text-base sm:text-lg">
-                <a
-                  href="https://vodojemybrno.cz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
-                >
-                  {t.address}
-                </a>
-              </p>
+              <p className="text-base sm:text-lg">{t.address}</p>
             </div>
           </div>
 
