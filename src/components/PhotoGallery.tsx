@@ -49,7 +49,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   }, [api]);
 
   return (
-    <section id="gallery" className="py-12 sm:py-16 bg-muted">
+    <section id="gallery" className="py-10 sm:py-10 bg-muted">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Nadpis */}
