@@ -1,7 +1,7 @@
 // components/Footer.tsx
 import { useState } from "react";
 import TermsModal from "./TermsModal"; 
-import unitersLogolight from "@/assets/full-logo_uniters_light.png";
+import unitersLogo from "@/assets/full-logo_uniters.png";
 
 interface FooterProps {
   language: "cs" | "en";
@@ -26,47 +26,47 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
-    <footer className="bg-muted text-foreground py-6 sm:py-6 md:py-8">
-      <div className="border-t border-gray-300 w-full">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <img 
-                src={unitersLogolight} 
-                alt="Uniters" 
-                className="h-10 sm:h-12 w-auto"
-              />
-            </div>
+    <footer className="bg-muted text-foreground">
+      <div className="border-t border-border w-full">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto py-6 sm:py-6 md:py-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
+              {/* Logo */}
+              <div className="flex-shrink-0">
+                <img 
+                  src={unitersLogo} 
+                  alt="Uniters" 
+                  className="h-10 sm:h-12 w-auto"
+                />
+              </div>
 
-            {/* Center content */}
-            <div className="text-center space-y-1 sm:space-y-2">
-              <p className="text-xs sm:text-sm opacity-80">{t.copyright}</p>
-              <p className="text-xs sm:text-sm opacity-80">{t.ico}</p>
-            </div>
+              {/* Center content */}
+              <div className="text-center space-y-1 sm:space-y-2">
+                <p className="text-xs sm:text-sm opacity-80">{t.copyright}</p>
+                <p className="text-xs sm:text-sm opacity-80">{t.ico}</p>
+              </div>
 
-            {/* GDPR Link */}
-            <div>
-              <button
-                type="button"
-                className="text-xs sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
-                onClick={() => setIsTermsOpen(true)}
-              >
-                {t.gdpr}
-              </button>
+              {/* GDPR Link */}
+              <div>
+                <button
+                  type="button"
+                  className="text-xs sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
+                  onClick={() => setIsTermsOpen(true)}
+                >
+                  {t.gdpr}
+                </button>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Render modalu */}
-        <TermsModal
-          open={isTermsOpen}
-          onClose={() => setIsTermsOpen(false)}
-          language={language}
-        />
-      </div>
-      </div>
+      {/* Modal */}
+      <TermsModal
+        open={isTermsOpen}
+        onClose={() => setIsTermsOpen(false)}
+        language={language}
+      />
     </footer>
   );
 };
