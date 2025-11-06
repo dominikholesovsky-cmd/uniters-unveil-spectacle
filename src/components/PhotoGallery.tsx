@@ -36,15 +36,15 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   // Obrázky
   const images = [
     {
-      src: "VODOJEM1",
+      src: "/images/VODOJEM1.jpg",
       alt: "Water reservoir exterior view",
     },
     {
-      src: "VODOJEM2",
+      src: "/images/VODOJEM1.jpg",
       alt: "Historic water tanks",
     },
     {
-      src: "VODOJEM3",
+      src: "/images/VODOJEM1.jpg",
       alt: "Evening ambience",
     },
   ];
