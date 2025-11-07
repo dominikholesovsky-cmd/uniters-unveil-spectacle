@@ -268,7 +268,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   control={form.control}
                   name="plusOne"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
