@@ -37,7 +37,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         {
           icon: Gift,
           title: "Dárek na památku",
-          description: "Nikdo neodejde s prázdnou 🎁",
+          description: "Nikdo neodejde s prázdnou",
         },
       ],
     },
@@ -69,7 +69,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         {
           icon: Gift,
           title: "Special Gift",
-          description: "Everyone leaves with a little surprise 🎁",
+          description: "Everyone leaves with a little surprise",
         },
       ],
     },
@@ -158,7 +158,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
               </Button>
             </div>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto px-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto px-4">
               {t.features.map((feature, index) => (
                 <div
                   key={index}
