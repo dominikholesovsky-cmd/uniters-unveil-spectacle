@@ -311,7 +311,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormControl>
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
-                      <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                      <FormLabel classname="text-black" style={{ display: "inline", marginLeft: "8px", cursor: "pointer"}}>
                         <span className="text-red-500">*</span>
                         {language === "cs"
                           ? <> Souhlasím se zpracováním osobních údajů dle <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>zásad ochrany osobních údajů</span> pro účely registrace.</>
@@ -332,7 +332,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormControl>
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
-                      <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                      <FormLabel classname="text-black" style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
                         <span className="text-red-500">*</span>
                         {language === "cs"
                           ? " Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters."
