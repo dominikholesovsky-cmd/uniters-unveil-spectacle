@@ -78,7 +78,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       .max(255),
     phone: z.string()
       .trim()
-      .max(20),
+      .max(20)
       .optional(),
     plusOne: z.boolean().default(false),
     company: z.string().trim().max(100).optional(),
