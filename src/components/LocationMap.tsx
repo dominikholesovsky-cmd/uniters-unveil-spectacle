@@ -29,13 +29,13 @@ const LocationMap = ({ language }: LocationMapProps) => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Nadpis a adresa */}
-          <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+          <div className="text-white text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <p className="text-base sm:text-lg">{t.address}</p>
+              <p className="text-white text-base sm:text-lg">{t.address}</p>
             </div>
           </div>
 

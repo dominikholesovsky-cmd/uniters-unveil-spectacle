@@ -209,7 +209,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base sm:text-lg font-semibold text-white">{t.name} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold text-black">{t.name} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder={t.namePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
