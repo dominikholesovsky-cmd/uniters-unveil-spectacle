@@ -44,7 +44,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
             <div className="aspect-video w-full">
               <iframe
                 src={`https://www.openstreetmap.org/export/embed.html?bbox=16.586%2C49.191%2C16.596%2C49.200&layer=mapnik&marker=${coordinates}`}
-                className="w-full h-full border-0"
+                className="w-full h-full border-0 text-white"
                 title={t.title}
                 loading="lazy"
               />
@@ -69,7 +69,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
               href="https://www.openstreetmap.org/copyright"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
+              className="hover:text-primary transition-colors text-white"
             >
               © OpenStreetMap contributors
             </a>
