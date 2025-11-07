@@ -32,7 +32,7 @@ const Contact = ({ language }: ContactProps) => {
             </p>
 
             {/* Kontakty */}
-            <div className="flex flex-row gap-4 sm:gap-6 justify-center items-stretch sm:items-center">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-stretch sm:items-center">
               {/* Telefon */}
               <a
                 href="tel:+420776285777"
