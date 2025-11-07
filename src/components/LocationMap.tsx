@@ -20,37 +20,37 @@ const LocationMap = ({ language }: LocationMapProps) => {
   };
 
   const t = content[language];
-
   const coordinates = "49.1956718,16.5913221";
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
 
   return (
-    <section id="location-map" className="py-8 sm:py-10 md:py-12 bg-gradient-to-t from-background via-background-light to-background-light">
+    <section
+      id="location-map"
+      className="py-8 sm:py-10 md:py-12 bg-gradient-to-t from-background via-background-light to-background-light"
+    >
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Nadpis a adresa */}
-          <div className="text-white text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-4">
-              {t.title}
-            </h2>
-            <div className="flex items-center justify-center gap-2 text-white">
-              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <p className="text-white text-base sm:text-lg">{t.address}</p>
-            </div>
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 animate-fade-in">
+            {t.title}
+          </h2>
+          <div className="flex items-center justify-center gap-2 text-white mb-8 sm:mb-10">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+            <p className="text-white text-base sm:text-lg">{t.address}</p>
           </div>
 
-          {/* Mapa */}
-          <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          <div
+            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in"
+            style={{ animationDelay: "0.2s" }}
+          >
             <div className="aspect-video w-full">
               <iframe
                 src={`https://www.openstreetmap.org/export/embed.html?bbox=16.586%2C49.191%2C16.596%2C49.200&layer=mapnik&marker=${coordinates}`}
-                className="w-full h-full border-0 text-white"
+                className="w-full h-full border-0"
                 title={t.title}
                 loading="lazy"
               />
             </div>
 
-            {/* Tlačítko navigace */}
             <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
               <Button
                 size="lg"
@@ -63,13 +63,12 @@ const LocationMap = ({ language }: LocationMapProps) => {
             </div>
           </div>
 
-          {/* Odkaz na OpenStreetMap */}
-          <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
+          <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm text-white/70">
             <a
               href="https://www.openstreetmap.org/copyright"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-primary transition-colors text-white"
+              className="hover:text-primary transition-colors"
             >
               © OpenStreetMap contributors
             </a>
