@@ -79,7 +79,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       }}
     >
       {/* Tmavý overlay pro čitelnost */}
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-black/40" />
 
       {/* Scroll indicator – skrytý na mobilech */}
       <div className="hidden lg:block sm:block absolute left-0 top-1/2 transform -translate-y-1/2 pl-16 z-10">
