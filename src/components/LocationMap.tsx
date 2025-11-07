@@ -25,7 +25,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
 
   return (
-    <section id="location-map" className="py-8 sm:py-10 md:py-12 bg-muted">
+    <section id="location-map" className="py-8 sm:py-10 md:py-12 bg-gradient-to-br from-background via-background-light to-background-light border-t border-border">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Nadpis a adresa */}

@@ -1,7 +1,7 @@
 // components/Footer.tsx
 import { useState } from "react";
 import TermsModal from "./TermsModal"; 
-import unitersLogo from "@/assets/full-logo_uniters.png";
+import unitersLogo from "@/assets/full-logo_uniters_light.png";
 
 interface FooterProps {
   language: "cs" | "en";
@@ -26,7 +26,7 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
-    <footer className="bg-muted text-foreground">
+    <footer className="bg-gradient-to-br from-background via-background-light to-background-light text-foreground">
       <div className="border-t border-border w-full">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-6 sm:py-6 md:py-8">
