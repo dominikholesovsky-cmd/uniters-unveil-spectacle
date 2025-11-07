@@ -53,7 +53,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   }, [api]);
 
   return (
-    <section id="gallery" className="py-10 sm:py-10 bg-gradient-to-t from-background via-background-light to-background-light border-t border-border">
+    <section id="gallery" className="py-10 sm:py-10 bg-gradient-to-t from-background via-background-light to-background-light">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Nadpis */}
