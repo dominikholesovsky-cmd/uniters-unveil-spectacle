@@ -61,7 +61,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
             <h2 className="text-3xl text-white sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground px-4">
+            <p className="text-lg sm:text-xl text-white px-4">
               {language === "cs" ? (
                 <>
                   Podívejte se na{" "}
@@ -129,7 +129,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
                   className={`h-2 rounded-full transition-all duration-100 ${
                     current === index
                       ? "w-8 bg-white"
-                      : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                      : "w-2 bg-muted-foreground hover:bg-muted-foreground/50"
                   }`}
                   aria-label={`Přejít na obrázek ${index + 1}`}
                 />
