@@ -13,7 +13,7 @@ const Index = () => {
   const [language, setLanguage] = useState<"cs" | "en">("cs");
 
   const toggleLanguage = () => {
-    setLanguage(prev => (prev === "cs" ? "en" : "cs"));
+    setLanguage((prev) => (prev === "cs" ? "en" : "cs"));
   };
 
   const handleRegisterClick = () => {
@@ -66,6 +66,14 @@ const Index = () => {
 
         {/* Canonical */}
         <link rel="canonical" href="https://www.uniters.one" />
+
+        {/* ✅ GOOGLE FONTS */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
 
       <main>
