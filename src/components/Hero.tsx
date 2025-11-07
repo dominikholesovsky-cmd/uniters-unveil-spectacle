@@ -30,13 +30,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         },
         {
           icon: Music,
-          title: (
-            <>
-              Živá hudba
-              <br />
-              <br />
-            </>
-          ),
+          title: "Živá hudba",
           description: "Užijte si příjemný večer s živou hudbou",
         },
       ],
@@ -78,20 +72,17 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-accent">
-      {/* Animated background */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-72 h-48 sm:h-72 bg-accent rounded-full blur-3xl animate-pulse" />
-        <div
-          className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-64 sm:w-96 h-64 sm:h-96 bg-secondary rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        />
-      </div>
+    <section
+      className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('/VODOJEM1.jpg')",
+      }}
+    >
+      {/* Tmavý overlay pro čitelnost */}
+      <div className="absolute inset-0 bg-black/60" />
 
-      {/* -------------------------------------- */}
       {/* Scroll indicator – skrytý na mobilech */}
-      {/* -------------------------------------- */}
-      <div className="hidden lg:block sm:block absolute left-0 top-1/2 transform -translate-y-1/2 pl-16">
+      <div className="hidden lg:block sm:block absolute left-0 top-1/2 transform -translate-y-1/2 pl-16 z-10">
         <div className="animate-bounce">
           <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
             <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
