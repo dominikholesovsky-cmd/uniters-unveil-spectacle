@@ -58,7 +58,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
         <div className="max-w-6xl mx-auto">
           {/* Nadpis */}
           <div className="text-center text-white mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-4 text-white">
+            <h2 className="text-3xl text-white sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-4">
               {t.title}
             </h2>
             <p className="text-lg sm:text-xl text-muted-foreground px-4">
