@@ -29,7 +29,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPlusOneDetails, setShowPlusOneDetails] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
-  const [addToCalendar, setAddToCalendar] = useState(false);
+  const [calendarAdded, setCalendarAdded] = useState(false);
 
   const content = {
     cs: {
@@ -88,38 +88,24 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const formSchema = z
     .object({
-      name: z
-        .string()
-        .trim()
-        .min(2, {
-          message:
-            language === "cs"
-              ? "Jméno musí mít alespoň 2 znaky"
-              : "Name must be at least 2 characters",
-        })
-        .max(100),
-      email: z
-        .string()
-        .trim()
-        .email({
-          message:
-            language === "cs"
-              ? "Neplatná e-mailová adresa"
-              : "Invalid email address",
-        })
-        .max(255),
+      name: z.string().trim().min(2, {
+        message:
+          language === "cs"
+            ? "Jméno musí mít alespoň 2 znaky"
+            : "Name must be at least 2 characters",
+      }),
+      email: z.string().trim().email({
+        message:
+          language === "cs"
+            ? "Neplatná e-mailová adresa"
+            : "Invalid email address",
+      }),
       phone: z.string().trim().max(20).optional(),
+      company: z.string().trim().min(1, {
+        message:
+          language === "cs" ? "Zadejte název firmy" : "Please enter company name",
+      }),
       plusOne: z.boolean().default(false),
-      company: z
-        .string()
-        .trim()
-        .min(1, {
-          message:
-            language === "cs"
-              ? "Zadejte název firmy"
-              : "Please enter company name",
-        })
-        .max(100),
       guestName: z.string().trim().max(100).optional(),
       gdprConsent: z.literal(true, {
         errorMap: () => ({
@@ -177,7 +163,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           company: values.company,
           plusOne: values.plusOne,
           guestName: values.guestName || "",
-          addToCalendar: addToCalendar ? 1 : 0,
           timestamp: new Date().toISOString(),
         }),
       });
@@ -205,7 +190,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     window.open(mapsUrl, "_blank");
   };
 
-  const generateICS = () => {
+  const handleAddToCalendar = () => {
     const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -224,7 +209,7 @@ END:VCALENDAR
     a.href = url;
     a.download = "uniters-event.ics";
     a.click();
-    setAddToCalendar(true);
+    setCalendarAdded(true);
   };
 
   if (isSubmitted) {
@@ -233,26 +218,14 @@ END:VCALENDAR
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl animate-scale-in">
             <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
-              {t.successTitle}
-            </h2>
-            <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
-              {t.successMessage}
-            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">{t.successTitle}</h2>
+            <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">{t.successMessage}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={handleNavigationClick}
-                className="bg-primary text-white hover:bg-primary/90"
-              >
+              <Button size="lg" onClick={handleNavigationClick} className="bg-primary text-white hover:bg-primary/90">
                 <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
               </Button>
-              {!addToCalendar && (
-                <Button
-                  size="lg"
-                  onClick={generateICS}
-                  className="bg-primary text-white hover:bg-primary/90"
-                >
+              {!calendarAdded && (
+                <Button size="lg" onClick={handleAddToCalendar} className="bg-primary text-white hover:bg-primary/90">
                   {t.addToCalendar}
                 </Button>
               )}
@@ -268,144 +241,119 @@ END:VCALENDAR
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 px-4">
-              {t.title}
-            </h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 px-4">{t.title}</h2>
             <p className="text-lg sm:text-xl text-white/80 px-4">{t.subtitle}</p>
           </div>
 
           <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
-                {/* --- Stávající formulářové pole Name, Email, Phone, Company, PlusOne, GuestName, GDPR, Photo/Video --- */}
+                {/* --- Form fields: Name, Email, Phone, Company, PlusOne, GuestName, GDPR, Photo/Video --- */}
+                
                 {/* Name */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t.name} <span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder={t.namePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.name} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t.namePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 {/* Email */}
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t.email} <span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} placeholder={t.emailPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.email} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} placeholder={t.emailPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 {/* Phone */}
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t.phone}</FormLabel>
-                      <FormControl>
-                        <Input type="tel" {...field} placeholder={t.phonePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="phone" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.phone}</FormLabel>
+                    <FormControl>
+                      <Input type="tel" {...field} placeholder={t.phonePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 {/* Company */}
-                <FormField
-                  control={form.control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t.company} <span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder={t.companyPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="company" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.company} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t.companyPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 {/* PlusOne */}
-                <FormField
-                  control={form.control}
-                  name="plusOne"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked);
-                            setShowPlusOneDetails(!!checked);
-                            if (!checked) form.setValue("guestName", "");
-                          }}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="text-base text-black font-medium cursor-pointer">{t.plusOne}</FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="plusOne" render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          setShowPlusOneDetails(!!checked);
+                          if (!checked) form.setValue("guestName", "");
+                        }}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-base text-black font-medium cursor-pointer">{t.plusOne}</FormLabel>
+                    </div>
+                  </FormItem>
+                )} />
+
                 {showPlusOneDetails && (
-                  <FormField
-                    control={form.control}
-                    name="guestName"
-                    render={({ field }) => (
-                      <FormItem className="animate-fade-in">
-                        <FormLabel className="text-black sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input placeholder={t.guestNamePlaceholder} {...field} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <FormField control={form.control} name="guestName" render={({ field }) => (
+                    <FormItem className="animate-fade-in">
+                      <FormLabel className="text-black sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
+                      <FormControl>
+                        <Input placeholder={t.guestNamePlaceholder} {...field} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                 )}
+
                 {/* GDPR Consent */}
-                <FormField
-                  control={form.control}
-                  name="gdprConsent"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                      <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
-                        <span className="text-red-500">*</span>
-                        {language === "cs" ? <> Souhlasím se zpracováním osobních údajů dle <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>zásad ochrany osobních údajů</span> pro účely registrace.</> : <> I agree to the processing of my personal data according to the <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>privacy policy</span> for registration purposes.</>}
-                      </FormLabel>
-                      <FormMessage />
-                      <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} language={language} />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="gdprConsent" render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
+                      <span className="text-red-500">*</span>
+                      {language === "cs" ? <> Souhlasím se zpracováním osobních údajů dle <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>zásad ochrany osobních údajů</span> pro účely registrace.</> : <> I agree to the processing of my personal data according to the <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>privacy policy</span> for registration purposes.</>}
+                    </FormLabel>
+                    <FormMessage />
+                    <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} language={language} />
+                  </FormItem>
+                )} />
+
                 {/* Photo/Video Consent */}
-                <FormField
-                  control={form.control}
-                  name="photoVideoConsent"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                      <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
-                        <span className="text-red-500">*</span>
-                        {language === "cs" ? t.photoVideoConsent : t.photoVideoConsent}
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="photoVideoConsent" render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
+                      <span className="text-red-500">*</span>
+                      {language === "cs" ? t.photoVideoConsent : t.photoVideoConsent}
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 {/* Submit */}
                 <Button type="submit" size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary text-white hover:bg-primary/90">
                   {t.submit}
