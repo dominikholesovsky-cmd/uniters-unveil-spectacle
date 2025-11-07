@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* Základní barvy pozadí a textu */
-    --background: 220 15% 25%;        /* světlejší pozadí */
+    --background: 220 10% 25%;        /* světlejší pozadí */
     --background-light: 220 15% 35%;  
     --foreground: 220 15% 12%;        /* tmavší text pro kontrast */
 
