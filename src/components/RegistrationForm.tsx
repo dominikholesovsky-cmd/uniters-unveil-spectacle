@@ -292,7 +292,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     name="guestName"
                     render={({ field }) => (
                       <FormItem className="animate-fade-in">
-                        <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
+                        <FormLabel className="text-black sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-black" />
                         </FormControl>
@@ -311,7 +311,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormControl>
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
-                      <FormLabel classname="text-black" style={{ display: "inline", marginLeft: "8px", cursor: "pointer"}}>
+                      <FormLabel className="text-black" style={{ display: "inline", marginLeft: "8px", cursor: "pointer"}}>
                         <span className="text-red-500">*</span>
                         {language === "cs"
                           ? <> Souhlasím se zpracováním osobních údajů dle <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>zásad ochrany osobních údajů</span> pro účely registrace.</>
@@ -332,7 +332,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormControl>
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
-                      <FormLabel classname="text-black" style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                      <FormLabel className="text-black" style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
                         <span className="text-red-500">*</span>
                         {language === "cs"
                           ? " Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters."
