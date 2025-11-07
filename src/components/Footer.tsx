@@ -26,7 +26,7 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
-    <footer className="bg-muted-foreground text-foreground">
+    <footer className="bg-muted-foreground text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-6 sm:py-6 md:py-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
@@ -41,8 +41,8 @@ const Footer = ({ language }: FooterProps) => {
 
               {/* Center content */}
               <div className="text-center text-white space-y-1 sm:space-y-2">
-                <p className="text-xs sm:text-sm opacity-80">{t.copyright}</p>
-                <p className="text-xs sm:text-sm opacity-80">{t.ico}</p>
+                <p className="text-xs text-white sm:text-sm opacity-80">{t.copyright}</p>
+                <p className="text-xs text-white sm:text-sm opacity-80">{t.ico}</p>
               </div>
 
               {/* GDPR Link */}
