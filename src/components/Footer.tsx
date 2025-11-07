@@ -40,9 +40,9 @@ const Footer = ({ language }: FooterProps) => {
               </div>
 
               {/* Center content */}
-              <div className="text-center text-white space-y-1 sm:space-y-2">
-                <p className="text-xs text-white sm:text-sm opacity-80">{t.copyright}</p>
-                <p className="text-xs text-white sm:text-sm opacity-80">{t.ico}</p>
+              <div className="text-white text-center space-y-1 sm:space-y-2">
+                <p className="text-xs text-white sm:text-sm ">{t.copyright}</p>
+                <p className="text-xs text-white sm:text-sm ">{t.ico}</p>
               </div>
 
               {/* GDPR Link */}
