@@ -151,11 +151,15 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             <div className="px-4">
               <Button
                 size="lg"
-                onClick={onRegisterClick}
+                onClick={() => {
+                  const el = document.getElementById("registration-form");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
               >
                 {t.cta}
               </Button>
+
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto px-4">
