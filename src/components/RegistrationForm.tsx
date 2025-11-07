@@ -78,11 +78,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       .max(255),
     phone: z.string()
       .trim()
-      .min(9, { message: language === "cs" ? "Neplatné telefonní číslo" : "Invalid phone number" })
       .max(20),
+      .optional(),
     plusOne: z.boolean().default(false),
     company: z.string().trim().max(100).optional(),
-    guestName: z.string().trim().max(100).optional(),
+    guestName: z.string()
+    .trim()
+    .min(2, { message: language === "cs" ? "Zadejte název firmy" : "Please enter a company name" })
+    .max(100),
     gdprConsent: z.literal(true, {
       errorMap: () => ({
         message: language === "cs" 
@@ -239,7 +242,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base sm:text-lg font-semibold text-black">{t.phone} <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold text-black">{t.phone}</FormLabel>
                       <FormControl>
                         <Input type="tel" placeholder={t.phonePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
@@ -254,7 +257,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   name="company"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base sm:text-lg font-semibold text-black">{t.company}</FormLabel>
+                      <FormLabel className="text-base sm:text-lg font-semibold text-black">{t.company} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder={t.companyPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
