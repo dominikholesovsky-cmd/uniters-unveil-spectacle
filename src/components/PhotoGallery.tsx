@@ -69,7 +69,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
                     href="https://vodojemybrno.cz/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:text-primary/80 underline decoration-2 underline-offset-4 hover:decoration-primary/80 font-medium transition-colors"
+                    className="text-primary text-white hover:text-primary/80 underline decoration-2 underline-offset-4 hover:decoration-primary/80 font-medium transition-colors"
                   >
                     místo konání akce
                   </a>
@@ -81,7 +81,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
                     href="https://vodojemybrno.cz/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:text-primary/80 underline decoration-2 underline-offset-4 hover:decoration-primary/80 font-medium transition-colors"
+                    className="text-primary text-white hover:text-primary/80 underline decoration-2 underline-offset-4 hover:decoration-primary/80 font-medium transition-colors"
                   >
                     event venue
                   </a>
