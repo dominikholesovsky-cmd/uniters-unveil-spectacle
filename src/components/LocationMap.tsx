@@ -39,7 +39,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
           </div>
 
           <div
-            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in"
+            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in scale-80"
             style={{ animationDelay: "0.2s" }}
           >
             <div className="aspect-video w-full">
