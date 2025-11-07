@@ -2,23 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 220 15% 15%;
-    --background-light: 220 15% 20%;
-    --foreground: 0 0% 95%;
+    /* Základní barvy pozadí a textu */
+    --background: 220 15% 25%;        /* světlejší pozadí */
+    --background-light: 220 15% 35%;  
+    --foreground: 220 15% 12%;        /* tmavší text pro kontrast */
 
+    /* Card / popover barvy */
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 10%;
+    --card-foreground: 220 15% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 10%;
+    --popover-foreground: 220 15% 12%;
 
-    /* Uniters brand colors from logo */
+    /* Uniters brand colors */
     --primary: 234 60% 40%;
     --primary-foreground: 0 0% 100%;
 
@@ -29,7 +27,7 @@ All colors MUST be HSL.
     --muted-foreground: 215.4 16.3% 46.9%;
 
     --accent: 180 55% 60%;
-    --accent-foreground: 220 15% 10%;
+    --accent-foreground: 220 15% 12%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
@@ -39,39 +37,26 @@ All colors MUST be HSL.
     --ring: 234 60% 40%;
 
     --radius: 0.75rem;
-    
-    /* Custom event theme */
-    --gradient-hero: linear-gradient(135deg, hsl(234 60% 40%), hsl(204 65% 55%), hsl(180 55% 60%));
-    --gradient-subtle: linear-gradient(180deg, hsl(220 15% 12%), hsl(220 15% 18%));
-    --gradient-section: linear-gradient(135deg, hsl(220 20% 14%), hsl(220 15% 22%));
-    --shadow-elegant: 0 10px 40px -10px hsl(234 60% 40% / 0.2);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 220 20% 10%;
+    --background: 220 20% 18%;
     --foreground: 0 0% 98%;
 
-    --card: 220 20% 12%;
+    --card: 220 20% 22%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 20% 12%;
+    --popover: 220 20% 22%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 234 60% 55%;
@@ -84,7 +69,7 @@ All colors MUST be HSL.
     --muted-foreground: 215 20.2% 65.1%;
 
     --accent: 180 55% 65%;
-    --accent-foreground: 220 15% 10%;
+    --accent-foreground: 220 15% 12%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
@@ -92,6 +77,7 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 20%;
     --input: 217.2 32.6% 20%;
     --ring: 234 60% 55%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -101,18 +87,13 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
+  /* Globální styly */
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Raleway', sans-serif;
   }
