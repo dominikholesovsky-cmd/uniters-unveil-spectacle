@@ -294,7 +294,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormItem className="animate-fade-in">
                         <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
-                          <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
+                          <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-white" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
