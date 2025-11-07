@@ -219,7 +219,7 @@ END:VCALENDAR
 
   if (isSubmitted) {
     return (
-      <section className="py-12 sm:py-16 bg-gradient-to-br from-background via-background-light to-background-light">
+      <section className="py-12 sm:py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl animate-scale-in">
             <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
