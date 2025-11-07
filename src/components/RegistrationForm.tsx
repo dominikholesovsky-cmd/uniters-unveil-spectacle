@@ -202,15 +202,17 @@ DTEND:20260122T220000
 LOCATION:Vodojemy Žlutý Kopec, Brno
 END:VEVENT
 END:VCALENDAR
-    `.trim();
-
+    `;
     const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "uniters-event.ics";
-    a.click();
+    const win = window.open(url, "_blank"); // otevře přímo ve výchozí aplikaci
+    if (!win) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "uniters-event.ics";
+      a.click();
+    }
 
     setCalendarAdded(true);
   };
@@ -227,11 +229,9 @@ END:VCALENDAR
               <Button size="lg" onClick={handleNavigationClick} className="bg-primary text-white hover:bg-primary/90">
                 <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
               </Button>
-              {!calendarAdded && (
-                <Button size="lg" onClick={handleAddToCalendar} className="bg-primary text-white hover:bg-primary/90">
-                  <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
-                </Button>
-              )}
+              <Button size="lg" onClick={handleAddToCalendar} className="bg-primary text-white hover:bg-primary/90">
+                <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
+              </Button>
             </div>
           </div>
         </div>
@@ -239,7 +239,6 @@ END:VCALENDAR
     );
   }
 
-  // --- Form Section ---
   return (
     <section className="py-10 sm:py-10 bg-gradient-to-br from-background via-background-light to-background-light relative overflow-hidden">
       <div className="container mx-auto px-4">
@@ -252,9 +251,111 @@ END:VCALENDAR
           <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
-                {/* Form fields - Name, Email, Phone, Company, PlusOne, GuestName, GDPR, Photo/Video */}
-                {/* ...zůstává stejné jako předtím... */}
-                {/* Submit Button */}
+                {/* Name */}
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.name} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t.namePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Email */}
+                <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.email} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} placeholder={t.emailPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Phone */}
+                <FormField control={form.control} name="phone" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.phone}</FormLabel>
+                    <FormControl>
+                      <Input type="tel" {...field} placeholder={t.phonePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Company */}
+                <FormField control={form.control} name="company" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.company} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t.companyPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* PlusOne */}
+                <FormField control={form.control} name="plusOne" render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          setShowPlusOneDetails(!!checked);
+                          if (!checked) form.setValue("guestName", "");
+                        }}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-base text-black font-medium cursor-pointer">{t.plusOne}</FormLabel>
+                    </div>
+                  </FormItem>
+                )} />
+
+                {showPlusOneDetails && (
+                  <FormField control={form.control} name="guestName" render={({ field }) => (
+                    <FormItem className="animate-fade-in">
+                      <FormLabel className="text-black sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
+                      <FormControl>
+                        <Input placeholder={t.guestNamePlaceholder} {...field} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                )}
+
+                {/* GDPR Consent */}
+                <FormField control={form.control} name="gdprConsent" render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
+                      <span className="text-red-500">*</span>
+                      {language === "cs" ? <> Souhlasím se zpracováním osobních údajů dle <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>zásad ochrany osobních údajů</span> pro účely registrace.</> : <> I agree to the processing of my personal data according to the <span className="underline text-primary cursor-pointer" onClick={() => setIsTermsOpen(true)}>privacy policy</span> for registration purposes.</>}
+                    </FormLabel>
+                    <FormMessage />
+                    <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} language={language} />
+                  </FormItem>
+                )} />
+
+                {/* Photo/Video Consent */}
+                <FormField control={form.control} name="photoVideoConsent" render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
+                      <span className="text-red-500">*</span>
+                      {language === "cs" ? t.photoVideoConsent : t.photoVideoConsent}
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Submit */}
                 <Button type="submit" size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-primary text-white hover:bg-primary/90">
                   {t.submit}
                 </Button>
