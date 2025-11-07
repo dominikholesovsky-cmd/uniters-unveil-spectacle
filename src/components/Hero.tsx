@@ -75,7 +75,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
     <section
       className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: "url('/VODOJEM1.jpg')",
+        backgroundImage: "url('/images/VODOJEM1.jpg')",
       }}
     >
       {/* Tmavý overlay pro čitelnost */}

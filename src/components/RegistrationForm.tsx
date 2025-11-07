@@ -89,6 +89,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           ? "Musíte souhlasit se zpracováním osobních údajů" 
           : "You must agree to the processing of personal data"
       })
+    }),
+    photoVideoConsent: z.literal(true, {
+      errorMap: () => ({
+        message: language === "cs" 
+          ? "Musíte souhlasit s pořizováním fotografií a videí" 
+          : "You must agree to photo and video recording"
+      })
     })
   });
 
@@ -101,7 +108,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       company: "",
       plusOne: false,
       guestName: "",
-      gdprConsent: undefined as any
+      gdprConsent: undefined as any,
+      photoVideoConsent: undefined as any
     }
   });
 
@@ -311,6 +319,26 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       </FormLabel>
                       <FormMessage />
                       <TermsModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} language={language} />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Photo/Video Consent */}
+                <FormField
+                  control={form.control}
+                  name="photoVideoConsent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                      <FormLabel style={{ display: "inline", marginLeft: "8px", cursor: "pointer" }}>
+                        <span className="text-red-500">*</span>
+                        {language === "cs"
+                          ? " Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters."
+                          : " I agree to photo and video recording during the event for marketing purposes of Uniters."}
+                      </FormLabel>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
