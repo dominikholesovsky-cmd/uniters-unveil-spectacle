@@ -211,7 +211,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.name} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder={t.namePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
+                        <Input placeholder={t.namePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -226,7 +226,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.email} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder={t.emailPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
+                        <Input type="email" placeholder={t.emailPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -241,7 +241,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.phone} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder={t.phonePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
+                        <Input type="tel" placeholder={t.phonePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -256,7 +256,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel className="text-base sm:text-lg font-semibold">{t.company}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t.companyPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
+                        <Input placeholder={t.companyPlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -294,7 +294,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormItem className="animate-fade-in">
                         <FormLabel className="text-base sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
-                          <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base" />
+                          <Input placeholder={t.guestNamePlaceholder} {...field} className="h-11 sm:h-12 text-sm sm:text-base bg-white text-foreground" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
