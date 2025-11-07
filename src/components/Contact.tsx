@@ -35,9 +35,9 @@ const Contact = ({ language }: ContactProps) => {
               className="flex items-center gap-4 text-xl sm:text-2xl text-foreground hover:text-primary transition-colors group justify-center"
             >
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                <Mail className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground" />
+                <Mail className="w-7 h-7 sm:w-8 sm:h-8 text-foreground" />
               </div>
-              <span className="font-semibold break-all sm:break-normal">hello@uniters.io</span>
+              <span className="font-semibold text-muted-foreground break-all sm:break-normal">hello@uniters.io</span>
             </a>
           </div>
         </div>
