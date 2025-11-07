@@ -41,7 +41,7 @@ const Footer = ({ language }: FooterProps) => {
               </div>
 
               {/* Center content */}
-              <div className="text-center space-y-1 sm:space-y-2">
+              <div className="text-center text-white space-y-1 sm:space-y-2">
                 <p className="text-xs sm:text-sm opacity-80">{t.copyright}</p>
                 <p className="text-xs sm:text-sm opacity-80">{t.ico}</p>
               </div>
@@ -50,7 +50,7 @@ const Footer = ({ language }: FooterProps) => {
               <div>
                 <button
                   type="button"
-                  className="text-xs sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
+                  className="text-xs text-white sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
                   onClick={() => setIsTermsOpen(true)}
                 >
                   {t.gdpr}
