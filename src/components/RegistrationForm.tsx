@@ -196,11 +196,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
+PRODID:-//YourCompany//Uniters Event//EN
 BEGIN:VEVENT
+UID:uniters-event-20260122@example.com
+DTSTAMP:20251107T120000Z
+DTSTART;TZID=Europe/Prague:20260122T18:00:00
+DTEND;TZID=Europe/Prague:20260122T22:00:00
 SUMMARY:Uniters Event
 DESCRIPTION:Vodojemy Žlutý Kopec
-DTSTART:20260122T180000
-DTEND:20260122T220000
 LOCATION:Vodojemy Žlutý Kopec, Brno
 END:VEVENT
 END:VCALENDAR
