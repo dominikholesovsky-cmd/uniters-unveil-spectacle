@@ -169,7 +169,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
       if (!response.ok) throw new Error("Failed to send data");
 
-      toast({ title: t.successTitle, description: t.successMessage });
+      toast({ title: t.successTitle, 
+        description: t.successMessage,
+        className: "bg-white" });
       setIsSubmitted(true);
     } catch (error) {
       console.error("Error sending to Power Automate:", error);
