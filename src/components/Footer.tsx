@@ -27,7 +27,6 @@ const Footer = ({ language }: FooterProps) => {
 
   return (
     <footer className="bg-muted-foreground text-foreground">
-      <div className="border-t border-border w-full">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-6 sm:py-6 md:py-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
@@ -58,7 +57,6 @@ const Footer = ({ language }: FooterProps) => {
               </div>
             </div>
           </div>
-        </div>
       </div>
 
       {/* Modal */}
