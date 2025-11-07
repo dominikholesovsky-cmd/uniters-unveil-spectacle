@@ -17,7 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 import TermsModal from "./TermsModal";
 
-const POWER_AUTOMATE_URL = "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
+const POWER_AUTOMATE_URL =
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
@@ -80,19 +81,29 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const formSchema = z
     .object({
-      name: z.string().trim().min(2),
-      email: z.string().trim().email(),
+      name: z.string().trim().min(2, {
+        message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters",
+      }),
+      email: z.string().trim().email({
+        message: language === "cs" ? "Neplatná e-mailová adresa" : "Invalid email address",
+      }),
       phone: z.string().trim().max(20).optional(),
-      company: z.string().trim().min(1),
+      company: z.string().trim().min(1, {
+        message: language === "cs" ? "Zadejte název firmy" : "Please enter company name",
+      }),
       plusOne: z.boolean().default(false),
       guestName: z.string().trim().max(100).optional(),
-      gdprConsent: z.literal(true),
-      photoVideoConsent: z.literal(true),
+      gdprConsent: z.literal(true, {
+        errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit se zpracováním osobních údajů" : "You must agree to the processing of personal data" }),
+      }),
+      photoVideoConsent: z.literal(true, {
+        errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit s pořizováním fotografií a videí" : "You must agree to photo and video recording" }),
+      }),
     })
-    .refine((data) => !data.plusOne || (data.plusOne && data.guestName?.trim().length > 0), {
-      message: "Please enter guest name",
-      path: ["guestName"],
-    });
+    .refine(
+      (data) => !data.plusOne || (data.plusOne && data.guestName?.trim().length > 0),
+      { message: language === "cs" ? "Zadejte prosím jméno doprovodu" : "Please enter guest name", path: ["guestName"] }
+    );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -123,12 +134,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       toast({ title: t.successTitle, description: t.successMessage, className: "bg-white" });
       setIsSubmitted(true);
     } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error sending data",
-        description: "Failed to send registration. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: language === "cs" ? "Chyba při odesílání" : "Error sending data", description: language === "cs" ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu." : "Failed to send registration. Please try again.", variant: "destructive" });
     }
   };
 
@@ -138,13 +144,16 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   };
 
   const handleAddToCalendar = () => {
+    const uid = `uniters-event-${Date.now()}@example.com`;
+    const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
     const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Uniters//Event//EN
 BEGIN:VEVENT
-UID:uniters-event-20260122@example.com
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+UID:${uid}
+DTSTAMP:${dtstamp}
 DTSTART;TZID=Europe/Prague:20260122T18:00:00
 DTEND;TZID=Europe/Prague:20260122T22:00:00
 SUMMARY:Uniters Event
@@ -157,13 +166,11 @@ END:VCALENDAR
     const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    // iOS/macOS detection
     const isApple = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     if (isApple) {
       const webcalUrl = url.replace(/^blob:/, "webcal:");
       window.location.href = webcalUrl;
     } else {
-      // fallback: download
       const a = document.createElement("a");
       a.href = url;
       a.download = "uniters-event.ics";
@@ -171,9 +178,10 @@ END:VCALENDAR
     }
   };
 
+  // --- Render form or success page (zachováno překlady a validace) ---
   if (isSubmitted) {
     return (
-      <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light">
+      <section className="py-12 sm:py-16 bg-gradient-to-br from-background via-background-light to-background-light">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl animate-scale-in">
             <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
@@ -193,6 +201,7 @@ END:VCALENDAR
     );
   }
 
+  // --- Form render ---
   return (
     <section className="py-10 sm:py-10 bg-gradient-to-br from-background via-background-light to-background-light relative overflow-hidden">
       <div className="container mx-auto px-4">
@@ -286,7 +295,10 @@ END:VCALENDAR
                     <FormControl>
                       <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
-                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">{t.gdprConsent}</FormLabel>
+                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
+                      <span className="text-red-500">*</span>
+                      {language === "cs" ? <> {t.gdprConsent} </> : <> {t.gdprConsent} </>}
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -297,7 +309,9 @@ END:VCALENDAR
                     <FormControl>
                       <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
-                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">{t.photoVideoConsent}</FormLabel>
+                    <FormLabel className="text-muted-foreground ml-2 cursor-pointer">
+                      <span className="text-red-500">*</span> {t.photoVideoConsent}
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )} />
