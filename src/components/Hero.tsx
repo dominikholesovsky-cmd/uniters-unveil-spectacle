@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock, Wine, Music, Info } from "lucide-react";
+import { Calendar, MapPin, Clock, Wine, Music, Info, Gift } from "lucide-react"; // přidán Gift
 import unitersLogo from "@/assets/full-logo_uniters_light.png";
 
 interface HeroProps {
@@ -16,7 +16,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       time: "18:00 - 22:00",
       location: "Vodojemy Žlutý Kopec, Brno",
       cta: "Registrovat se",
-      description: "Přidejte se k nám na jedinečný večerní program plný zážitků",
+      description:
+        "Přidejte se k nám na jedinečný večerní program plný zážitků",
       features: [
         {
           icon: Info,
@@ -33,6 +34,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           title: "Živá hudba",
           description: "Užijte si příjemný večer s živou hudbou",
         },
+        {
+          icon: Gift,
+          title: "Dárek na památku",
+          description: "Nikdo neodejde s prázdnou 🎁",
+        },
       ],
     },
     en: {
@@ -42,7 +48,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       time: "6:00 PM - 10:00 PM",
       location: "Žlutý Kopec Water Tanks, Brno",
       cta: "Register",
-      description: "Join us for a unique evening program full of experiences",
+      description:
+        "Join us for a unique evening program full of experiences",
       features: [
         {
           icon: Info,
@@ -59,13 +66,17 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           title: "Live Music",
           description: "Enjoy a pleasant evening with live music",
         },
+        {
+          icon: Gift,
+          title: "Special Gift",
+          description: "Everyone leaves with a little surprise 🎁",
+        },
       ],
     },
   };
 
   const t = content[language] ?? content.cs;
 
-  // scroll funkce
   const scrollToMap = () => {
     const el = document.getElementById("location-map");
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -78,10 +89,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
         backgroundImage: "url('/images/VODOJEM2.jpg')",
       }}
     >
-      {/* Tmavý overlay pro čitelnost */}
       <div className="absolute inset-0 bg-black/40" />
 
-      {/* Scroll indicator – skrytý na mobilech */}
       <div className="hidden lg:block sm:block absolute left-0 top-1/2 transform -translate-y-1/2 pl-16 z-10">
         <div className="animate-bounce">
           <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
@@ -92,11 +101,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
       <div className="container relative z-10 mx-auto px-4 py-8 sm:py-10 md:py-10">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          {/* -------------------------------------- */}
-          {/* TOP PART: Logo + Title + Description */}
-          {/* -------------------------------------- */}
+          {/* Logo + Title + Description */}
           <div className="space-y-6 sm:space-y-8">
-            {/* Logo */}
             <div className="flex justify-center mb-6 sm:mb-8">
               <img
                 src={unitersLogo}
@@ -105,7 +111,6 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
               />
             </div>
 
-            {/* Title & Description */}
             <div className="space-y-3 sm:space-y-4 px-4">
               <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
                 {t.title}
@@ -119,9 +124,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
           </div>
 
-          {/* -------------------------------------- */}
-          {/* EVENT DETAILS */}
-          {/* -------------------------------------- */}
+          {/* Event details */}
           <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 text-white/90 py-6 sm:py-8 px-4">
             <div className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base">
               <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -143,11 +146,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
             </div>
           </div>
 
-          {/* -------------------------------------- */}
-          {/* CTA BUTTON + FEATURES */}
-          {/* -------------------------------------- */}
+          {/* CTA + Features */}
           <div className="space-y-10 sm:space-y-12">
-            {/* CTA */}
             <div className="px-4">
               <Button
                 size="lg"
@@ -158,8 +158,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
               </Button>
             </div>
 
-            {/* Features */}
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto px-4">
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto px-4">
               {t.features.map((feature, index) => (
                 <div
                   key={index}
