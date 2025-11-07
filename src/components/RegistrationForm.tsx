@@ -171,7 +171,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   if (isSubmitted) {
     return (
-      <section id="registration" className="py-12 sm:py-16 bg-gradient-to-tr from-primary via-secondary to-accent relative overflow-hidden">
+      <section id="registration" className="py-12 sm:py-16 bg-gradient-to-br from-background to-background/95 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl text-center animate-scale-in">
@@ -191,7 +191,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   }
 
   return (
-    <section id="registration" className="py-10 sm:py-10 bg-gradient-to-tr from-primary via-secondary to-accent relative overflow-hidden">
+    <section id="registration" className="py-10 sm:py-10 bg-gradient-to-br from-background to-background/95 relative overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
