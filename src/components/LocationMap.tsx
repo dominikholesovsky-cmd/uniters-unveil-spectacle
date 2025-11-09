@@ -39,10 +39,10 @@ const LocationMap = ({ language }: LocationMapProps) => {
           </div>
 
           <div
-            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in mx-auto"
-            style={{ animationDelay: "0.2s", maxWidth: "80%" }}
-          >            
-            <div className="aspect-video w-full">
+            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant animate-fade-in"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <div className="aspect-video w-full transform scale-85">
               <iframe
                 src={`https://www.openstreetmap.org/export/embed.html?bbox=16.586%2C49.191%2C16.596%2C49.200&layer=mapnik&marker=${coordinates}`}
                 className="w-full h-full border-0"
