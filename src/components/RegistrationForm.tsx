@@ -297,7 +297,7 @@ END:VCALENDAR
               name="tourTime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-medium">
+                  <FormLabel className="text-foreground font-medium bg-white">
                     {t.tourTime}
                   </FormLabel>
                   <Select
