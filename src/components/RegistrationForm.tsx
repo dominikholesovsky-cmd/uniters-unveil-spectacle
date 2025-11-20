@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -13,13 +13,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import TermsModal from "./TermsModal";
 
-const POWER_AUTOMATE_URL =
+const POWER_AUTOMATE_SUBMIT_URL =
   "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
+
+const POWER_AUTOMATE_CAPACITY_URL =
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99925fb9ae554367889c08dc4e186ccc/triggers/manual/paths/invoke?api-version=1";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
@@ -29,6 +38,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [is1930Available, setIs1930Available] = useState(false);
+  const [isLoadingCapacity, setIsLoadingCapacity] = useState(true);
 
   const content = {
     cs: {
@@ -79,6 +90,32 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const t = content[language];
 
+  useEffect(() => {
+    const checkCapacity = async () => {
+      try {
+        const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        
+        // Enable 19:30 if 18:30 has 80 or more registrations
+        if (data.count_1830 >= 80) {
+          setIs1930Available(true);
+        }
+      } catch (error) {
+        console.error("Error checking capacity:", error);
+        // On error, keep 19:30 disabled for safety
+      } finally {
+        setIsLoadingCapacity(false);
+      }
+    };
+
+    checkCapacity();
+  }, []);
+
   const formSchema = z.object({
     name: z.string().trim().min(2, {
       message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters",
@@ -118,7 +155,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     localStorage.setItem("gdprConsent", "accepted");
 
     try {
-      const response = await fetch(POWER_AUTOMATE_URL, {
+      const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...values, timestamp: new Date().toISOString() }),
@@ -254,37 +291,38 @@ END:VCALENDAR
                   </FormItem>
                 )} />
 
-                {/* Tour Time */}
-                <FormField control={form.control} name="tourTime" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.tourTime} <span className="text-red-500">*</span></FormLabel>
+            {/* Tour Time */}
+            <FormField
+              control={form.control}
+              name="tourTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    {t.tourTime}
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isLoadingCapacity}
+                  >
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="flex flex-col space-y-3"
-                      >
-                        <FormItem className="flex items-center space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
-                          <FormControl>
-                            <RadioGroupItem value="18:30" />
-                          </FormControl>
-                          <FormLabel className="text-base text-black font-medium cursor-pointer">
-                            {t.tourTime1830}
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
-                          <FormControl>
-                            <RadioGroupItem value="19:30" />
-                          </FormControl>
-                          <FormLabel className="text-base text-black font-medium cursor-pointer">
-                            {t.tourTime1930}
-                          </FormLabel>
-                        </FormItem>
-                      </RadioGroup>
+                      <SelectTrigger>
+                        <SelectValue placeholder={isLoadingCapacity ? "Načítání..." : "Vyberte čas"} />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+                    <SelectContent>
+                      <SelectItem value="18:30">
+                        {t.tourTime1830}
+                      </SelectItem>
+                      <SelectItem value="19:30" disabled={!is1930Available}>
+                        {t.tourTime1930} {!is1930Available && "(Nedostupné)"}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
                 {/* GDPR Consent */}
                 <FormField control={form.control} name="gdprConsent" render={({ field }) => (
