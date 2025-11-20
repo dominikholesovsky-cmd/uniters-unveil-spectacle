@@ -92,20 +92,33 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
 useEffect(() => {
   const checkCapacity = async () => {
+    setIsLoadingCapacity(true);
+
     try {
       const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, { method: "POST" });
-      if (!response.ok) throw new Error("Failed to fetch capacity");
 
-      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Capacity API returned error, enabling all times by fallback.");
+        setIs1930Available(true); // fallback: nikdy nezablokovat
+        return;
+      }
+
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.warn("Capacity API returned non-JSON, enabling all times by fallback.");
+        setIs1930Available(true); // fallback
+        return;
+      }
+
       const count1830 = Number(data.count_1830 || 0);
-
-      // Povolit 19:30 jen pokud je 18:30 >= 80
       setIs1930Available(count1830 >= 80);
 
-    } catch (error) {
-      console.error("Error checking capacity:", error);
-      // fallback: nikdy neblokuj uživatele
-      setIs1930Available(true);
+    } catch (err) {
+      console.error("Error checking capacity:", err);
+      setIs1930Available(true); // fallback
     } finally {
       setIsLoadingCapacity(false);
     }
