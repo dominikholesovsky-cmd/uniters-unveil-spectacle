@@ -306,7 +306,7 @@ END:VCALENDAR
                     disabled={isLoadingCapacity}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base">
                         <SelectValue placeholder={isLoadingCapacity ? "Načítání..." : "Vyberte čas"} />
                       </SelectTrigger>
                     </FormControl>
