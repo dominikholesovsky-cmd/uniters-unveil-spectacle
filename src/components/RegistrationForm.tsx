@@ -28,7 +28,7 @@ const POWER_AUTOMATE_SUBMIT_URL =
   "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
 
 const POWER_AUTOMATE_CAPACITY_URL =
-  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99925fb9ae554367889c08dc4e186ccc/triggers/manual/paths/invoke?api-version=1";
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99925fb9ae554367889c08dc4e186ccc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CfVWeIljZMGnxzhqwTlvKCoAsknL6Y9pVj-hTuN-_Ts";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
