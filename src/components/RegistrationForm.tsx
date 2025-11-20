@@ -165,6 +165,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
       toast({ title: t.successTitle, description: t.successMessage, className: "bg-white" });
       setIsSubmitted(true);
+
+      // --- scroll na ID registration-form ---
+    const element = document.getElementById("registration-form");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+      
     } catch (error) {
       toast({ title: language === "cs" ? "Chyba při odesílání" : "Error sending data", description: language === "cs" ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu." : "Failed to send registration. Please try again.", variant: "destructive" });
     }
