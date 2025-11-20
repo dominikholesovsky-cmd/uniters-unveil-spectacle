@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import TermsModal from "./TermsModal";
 
 const POWER_AUTOMATE_URL =
@@ -27,7 +28,6 @@ interface RegistrationFormProps {
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showPlusOneDetails, setShowPlusOneDetails] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const content = {
@@ -40,9 +40,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "jan.novak@example.com",
       phone: "Telefon",
       phonePlaceholder: "+420 123 456 789",
-      plusOne: "Účast s doprovodem",
-      guestName: "Jméno doprovodu",
-      guestNamePlaceholder: "Jméno osoby +1",
+      tourTime: "Preferovaný čas prohlídky",
+      tourTime1830: "18:30",
+      tourTime1930: "19:30",
       gdprConsent: "Souhlasím se zpracováním osobních údajů pro účely registrace.",
       photoVideoConsent: "Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters.",
       submit: "Potvrdit registraci",
@@ -62,9 +62,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "john.doe@example.com",
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
-      plusOne: "Attending with guest",
-      guestName: "Guest Name",
-      guestNamePlaceholder: "Name of +1 person",
+      tourTime: "Preferred Tour Time",
+      tourTime1830: "6:30 PM",
+      tourTime1930: "7:30 PM",
       gdprConsent: "I agree to the processing of my personal data for registration purposes.",
       photoVideoConsent: "I agree to photo and video recording during the event for marketing purposes of Uniters.",
       submit: "Confirm Registration",
@@ -79,31 +79,27 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const t = content[language];
 
-  const formSchema = z
-    .object({
-      name: z.string().trim().min(2, {
-        message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters",
-      }),
-      email: z.string().trim().email({
-        message: language === "cs" ? "Neplatná e-mailová adresa" : "Invalid email address",
-      }),
-      phone: z.string().trim().max(20).optional(),
-      company: z.string().trim().min(1, {
-        message: language === "cs" ? "Zadejte název firmy" : "Please enter company name",
-      }),
-      plusOne: z.boolean().default(false),
-      guestName: z.string().trim().max(100).optional(),
-      gdprConsent: z.literal(true, {
-        errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit se zpracováním osobních údajů" : "You must agree to the processing of personal data" }),
-      }),
-      photoVideoConsent: z.literal(true, {
-        errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit s pořizováním fotografií a videí" : "You must agree to photo and video recording" }),
-      }),
-    })
-    .refine(
-      (data) => !data.plusOne || (data.plusOne && data.guestName?.trim().length > 0),
-      { message: language === "cs" ? "Zadejte prosím jméno doprovodu" : "Please enter guest name", path: ["guestName"] }
-    );
+  const formSchema = z.object({
+    name: z.string().trim().min(2, {
+      message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters",
+    }),
+    email: z.string().trim().email({
+      message: language === "cs" ? "Neplatná e-mailová adresa" : "Invalid email address",
+    }),
+    phone: z.string().trim().max(20).optional(),
+    company: z.string().trim().min(1, {
+      message: language === "cs" ? "Zadejte název firmy" : "Please enter company name",
+    }),
+    tourTime: z.enum(["18:30", "19:30"], {
+      required_error: language === "cs" ? "Vyberte prosím čas prohlídky" : "Please select tour time",
+    }),
+    gdprConsent: z.literal(true, {
+      errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit se zpracováním osobních údajů" : "You must agree to the processing of personal data" }),
+    }),
+    photoVideoConsent: z.literal(true, {
+      errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit s pořizováním fotografií a videí" : "You must agree to photo and video recording" }),
+    }),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -112,8 +108,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       email: "",
       phone: "",
       company: "",
-      plusOne: false,
-      guestName: "",
+      tourTime: undefined as any,
       gdprConsent: undefined as any,
       photoVideoConsent: undefined as any,
     },
@@ -259,36 +254,37 @@ END:VCALENDAR
                   </FormItem>
                 )} />
 
-                {/* PlusOne */}
-                <FormField control={form.control} name="plusOne" render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
+                {/* Tour Time */}
+                <FormField control={form.control} name="tourTime" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.tourTime} <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          setShowPlusOneDetails(!!checked);
-                          if (!checked) form.setValue("guestName", "");
-                        }}
-                      />
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="flex flex-col space-y-3"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
+                          <FormControl>
+                            <RadioGroupItem value="18:30" />
+                          </FormControl>
+                          <FormLabel className="text-base text-black font-medium cursor-pointer">
+                            {t.tourTime1830}
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0 rounded-lg border border-border p-4 bg-white">
+                          <FormControl>
+                            <RadioGroupItem value="19:30" />
+                          </FormControl>
+                          <FormLabel className="text-base text-black font-medium cursor-pointer">
+                            {t.tourTime1930}
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel className="text-base text-black font-medium cursor-pointer">{t.plusOne}</FormLabel>
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )} />
-
-                {showPlusOneDetails && (
-                  <FormField control={form.control} name="guestName" render={({ field }) => (
-                    <FormItem className="animate-fade-in">
-                      <FormLabel className="text-black sm:text-lg font-semibold">{t.guestName} <span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input placeholder={t.guestNamePlaceholder} {...field} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                )}
 
                 {/* GDPR Consent */}
                 <FormField control={form.control} name="gdprConsent" render={({ field }) => (
