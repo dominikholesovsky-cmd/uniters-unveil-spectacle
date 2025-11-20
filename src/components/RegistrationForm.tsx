@@ -93,38 +93,22 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 useEffect(() => {
   const checkCapacity = async () => {
     try {
-      const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, { method: "GET" });
+      if (!response.ok) throw new Error("Failed to fetch capacity");
 
-      console.log("Response status:", response.status);
-      const text = await response.text();
-      console.log("Response text:", text);
-
-      // Pokud je status 401, víme, že je problém s autentizací
-      if (response.status === 401) {
-        console.error("Unauthorized: Check your API key or token");
-        setIs1930Available(false);
-        return;
-      }
-
-      const data = JSON.parse(text);
-      console.log("Capacity response:", data);
-
+      const data = await response.json();
       const count1830 = Number(data.count_1830 || 0);
-      console.log("Count for 18:30:", count1830);
 
-      // Povolit 19:30, pokud je 18:30 plné (>= 80)
-      setIs1930Available(count1830 >= 80);
-      if (count1830 >= 80) console.log("19:30 is now available ✅");
-      else console.log("19:30 is NOT available ❌");
+      if (count1830 >= 80) {
+        setIs1930Available(true);
+      } else {
+        setIs1930Available(false);
+      }
 
     } catch (error) {
       console.error("Error checking capacity:", error);
-      setIs1930Available(false);
+      // fallback: neblokuj výběr úplně
+      setIs1930Available(true);
     } finally {
       setIsLoadingCapacity(false);
     }
