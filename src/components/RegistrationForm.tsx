@@ -90,38 +90,48 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const t = content[language];
 
-  useEffect(() => {
-    const checkCapacity = async () => {
-      try {
-        const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
+useEffect(() => {
+  const checkCapacity = async () => {
+    try {
+      const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-        // Přidej log pro kontrolu
-      console.log("Capacity response from Power Automate:", data);
+      console.log("Response status:", response.status);
+      const text = await response.text();
+      console.log("Response text:", text);
 
-      // Převod na číslo pro bezpečné porovnání
+      // Pokud je status 401, víme, že je problém s autentizací
+      if (response.status === 401) {
+        console.error("Unauthorized: Check your API key or token");
+        setIs1930Available(false);
+        return;
+      }
+
+      const data = JSON.parse(text);
+      console.log("Capacity response:", data);
+
       const count1830 = Number(data.count_1830 || 0);
       console.log("Count for 18:30:", count1830);
-        
-        // Enable 19:30 if 18:30 has 80 or more registrations
-        if (data.count_1830 >= 80) {
-          setIs1930Available(true);
-        }
-      } catch (error) {
-        console.error("Error checking capacity:", error);
-        // On error, keep 19:30 disabled for safety
-      } finally {
-        setIsLoadingCapacity(false);
-      }
-    };
 
-    checkCapacity();
-  }, []);
+      // Povolit 19:30, pokud je 18:30 plné (>= 80)
+      setIs1930Available(count1830 >= 80);
+      if (count1830 >= 80) console.log("19:30 is now available ✅");
+      else console.log("19:30 is NOT available ❌");
+
+    } catch (error) {
+      console.error("Error checking capacity:", error);
+      setIs1930Available(false);
+    } finally {
+      setIsLoadingCapacity(false);
+    }
+  };
+
+  checkCapacity();
+}, []);
 
   const formSchema = z.object({
     name: z.string().trim().min(2, {
