@@ -93,21 +93,18 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 useEffect(() => {
   const checkCapacity = async () => {
     try {
-      const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, { method: "GET" });
+      const response = await fetch(POWER_AUTOMATE_CAPACITY_URL, { method: "POST" });
       if (!response.ok) throw new Error("Failed to fetch capacity");
 
       const data = await response.json();
       const count1830 = Number(data.count_1830 || 0);
 
-      if (count1830 >= 80) {
-        setIs1930Available(true);
-      } else {
-        setIs1930Available(false);
-      }
+      // Povolit 19:30 jen pokud je 18:30 >= 80
+      setIs1930Available(count1830 >= 80);
 
     } catch (error) {
       console.error("Error checking capacity:", error);
-      // fallback: neblokuj výběr úplně
+      // fallback: nikdy neblokuj uživatele
       setIs1930Available(true);
     } finally {
       setIsLoadingCapacity(false);
