@@ -100,6 +100,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           },
         });
         const data = await response.json();
+
+        // Přidej log pro kontrolu
+      console.log("Capacity response from Power Automate:", data);
+
+      // Převod na číslo pro bezpečné porovnání
+      const count1830 = Number(data.count_1830 || 0);
+      console.log("Count for 18:30:", count1830);
         
         // Enable 19:30 if 18:30 has 80 or more registrations
         if (data.count_1830 >= 80) {
@@ -171,7 +178,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-      
+
     } catch (error) {
       toast({ title: language === "cs" ? "Chyba při odesílání" : "Error sending data", description: language === "cs" ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu." : "Failed to send registration. Please try again.", variant: "destructive" });
     }
