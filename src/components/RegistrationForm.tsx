@@ -261,13 +261,11 @@ END:VCALENDAR`;
                         onCheckedChange={(v) => field.onChange(!!v)}
                       />
                     </FormControl>
-                    <div>
-                      <FormLabel className="font-semibold text-blue-700 mt-0">
+                    <div className="flex flex-col m-0">
+                      <FormLabel className="font-semibold text-blue-700 m-0">
                         {t.guidedTour}
                       </FormLabel>
-                      <p className="text-sm text-blue-600 mt-1">
-                        {t.guidedTourNote}
-                      </p>
+                      <p className="text-sm text-blue-600 mt-1 m-0">{t.guidedTourNote}</p>
                     </div>
                   </FormItem>
                 )}
