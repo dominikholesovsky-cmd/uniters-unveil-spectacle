@@ -1,7 +1,3 @@
-// Updated and fully functional version of RegistrationForm
-// All syntax errors fixed, including the malformed fetch body
-// and incorrect checkbox structure.
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,8 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 
-const POWER_AUTOMATE_SUBMIT_URL =
-  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
+const POWER_AUTOMATE_SUBMIT_URL = "YOUR_POWER_AUTOMATE_URL";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
@@ -34,7 +29,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const content = {
     cs: {
       title: "Registrace",
-      subtitle: "Zarezervujte si místo na akci",
+      subtitle: "Zarezervujte si místo na akci a komentované prohlídce",
       name: "Jméno a příjmení",
       namePlaceholder: "Jan Novák",
       email: "E-mail",
@@ -57,7 +52,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     },
     en: {
       title: "Registration",
-      subtitle: "Reserve your spot at the event",
+      subtitle: "Reserve your spot at the event and tour",
       name: "Full Name",
       namePlaceholder: "John Doe",
       email: "Email",
@@ -107,7 +102,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     localStorage.setItem("gdprConsent", "accepted");
-
     try {
       const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
         method: "POST",
@@ -140,12 +134,16 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
-    window.open(`https://www.google.com/maps/search/?api=1&query=${coordinates}`, "_blank");
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${coordinates}`,
+      "_blank"
+    );
   };
 
   const handleAddToCalendar = () => {
     const uid = `uniters-event-${Date.now()}@example.com`;
-    const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const dtstamp =
+      new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -172,7 +170,7 @@ END:VCALENDAR`;
 
   if (isSubmitted) {
     return (
-      <section className="py-12 sm:py-16">
+      <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -193,7 +191,10 @@ END:VCALENDAR`;
   }
 
   return (
-    <section id="registration-form" className="py-10">
+    <section
+      id="registration-form"
+      className="py-10 bg-gradient-to-t from-background via-background-light to-background-light"
+    >
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl">
           <h2 className="text-4xl font-bold text-center mb-4">{t.title}</h2>
@@ -201,68 +202,35 @@ END:VCALENDAR`;
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t.name} <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder={t.namePlaceholder} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {["name", "email", "phone", "company"].map((fieldName) => (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName as any}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t[fieldName as keyof typeof t]}{" "}
+                        {["name", "email", "company"].includes(fieldName) && (
+                          <span className="text-red-500">*</span>
+                        )}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t[
+                            `${fieldName}Placeholder` as keyof typeof t
+                          ]}
+                          className="bg-white text-black border-gray-300"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t.email} <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} placeholder={t.emailPlaceholder} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.phone}</FormLabel>
-                    <FormControl>
-                      <Input type="tel" {...field} placeholder={t.phonePlaceholder} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="company"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t.company} <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder={t.companyPlaceholder} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+              {/* Guided tour */}
               <FormField
                 control={form.control}
                 name="guidedTour"
@@ -279,6 +247,7 @@ END:VCALENDAR`;
                 )}
               />
 
+              {/* GDPR */}
               <FormField
                 control={form.control}
                 name="gdprConsent"
@@ -298,6 +267,7 @@ END:VCALENDAR`;
                 )}
               />
 
+              {/* Photo/Video consent */}
               <FormField
                 control={form.control}
                 name="photoVideoConsent"
