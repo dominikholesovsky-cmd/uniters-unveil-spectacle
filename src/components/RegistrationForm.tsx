@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 
 const POWER_AUTOMATE_SUBMIT_URL =
-  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
+  "https://default54b8b3209661409e9b3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
@@ -158,41 +158,23 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   };
 
   const handleAddToCalendar = () => {
-    const title = "Uniters Event";
-    const details = "Vodojemy Žlutý Kopec";
-    const location = "Vodojemy Žlutý Kopec, Brno";
+    const title = encodeURIComponent("Uniters Event");
+    const details = encodeURIComponent("Vodojemy Žlutý Kopec");
+    const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
 
-    // Časy UTC (18:00–22:00 CET)
-    const start = "20260122T170000Z";
-    const end = "20260122T210000Z";
+    const start = "2026-01-22T17:00:00Z";
+    const end = "2026-01-22T21:00:00Z";
 
-    // Google Calendar pro Android/Desktop
-    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      title
-    )}&dates=${start}/${end}&details=${encodeURIComponent(
-      details
-    )}&location=${encodeURIComponent(location)}`;
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start.replace(/-|:|\.\d+/g,"")}/${end.replace(/-|:|\.\d+/g,"")}&details=${details}&location=${location}`;
 
-    // ICS obsah pro iOS / nativní kalendář
-    const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:${title}
-DTSTART:${start}
-DTEND:${end}
-DESCRIPTION:${details}
-LOCATION:${location}
-END:VEVENT
-END:VCALENDAR`;
-
-    const blob = new Blob([icsContent], { type: "text/calendar" });
-    const icsUrl = URL.createObjectURL(blob);
+    // ICS soubor v public složce Vercelu
+    const icsUrl = "/uniters-event.ics";
 
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
 
     if (isIOS) {
-      // iOS: otevře nativní kalendář přes Blob ICS
+      // iOS: otevře nativní kalendář přes ICS
       window.location.href = icsUrl;
     } else {
       // Android / Desktop: otevře Google Calendar
