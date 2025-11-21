@@ -158,24 +158,41 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   };
 
   const handleAddToCalendar = () => {
-    const title = encodeURIComponent("Uniters Event");
-    const details = encodeURIComponent("Vodojemy Žlutý Kopec");
-    const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
+    const title = "Uniters Event";
+    const details = "Vodojemy Žlutý Kopec";
+    const location = "Vodojemy Žlutý Kopec, Brno";
 
-    const start = "2026-01-22T17:00:00Z";
-    const end = "2026-01-22T21:00:00Z";
+    // Časy UTC (18:00–22:00 CET)
+    const start = "20260122T170000Z";
+    const end = "20260122T210000Z";
 
-    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start.replace(/-|:|\.\d+/g,"")}/${end.replace(/-|:|\.\d+/g,"")}&details=${details}&location=${location}`;
+    // Google Calendar pro Android/Desktop
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      title
+    )}&dates=${start}/${end}&details=${encodeURIComponent(
+      details
+    )}&location=${encodeURIComponent(location)}`;
 
-    // Zde vlož URL tvého ICS souboru
-    const icsUrl = "https://raw.githubusercontent.com/dominikholesovsky-cmd/uniters-unveil-spectacle/9287ab2c10ec3a45eefc7d93d4c182d63d6ec893/uniters-event.ics";
+    // ICS obsah pro iOS / nativní kalendář
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DTSTART:${start}
+DTEND:${end}
+DESCRIPTION:${details}
+LOCATION:${location}
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: "text/calendar" });
+    const icsUrl = URL.createObjectURL(blob);
 
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
-    const isAndroid = /Android/i.test(ua);
 
     if (isIOS) {
-      // iOS: otevře nativní kalendář přes ICS
+      // iOS: otevře nativní kalendář přes Blob ICS
       window.location.href = icsUrl;
     } else {
       // Android / Desktop: otevře Google Calendar
