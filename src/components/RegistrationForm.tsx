@@ -1,4 +1,4 @@
-// Updated RegistrationForm component without capacity check and with optional checkbox for guided tour at 18:30
+// RegistrationForm component — Power Automate only for writing, no capacity check, optional checkbox for guided tour at 18:30 (square checkbox)
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,6 +28,7 @@ interface RegistrationFormProps {
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const content = {
     cs: {
@@ -81,13 +82,23 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const t = content[language];
 
   const formSchema = z.object({
-    name: z.string().trim().min(2),
-    email: z.string().trim().email(),
+    name: z.string().trim().min(2, {
+      message: language === "cs" ? "Jméno musí mít alespoň 2 znaky" : "Name must be at least 2 characters",
+    }),
+    email: z.string().trim().email({
+      message: language === "cs" ? "Neplatná e-mailová adresa" : "Invalid email address",
+    }),
     phone: z.string().trim().max(20).optional(),
-    company: z.string().trim().min(1),
+    company: z.string().trim().min(1, {
+      message: language === "cs" ? "Zadejte název firmy" : "Please enter company name",
+    }),
     guidedTour: z.boolean().optional(),
-    gdprConsent: z.literal(true),
-    photoVideoConsent: z.literal(true),
+    gdprConsent: z.literal(true, {
+      errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit se zpracováním osobních údajů" : "You must agree to the processing of personal data" }),
+    }),
+    photoVideoConsent: z.literal(true, {
+      errorMap: () => ({ message: language === "cs" ? "Musíte souhlasit s pořizováním fotografií a videí" : "You must agree to photo and video recording" }),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -115,101 +126,148 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
       if (!response.ok) throw new Error("Failed to send data");
 
-      toast({ title: t.successTitle, description: t.successMessage });
+      toast({ title: t.successTitle, description: t.successMessage, className: "bg-white" });
       setIsSubmitted(true);
+
+      // scroll to form
+      const element = document.getElementById("registration-form");
+      if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
-      toast({
-        title: language === "cs" ? "Chyba při odesílání" : "Error sending data",
-        description:
-          language === "cs"
-            ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu."
-            : "Failed to send registration. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: language === "cs" ? "Chyba při odesílání" : "Error sending data", description: language === "cs" ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu." : "Failed to send registration. Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleNavigationClick = () => {
+    const coordinates = "49.1956718,16.5913221";
+    window.open(`https://www.google.com/maps/search/?api=1&query=${coordinates}`, "_blank");
+  };
+
+  const handleAddToCalendar = () => {
+    const uid = `uniters-event-${Date.now()}@example.com`;
+    const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+    const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Uniters//Event//EN
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${dtstamp}
+DTSTART;TZID=Europe/Prague:20260122T18:00:00
+DTEND;TZID=Europe/Prague:20260122T22:00:00
+SUMMARY:Uniters Event
+DESCRIPTION:Vodojemy Žlutý Kopec
+LOCATION:Vodojemy Žlutý Kopec, Brno
+END:VEVENT
+END:VCALENDAR
+`;
+
+    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const isApple = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+    if (isApple) {
+      const webcalUrl = url.replace(/^blob:/, "webcal:");
+      window.location.href = webcalUrl;
+    } else {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "uniters-event.ics";
+      a.click();
     }
   };
 
   if (isSubmitted) {
-    return <div>Registrace potvrzena</div>;
+    return (
+      <section className="py-12 sm:py-16 bg-gradient-to-br from-background via-background-light to-background-light">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl animate-scale-in">
+            <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-accent mx-auto mb-4 sm:mb-6" />
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">{t.successTitle}</h2>
+            <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">{t.successMessage}</p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <Button size="lg" onClick={handleNavigationClick} className="bg-primary text-white hover:bg-primary/90">
+                <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
+              </Button>
+              <Button size="lg" onClick={handleAddToCalendar} className="bg-primary text-white hover:bg-primary/90">
+                <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
-    <section>
-      <div className="container mx-auto px-4 max-w-2xl">
-        <h2>{t.title}</h2>
-        <p>{t.subtitle}</p>
+    <section id="registration-form" className="py-10 sm:py-10 bg-gradient-to-br from-background via-background-light to-background-light relative overflow-hidden">
+      <div className="container mx-auto px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 px-4">{t.title}</h2>
+            <p className="text-lg sm:text-xl text-white/80 px-4">{t.subtitle}</p>
+          </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.name}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder={t.namePlaceholder} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+                {/* Name */}
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.name} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t.namePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.email}</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} placeholder={t.emailPlaceholder} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                {/* Email */}
+                <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.email} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} placeholder={t.emailPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.phone}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder={t.phonePlaceholder} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                {/* Phone */}
+                <FormField control={form.control} name="phone" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.phone}</FormLabel>
+                    <FormControl>
+                      <Input type="tel" {...field} placeholder={t.phonePlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <FormField
-              control={form.control}
-              name="company"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.company}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder={t.companyPlaceholder} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                {/* Company */}
+                <FormField control={form.control} name="company" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.company} <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t.companyPlaceholder} className="bg-white text-foreground h-11 sm:h-12 text-sm sm:text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <FormField
-              control={form.control}
-              name="guidedTour"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                  <FormLabel>{t.guidedTour}</FormLabel>
-                </FormItem>
-              )}
-            />
-
+                {/* Guided tour checkbox (square) */}
+                <FormField control={form.control} name="guidedTour" render={({ field }) => (
+                  <FormItem className="flex items-start space-x-3">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <div>
+                      <FormLabel className="text-foreground cursor-pointer">
+                        {t.guidedTour}
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )} />
 
                 {/* GDPR Consent */}
                 <FormField control={form.control} name="gdprConsent" render={({ field }) => (
@@ -245,6 +303,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
               </form>
             </Form>
           </div>
+        </div>
+      </div>
     </section>
   );
 };
