@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -27,6 +27,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // kontrola localStorage při načtení komponenty
+  useEffect(() => {
+    const submitted = localStorage.getItem("registrationSubmitted") === "true";
+    setIsSubmitted(submitted);
+  }, []);
+
   const content = {
     cs: {
       title: "Registrace",
@@ -37,10 +43,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "jan.novak@example.com",
       phone: "Telefon",
       phonePlaceholder: "+420 123 456 789",
-      company: "Firma",
-      companyPlaceholder: "Název firmy",
       guidedTour: "Mám zájem o komentovanou prohlídku v 18:30",
-      guidedTourHint:
+      guidedTourNote:
         "Doporučujeme se zúčastnit, komentovaná prohlídka je omezená kapacitou.",
       gdprConsent:
         "Souhlasím se zpracováním osobních údajů pro účely registrace.",
@@ -50,8 +54,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       successTitle: "Registrace potvrzena!",
       successMessage:
         "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
+      company: "Firma",
+      companyPlaceholder: "Název firmy",
       openNavigation: "Otevřít navigaci",
       addToCalendar: "Přidat do kalendáře",
+      alreadySubmitted: "Už jste se zaregistrovali. Nemůžete odeslat formulář znovu.",
     },
     en: {
       title: "Registration",
@@ -62,11 +69,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "john.doe@example.com",
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
-      company: "Company",
-      companyPlaceholder: "Company Name",
       guidedTour: "I am interested in a guided tour at 6:30 PM",
-      guidedTourHint:
-        "We recommend attending, the guided tour has limited capacity.",
+      guidedTourNote:
+        "We recommend attending, guided tour is limited in capacity.",
       gdprConsent:
         "I agree to the processing of my personal data for registration purposes.",
       photoVideoConsent:
@@ -75,8 +80,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       successTitle: "Registration Confirmed!",
       successMessage:
         "Thank you for registering. We look forward to seeing you on January 22, 2026.",
+      company: "Company",
+      companyPlaceholder: "Company Name",
       openNavigation: "Open Navigation",
       addToCalendar: "Add to Calendar",
+      alreadySubmitted: "You have already registered. You cannot submit again.",
     },
   };
 
@@ -106,7 +114,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    localStorage.setItem("gdprConsent", "accepted");
     try {
       const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
         method: "POST",
@@ -120,20 +127,20 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
       if (!response.ok) throw new Error("Failed to send data");
 
+      localStorage.setItem("registrationSubmitted", "true");
+      setIsSubmitted(true);
+
       toast({
         title: t.successTitle,
         description: t.successMessage,
         className: "bg-white text-black shadow-xl rounded-2xl",
       });
 
-      setIsSubmitted(true);
-
       const element = document.getElementById("registration-form");
       if (element) element.scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       toast({
-        title:
-          language === "cs" ? "Chyba při odesílání" : "Error sending data",
+        title: language === "cs" ? "Chyba při odesílání" : "Error sending data",
         description:
           language === "cs"
             ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu."
@@ -187,6 +194,7 @@ END:VCALENDAR`;
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
+            <p className="text-sm text-gray-500 mb-4">{t.alreadySubmitted}</p>
             <div className="flex justify-center gap-4">
               <Button onClick={handleNavigationClick}>
                 <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
@@ -246,19 +254,19 @@ END:VCALENDAR`;
                 control={form.control}
                 name="guidedTour"
                 render={({ field }) => (
-                  <FormItem className="p-4 border-2 border-blue-500 rounded-xl bg-blue-50 flex items-start gap-4">
+                  <FormItem className="p-4 border-2 border-blue-500 rounded-xl bg-blue-50 flex items-center gap-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(v) => field.onChange(!!v)}
                       />
                     </FormControl>
-                    <div className="flex flex-col">
-                      <FormLabel className="font-semibold text-blue-700 m-0">
+                    <div>
+                      <FormLabel className="font-semibold text-blue-700">
                         {t.guidedTour}
                       </FormLabel>
-                      <p className="text-sm text-blue-600 mt-1 m-0">
-                        {t.guidedTourHint}
+                      <p className="text-sm text-blue-600 mt-1">
+                        {t.guidedTourNote}
                       </p>
                     </div>
                   </FormItem>
