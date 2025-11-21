@@ -152,39 +152,41 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
     window.open(
-      `https://www.google.com/maps/search/?api=1&query=${coordinates}`,
+      `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`,
       "_blank"
     );
   };
 
   const handleAddToCalendar = () => {
-    const title = "Uniters Event";
-    const details = "Vodojemy Žlutý Kopec";
-    const location = "Vodojemy Žlutý Kopec, Brno";
-    const start = "20260122T180000Z";
-    const end = "20260122T220000Z";
+    const title = encodeURIComponent("Uniters Event");
+    const details = encodeURIComponent("Vodojemy Žlutý Kopec");
+    const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
 
-    const icsContent = `BEGIN:VCALENDAR
+    // Časy UTC (18:00–22:00 CET)
+    const start = "2026-01-22T17:00:00Z";
+    const end = "2026-01-22T21:00:00Z";
+
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start.replace(/-|:|\.\d+/g,"")}/${end.replace(/-|:|\.\d+/g,"")}&details=${details}&location=${location}`;
+
+    // Apple/Android nativní
+    const icsUrl = `data:text/calendar;charset=utf8,BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Uniters//Event//EN
 BEGIN:VEVENT
-UID:uniters-event-${Date.now()}@example.com
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-DTSTART:${start}
-DTEND:${end}
 SUMMARY:${title}
+DTSTART:${start.replace(/-|:|\.\d+/g,"")}
+DTEND:${end.replace(/-|:|\.\d+/g,"")}
 DESCRIPTION:${details}
 LOCATION:${location}
 END:VEVENT
 END:VCALENDAR`;
 
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "uniters-event.ics";
-    a.click();
+    if (isMobile) {
+      window.open(icsUrl, "_blank");
+    } else {
+      window.open(gcalUrl, "_blank");
+    }
   };
 
   if (isSubmitted) {
@@ -249,7 +251,6 @@ END:VCALENDAR`;
                 />
               ))}
 
-              {/* Guided tour */}
               <FormField
                 control={form.control}
                 name="guidedTour"
@@ -271,7 +272,6 @@ END:VCALENDAR`;
                 )}
               />
 
-              {/* GDPR */}
               <FormField
                 control={form.control}
                 name="gdprConsent"
@@ -291,7 +291,6 @@ END:VCALENDAR`;
                 )}
               />
 
-              {/* Photo/Video consent */}
               <FormField
                 control={form.control}
                 name="photoVideoConsent"
