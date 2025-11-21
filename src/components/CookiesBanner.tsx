@@ -51,15 +51,15 @@ const CookiesBanner = ({ language }: CookiesBannerProps) => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4 bg-foreground/60 text-background shadow-2xl animate-slide-in-right">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4 bg-foreground/60 text-white shadow-2xl animate-slide-in-right">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             <div className="flex-1 text-center sm:text-left">
-              <p className="text-xs sm:text-sm md:text-base">
+              <p className="text-xs sm:text-sm md:text-base text-white">
                 {t.message}{" "}
                 <button
                   onClick={() => setIsTermsOpen(true)}
-                  className="underline hover:text-accent transition-colors"
+                  className="underline text-white hover:text-white/80 transition-colors"
                 >
                   {t.learnMore}
                 </button>
@@ -71,23 +71,23 @@ const CookiesBanner = ({ language }: CookiesBannerProps) => {
                 variant="outline"
                 size="sm"
                 onClick={handleDecline}
-                className="bg-transparent border-background text-background hover:bg-background/10 text-xs sm:text-sm"
+                className="bg-transparent border-white text-white hover:bg-white/10 text-xs sm:text-sm"
               >
                 {t.decline}
               </Button>
               <Button
                 size="sm"
                 onClick={handleAccept}
-                className="bg-accent text-foreground hover:bg-accent/90 text-xs sm:text-sm"
+                className="bg-white/90 text-black hover:bg-white/80 text-xs sm:text-sm"
               >
                 {t.accept}
               </Button>
               <button
                 onClick={handleDecline}
-                className="p-1.5 sm:p-2 hover:bg-background/10 rounded-full transition-colors"
+                className="p-1.5 sm:p-2 hover:bg-white/10 rounded-full transition-colors"
                 aria-label="Close"
               >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </button>
             </div>
           </div>
