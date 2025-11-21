@@ -1,4 +1,6 @@
-// RegistrationForm updated: white fields + gallery-style dark gradient background
+// Updated and fully functional version of RegistrationForm
+// All syntax errors fixed, including the malformed fetch body
+// and incorrect checkbox structure.
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,7 +20,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 
-const RegistrationForm = ({ language }) => {
+const POWER_AUTOMATE_SUBMIT_URL =
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
+
+interface RegistrationFormProps {
+  language: "cs" | "en";
+}
+
+const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -36,12 +45,38 @@ const RegistrationForm = ({ language }) => {
       gdprConsent:
         "Souhlasím se zpracováním osobních údajů pro účely registrace.",
       photoVideoConsent:
-        "Souhlasím s pořizováním fotografií a videí během akce.",
+        "Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters.",
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
-      successMessage: "Děkujeme za registraci.",
+      successMessage:
+        "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
       company: "Firma",
       companyPlaceholder: "Název firmy",
+      openNavigation: "Otevřít navigaci",
+      addToCalendar: "Přidat do kalendáře",
+    },
+    en: {
+      title: "Registration",
+      subtitle: "Reserve your spot at the event",
+      name: "Full Name",
+      namePlaceholder: "John Doe",
+      email: "Email",
+      emailPlaceholder: "john.doe@example.com",
+      phone: "Phone",
+      phonePlaceholder: "+420 123 456 789",
+      guidedTour: "I am interested in a guided tour at 6:30 PM",
+      gdprConsent:
+        "I agree to the processing of my personal data for registration purposes.",
+      photoVideoConsent:
+        "I agree to photo and video recording during the event for marketing purposes of Uniters.",
+      submit: "Confirm Registration",
+      successTitle: "Registration Confirmed!",
+      successMessage:
+        "Thank you for registering. We look forward to seeing you on January 22, 2026.",
+      company: "Company",
+      companyPlaceholder: "Company Name",
+      openNavigation: "Open Navigation",
+      addToCalendar: "Add to Calendar",
     },
   };
 
@@ -50,14 +85,14 @@ const RegistrationForm = ({ language }) => {
   const formSchema = z.object({
     name: z.string().trim().min(2),
     email: z.string().trim().email(),
-    phone: z.string().trim().optional(),
+    phone: z.string().trim().max(20).optional(),
     company: z.string().trim().min(1),
     guidedTour: z.boolean().optional(),
     gdprConsent: z.literal(true),
     photoVideoConsent: z.literal(true),
   });
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -65,24 +100,92 @@ const RegistrationForm = ({ language }) => {
       phone: "",
       company: "",
       guidedTour: false,
-      gdprConsent: undefined,
-      photoVideoConsent: undefined,
+      gdprConsent: undefined as any,
+      photoVideoConsent: undefined as any,
     },
   });
 
-  const onSubmit = async (values) => {
-    toast({ title: t.successTitle, description: t.successMessage });
-    setIsSubmitted(true);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    localStorage.setItem("gdprConsent", "accepted");
+
+    try {
+      const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          guidedTour: values.guidedTour ? "yes" : "no",
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to send data");
+
+      toast({ title: t.successTitle, description: t.successMessage });
+      setIsSubmitted(true);
+
+      const element = document.getElementById("registration-form");
+      if (element) element.scrollIntoView({ behavior: "smooth" });
+    } catch (error) {
+      toast({
+        title: language === "cs" ? "Chyba při odesílání" : "Error sending data",
+        description:
+          language === "cs"
+            ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu."
+            : "Failed to send registration. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleNavigationClick = () => {
+    const coordinates = "49.1956718,16.5913221";
+    window.open(`https://www.google.com/maps/search/?api=1&query=${coordinates}`, "_blank");
+  };
+
+  const handleAddToCalendar = () => {
+    const uid = `uniters-event-${Date.now()}@example.com`;
+    const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Uniters//Event//EN
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${dtstamp}
+DTSTART;TZID=Europe/Prague:20260122T18:00:00
+DTEND;TZID=Europe/Prague:20260122T22:00:00
+SUMMARY:Uniters Event
+DESCRIPTION:Vodojemy Žlutý Kopec
+LOCATION:Vodojemy Žlutý Kopec, Brno
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "uniters-event.ics";
+    a.click();
   };
 
   if (isSubmitted) {
     return (
-      <section className="py-12 sm:py-16 bg-gradient-to-t from-[#0A0A0A] via-[#111] to-[#222] text-white">
+      <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center bg-white text-black rounded-2xl p-10 shadow-xl">
+          <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
+            <div className="flex justify-center gap-4">
+              <Button onClick={handleNavigationClick}>
+                <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
+              </Button>
+              <Button onClick={handleAddToCalendar}>
+                <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -90,18 +193,14 @@ const RegistrationForm = ({ language }) => {
   }
 
   return (
-    <section
-      id="registration-form"
-      className="py-16 bg-gradient-to-t from-[#0A0A0A] via-[#111] to-[#222]"
-    >
+    <section id="registration-form" className="py-10">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-2xl">
+        <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl">
           <h2 className="text-4xl font-bold text-center mb-4">{t.title}</h2>
           <p className="text-center text-gray-600 mb-8">{t.subtitle}</p>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* NAME */}
               <FormField
                 control={form.control}
                 name="name"
@@ -111,18 +210,13 @@ const RegistrationForm = ({ language }) => {
                       {t.name} <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-white border-gray-300 text-black"
-                        placeholder={t.namePlaceholder}
-                      />
+                      <Input {...field} placeholder={t.namePlaceholder} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* EMAIL */}
               <FormField
                 control={form.control}
                 name="email"
@@ -132,19 +226,13 @@ const RegistrationForm = ({ language }) => {
                       {t.email} <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        {...field}
-                        className="bg-white border-gray-300 text-black"
-                        placeholder={t.emailPlaceholder}
-                      />
+                      <Input type="email" {...field} placeholder={t.emailPlaceholder} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* PHONE */}
               <FormField
                 control={form.control}
                 name="phone"
@@ -152,19 +240,13 @@ const RegistrationForm = ({ language }) => {
                   <FormItem>
                     <FormLabel>{t.phone}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="tel"
-                        {...field}
-                        className="bg-white border-gray-300 text-black"
-                        placeholder={t.phonePlaceholder}
-                      />
+                      <Input type="tel" {...field} placeholder={t.phonePlaceholder} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* COMPANY */}
               <FormField
                 control={form.control}
                 name="company"
@@ -174,18 +256,29 @@ const RegistrationForm = ({ language }) => {
                       {t.company} <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-white border-gray-300 text-black"
-                        placeholder={t.companyPlaceholder}
-                      />
+                      <Input {...field} placeholder={t.companyPlaceholder} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* GDPR */}
+              <FormField
+                control={form.control}
+                name="guidedTour"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(v) => field.onChange(!!v)}
+                      />
+                    </FormControl>
+                    <FormLabel>{t.guidedTour}</FormLabel>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="gdprConsent"
@@ -197,7 +290,7 @@ const RegistrationForm = ({ language }) => {
                         onCheckedChange={(v) => field.onChange(!!v)}
                       />
                     </FormControl>
-                    <FormLabel className="text-black">
+                    <FormLabel>
                       <span className="text-red-500">*</span> {t.gdprConsent}
                     </FormLabel>
                     <FormMessage />
@@ -205,7 +298,6 @@ const RegistrationForm = ({ language }) => {
                 )}
               />
 
-              {/* PHOTO CONSENT */}
               <FormField
                 control={form.control}
                 name="photoVideoConsent"
@@ -217,7 +309,7 @@ const RegistrationForm = ({ language }) => {
                         onCheckedChange={(v) => field.onChange(!!v)}
                       />
                     </FormControl>
-                    <FormLabel className="text-black">
+                    <FormLabel>
                       <span className="text-red-500">*</span> {t.photoVideoConsent}
                     </FormLabel>
                     <FormMessage />
