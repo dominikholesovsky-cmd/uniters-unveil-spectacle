@@ -68,13 +68,13 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full h-[80vh] p-6 sm:p-8 overflow-y-auto">
-        <DialogHeader className="sticky top-0 bg-white z-10 mb-4">
-          <DialogTitle className="text-2xl sm:text-3xl font-bold text-center">
+      <DialogContent className="max-w-4xl w-full h-[80vh] p-6 sm:p-8 overflow-y-auto bg-gray-900 text-white">
+        <DialogHeader className="sticky top-0 bg-gray-900 z-10 mb-4">
+          <DialogTitle className="text-2xl sm:text-3xl font-bold text-center text-white">
             {t.title}
           </DialogTitle>
           <DialogClose asChild>
-            <Button variant="ghost" className="absolute right-4 top-4">
+            <Button variant="ghost" className="absolute right-4 top-4 text-white">
               <X className="w-5 h-5" />
             </Button>
           </DialogClose>
@@ -82,20 +82,20 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
 
         <div className="space-y-4">
           {/* GDPR Notice */}
-          <Card className="p-4 sm:p-6 bg-primary/10 border-primary/30">
+          <Card className="p-4 sm:p-6 bg-gray-800/30 border border-gray-700/50">
             <div className="flex items-start gap-3">
-              <Lock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <p className="text-xs sm:text-sm text-foreground/80">{t.privacyNotice}</p>
+              <Lock className="w-5 h-5 text-white/80 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-white/80 leading-relaxed">{t.privacyNotice}</p>
             </div>
           </Card>
 
           {/* Data Processing */}
-          <Card className="p-4 sm:p-6">
+          <Card className="p-4 sm:p-6 bg-gray-800/30 border border-gray-700/50">
             <div className="flex items-start gap-3 mb-3">
-              <User className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <h2 className="text-base sm:text-lg font-bold">{t.section1Title}</h2>
+              <User className="w-5 h-5 text-white/80 flex-shrink-0 mt-0.5" />
+              <h2 className="text-base sm:text-lg font-bold text-white">{t.section1Title}</h2>
             </div>
-            <div className="space-y-1 text-xs sm:text-sm text-foreground/80">
+            <div className="space-y-2 text-sm text-white/80 leading-relaxed">
               <p>
                 <strong>{t.dataControllerLabel}</strong> {t.dataController}
               </p>
@@ -112,29 +112,31 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
           </Card>
 
           {/* Rights */}
-          <Card className="p-4 sm:p-6">
+          <Card className="p-4 sm:p-6 bg-gray-800/30 border border-gray-700/50">
             <div className="flex items-start gap-3 mb-3">
-              <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <h2 className="text-base sm:text-lg font-bold">{t.section2Title}</h2>
+              <Shield className="w-5 h-5 text-white/80 flex-shrink-0 mt-0.5" />
+              <h2 className="text-base sm:text-lg font-bold text-white">{t.section2Title}</h2>
             </div>
-            <div className="text-xs sm:text-sm text-foreground/80">
+            <div className="space-y-2 text-sm text-white/80 leading-relaxed">
               <p>{t.rights}</p>
-              <p className="pt-2">{t.contact}</p>
+              <p className="pt-1">{t.contact}</p>
             </div>
           </Card>
 
           {/* Service Terms */}
-          <Card className="p-4 sm:p-6">
+          <Card className="p-4 sm:p-6 bg-gray-800/30 border border-gray-700/50">
             <div className="flex items-start gap-3 mb-3">
-              <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <h2 className="text-base sm:text-lg font-bold">{t.serviceTermsTitle}</h2>
+              <Mail className="w-5 h-5 text-white/80 flex-shrink-0 mt-0.5" />
+              <h2 className="text-base sm:text-lg font-bold text-white">{t.serviceTermsTitle}</h2>
             </div>
-            <p className="text-xs sm:text-sm text-foreground/80">{t.serviceTerms}</p>
+            <p className="text-sm text-white/80 leading-relaxed">{t.serviceTerms}</p>
           </Card>
 
           {/* Close */}
           <div className="flex justify-center mt-4">
-            <Button onClick={onClose}>{t.close}</Button>
+            <Button onClick={onClose} className="bg-white text-gray-900 hover:bg-white/90">
+              {t.close}
+            </Button>
           </div>
         </div>
       </DialogContent>
