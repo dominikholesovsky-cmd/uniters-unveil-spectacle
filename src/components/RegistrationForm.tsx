@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, Navigation, Calendar, FileText } from "lucide-react";
+import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 
 const POWER_AUTOMATE_SUBMIT_URL =
   "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
@@ -161,36 +161,15 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const title = "Uniters Event";
     const details = "Vodojemy Žlutý Kopec";
     const location = "Vodojemy Žlutý Kopec, Brno";
-    const startDate = new Date("2026-01-22T18:00:00+01:00"); // Prague time
-    const endDate = new Date("2026-01-22T22:00:00+01:00");
+    const start = "20260122T180000Z";
+    const end = "20260122T220000Z";
 
-    const formatDate = (date: Date) =>
-      date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-
-    const start = formatDate(startDate);
-    const end = formatDate(endDate);
-
-    // Google Calendar
-    const gCalUrl = `https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(
-      title
-    )}&dates=${start}/${end}&details=${encodeURIComponent(
-      details
-    )}&location=${encodeURIComponent(location)}`;
-
-    // Outlook.com / Office 365
-    const outlookUrl = `https://outlook.office.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(
-      title
-    )}&startdt=${startDate.toISOString()}&enddt=${endDate.toISOString()}&body=${encodeURIComponent(
-      details
-    )}&location=${encodeURIComponent(location)}`;
-
-    // iCal / Apple Calendar
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Uniters//Event//EN
 BEGIN:VEVENT
 UID:uniters-event-${Date.now()}@example.com
-DTSTAMP:${formatDate(new Date())}
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
 DTSTART:${start}
 DTEND:${end}
 SUMMARY:${title}
@@ -200,22 +179,12 @@ END:VEVENT
 END:VCALENDAR`;
 
     const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const icsUrl = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
-    // Můžeme ukázat menu nebo otevřít Google Calendar přímo
-    const choice = window.prompt(
-      "Vyberte kalendář: 1 = Google, 2 = Outlook, 3 = Apple/iCal",
-      "1"
-    );
-
-    if (choice === "1") window.open(gCalUrl, "_blank");
-    else if (choice === "2") window.open(outlookUrl, "_blank");
-    else if (choice === "3") {
-      const a = document.createElement("a");
-      a.href = icsUrl;
-      a.download = "uniters-event.ics";
-      a.click();
-    }
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "uniters-event.ics";
+    a.click();
   };
 
   if (isSubmitted) {
