@@ -1,5 +1,3 @@
-// RegistrationForm component — Power Automate only for writing, no capacity check, optional checkbox for guided tour at 18:30 (square checkbox)
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -121,7 +119,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, timestamp: new Date().toISOString() }),
+        body: JSON.stringify({ ...values, guidedTour: values.guidedTour ? "yes" : "no", timestamp: new Date().toISOString() }).toISOString() }),
       });
 
       if (!response.ok) throw new Error("Failed to send data");
