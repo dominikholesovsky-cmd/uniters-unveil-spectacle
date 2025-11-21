@@ -158,7 +158,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   };
 
   const handleAddToCalendar = () => {
-    const title = encodeURIComponent("Uniters Event");
+    const title = encodeURIComponent("Uniters Event - Vodojemy Brno");
     const details = encodeURIComponent("Vodojemy Žlutý Kopec");
     const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
 
