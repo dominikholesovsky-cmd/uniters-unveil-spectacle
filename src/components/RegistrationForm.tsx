@@ -171,7 +171,7 @@ END:VCALENDAR`;
   if (isSubmitted) {
     return (
       <section className="py-12 sm:py-16 bg-gradient-to-b from-background via-background-light to-background-light">
-        <div className="container mx-auto px-4 bg-white">
+        <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
