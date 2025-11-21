@@ -245,8 +245,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
               </form>
             </Form>
           </div>
-        </div>
-      </div>
     </section>
   );
 };
