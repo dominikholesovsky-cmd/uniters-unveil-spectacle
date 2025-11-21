@@ -240,14 +240,21 @@ END:VCALENDAR`;
                 control={form.control}
                 name="guidedTour"
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
+                  <FormItem className="p-4 border-2 border-blue-500 rounded-xl bg-blue-50 flex items-center gap-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(v) => field.onChange(!!v)}
                       />
                     </FormControl>
-                    <FormLabel>{t.guidedTour}</FormLabel>
+                    <div>
+                      <FormLabel className="font-semibold text-blue-700">
+                        {t.guidedTour}
+                      </FormLabel>
+                      <p className="text-sm text-blue-600 mt-1">
+                        Doporučujeme se zúčastnit, komentovaná prohlídka je omezená kapacitou.
+                      </p>
+                    </div>
                   </FormItem>
                 )}
               />
