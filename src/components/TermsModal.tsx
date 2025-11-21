@@ -131,13 +131,6 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
             </div>
             <p className="text-sm text-white/80 leading-relaxed">{t.serviceTerms}</p>
           </Card>
-
-          {/* Close */}
-          <div className="flex justify-center mt-4">
-            <Button onClick={onClose} className="bg-white text-gray-900 hover:bg-white/90">
-              {t.close}
-            </Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
