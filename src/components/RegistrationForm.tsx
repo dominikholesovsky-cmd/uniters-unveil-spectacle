@@ -262,7 +262,7 @@ END:VCALENDAR`;
                       />
                     </FormControl>
                     <div>
-                      <FormLabel className="font-semibold text-blue-700">
+                      <FormLabel className="font-semibold text-blue-700 mt-0">
                         {t.guidedTour}
                       </FormLabel>
                       <p className="text-sm text-blue-600 mt-1">
