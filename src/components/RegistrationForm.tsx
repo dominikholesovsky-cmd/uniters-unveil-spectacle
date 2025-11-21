@@ -16,7 +16,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 
-const POWER_AUTOMATE_SUBMIT_URL = "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA"
+const POWER_AUTOMATE_SUBMIT_URL =
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
@@ -36,7 +37,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "jan.novak@example.com",
       phone: "Telefon",
       phonePlaceholder: "+420 123 456 789",
+      company: "Firma",
+      companyPlaceholder: "Název firmy",
       guidedTour: "Mám zájem o komentovanou prohlídku v 18:30",
+      guidedTourHint:
+        "Doporučujeme se zúčastnit, komentovaná prohlídka je omezená kapacitou.",
       gdprConsent:
         "Souhlasím se zpracováním osobních údajů pro účely registrace.",
       photoVideoConsent:
@@ -45,8 +50,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       successTitle: "Registrace potvrzena!",
       successMessage:
         "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
-      company: "Firma",
-      companyPlaceholder: "Název firmy",
       openNavigation: "Otevřít navigaci",
       addToCalendar: "Přidat do kalendáře",
     },
@@ -59,7 +62,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       emailPlaceholder: "john.doe@example.com",
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
+      company: "Company",
+      companyPlaceholder: "Company Name",
       guidedTour: "I am interested in a guided tour at 6:30 PM",
+      guidedTourHint:
+        "We recommend attending, the guided tour has limited capacity.",
       gdprConsent:
         "I agree to the processing of my personal data for registration purposes.",
       photoVideoConsent:
@@ -68,8 +75,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       successTitle: "Registration Confirmed!",
       successMessage:
         "Thank you for registering. We look forward to seeing you on January 22, 2026.",
-      company: "Company",
-      companyPlaceholder: "Company Name",
       openNavigation: "Open Navigation",
       addToCalendar: "Add to Calendar",
     },
@@ -100,7 +105,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     },
   });
 
-   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     localStorage.setItem("gdprConsent", "accepted");
     try {
       const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
@@ -127,7 +132,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       if (element) element.scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       toast({
-        title: language === "cs" ? "Chyba při odesílání" : "Error sending data",
+        title:
+          language === "cs" ? "Chyba při odesílání" : "Error sending data",
         description:
           language === "cs"
             ? "Nepodařilo se odeslat registraci. Zkuste to prosím znovu."
@@ -240,19 +246,19 @@ END:VCALENDAR`;
                 control={form.control}
                 name="guidedTour"
                 render={({ field }) => (
-                  <FormItem className="p-4 border-2 border-blue-500 rounded-xl bg-blue-50 flex items-center gap-4">
+                  <FormItem className="p-4 border-2 border-blue-500 rounded-xl bg-blue-50 flex items-start gap-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(v) => field.onChange(!!v)}
                       />
                     </FormControl>
-                    <div>
-                      <FormLabel className="font-semibold text-blue-700">
+                    <div className="flex flex-col">
+                      <FormLabel className="font-semibold text-blue-700 m-0">
                         {t.guidedTour}
                       </FormLabel>
-                      <p className="text-sm text-blue-600 mt-1">
-                        Doporučujeme se zúčastnit, komentovaná prohlídka je omezená kapacitou.
+                      <p className="text-sm text-blue-600 mt-1 m-0">
+                        {t.guidedTourHint}
                       </p>
                     </div>
                   </FormItem>
