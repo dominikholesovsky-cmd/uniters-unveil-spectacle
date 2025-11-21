@@ -162,29 +162,23 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const details = encodeURIComponent("Vodojemy Žlutý Kopec");
     const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
 
-    // Časy UTC (18:00–22:00 CET)
     const start = "2026-01-22T17:00:00Z";
     const end = "2026-01-22T21:00:00Z";
 
     const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start.replace(/-|:|\.\d+/g,"")}/${end.replace(/-|:|\.\d+/g,"")}&details=${details}&location=${location}`;
 
-    // Apple/Android nativní
-    const icsUrl = `data:text/calendar;charset=utf8,BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:${title}
-DTSTART:${start.replace(/-|:|\.\d+/g,"")}
-DTEND:${end.replace(/-|:|\.\d+/g,"")}
-DESCRIPTION:${details}
-LOCATION:${location}
-END:VEVENT
-END:VCALENDAR`;
+    // Zde vlož URL tvého ICS souboru
+    const icsUrl = "https://raw.githubusercontent.com/dominikholesovsky-cmd/uniters-unveil-spectacle/9287ab2c10ec3a45eefc7d93d4c182d63d6ec893/uniters-event.ics";
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
 
-    if (isMobile) {
-      window.open(icsUrl, "_blank");
+    if (isIOS) {
+      // iOS: otevře nativní kalendář přes ICS
+      window.location.href = icsUrl;
     } else {
+      // Android / Desktop: otevře Google Calendar
       window.open(gcalUrl, "_blank");
     }
   };
