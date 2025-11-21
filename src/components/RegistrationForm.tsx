@@ -16,7 +16,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar } from "lucide-react";
 
-const POWER_AUTOMATE_SUBMIT_URL = "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA"
+const POWER_AUTOMATE_SUBMIT_URL =
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
 
 interface RegistrationFormProps {
   language: "cs" | "en";
@@ -170,7 +171,7 @@ END:VCALENDAR`;
 
   if (isSubmitted) {
     return (
-      <section className="py-12 sm:py-16 bg-gradient-to-b from-background via-background-light to-background-light">
+      <section className="py-12 sm:py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -230,7 +231,6 @@ END:VCALENDAR`;
                 />
               ))}
 
-              {/* Guided tour */}
               <FormField
                 control={form.control}
                 name="guidedTour"
@@ -247,7 +247,6 @@ END:VCALENDAR`;
                 )}
               />
 
-              {/* GDPR */}
               <FormField
                 control={form.control}
                 name="gdprConsent"
@@ -267,7 +266,6 @@ END:VCALENDAR`;
                 )}
               />
 
-              {/* Photo/Video consent */}
               <FormField
                 control={form.control}
                 name="photoVideoConsent"
