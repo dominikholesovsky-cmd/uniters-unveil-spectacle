@@ -90,10 +90,10 @@ const Schedule = ({ language }: ScheduleProps) => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12 sm:mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
               {t.title}
             </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground">
+            <p className="text-lg sm:text-xl text-white/90">
               {t.subtitle}
             </p>
           </div>
@@ -109,24 +109,24 @@ const Schedule = ({ language }: ScheduleProps) => {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                   {/* Time Badge */}
                   <div className="flex items-center gap-3 sm:min-w-[140px]">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <span className="text-2xl sm:text-3xl font-bold text-white">
                       {item.time}
                     </span>
                   </div>
 
                   {/* Content */}
                   <div className="flex-1 flex items-start gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-accent-foreground" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">
                         {item.title}
                       </h3>
-                      <p className="text-sm sm:text-base text-muted-foreground">
+                      <p className="text-sm sm:text-base text-white/80">
                         {item.description}
                       </p>
                     </div>
@@ -138,9 +138,9 @@ const Schedule = ({ language }: ScheduleProps) => {
 
           {/* Partner Badge */}
           <div className="mt-12 text-center">
-            <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-sm px-6 py-3 rounded-full">
-              <Gift className="w-5 h-5 text-primary" />
-              <span className="text-sm sm:text-base font-medium text-foreground">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+              <Gift className="w-5 h-5 text-white" />
+              <span className="text-sm sm:text-base font-medium text-white">
                 {t.partner}
               </span>
             </div>
