@@ -94,9 +94,7 @@ const Schedule = ({ language }: ScheduleProps) => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
               {t.title}
             </h2>
-            <p className="text-lg sm:text-xl text-white/90">
-              {t.subtitle}
-            </p>
+            <p className="text-lg sm:text-xl text-white/90">{t.subtitle}</p>
           </div>
 
           {/* Schedule Timeline */}
@@ -124,12 +122,8 @@ const Schedule = ({ language }: ScheduleProps) => {
                       <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-lg sm:text-xl font-semibold text-white">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm sm:text-base text-white/80">
-                        {item.description}
-                      </p>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">{item.title}</h3>
+                      <p className="text-sm sm:text-base text-white/80">{item.description}</p>
                     </div>
                   </div>
                 </div>
@@ -139,12 +133,19 @@ const Schedule = ({ language }: ScheduleProps) => {
 
           {/* Partner Badge */}
           <div className="mt-12 text-center">
-            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
-              <span className="text-sm sm:text-base font-medium text-white">
-                {t.partner}
-              </span>
-              <img src={loklokLogo} alt="LokLok" className="h-6 sm:h-8 w-auto brightness-0 invert" />
-            </div>
+            <a
+              href="https://loklok.com" // replace with real link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 transition-all duration-300 hover:bg-white/15 hover:-translate-y-1"
+            >
+              <span className="text-sm sm:text-base font-medium text-white">{t.partner}</span>
+              <img
+                src={loklokLogo}
+                alt="LokLok"
+                className="h-6 sm:h-8 w-auto brightness-0 invert"
+              />
+            </a>
           </div>
         </div>
       </div>
