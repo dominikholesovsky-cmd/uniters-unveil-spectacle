@@ -134,7 +134,7 @@ const Schedule = ({ language }: ScheduleProps) => {
           {/* Partner Badge */}
           <div className="mt-12 text-center">
             <a
-              href="https://loklok.com" // replace with real link
+              href="https://loklok.cz"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 transition-all duration-300 hover:bg-white/15 hover:-translate-y-1"
