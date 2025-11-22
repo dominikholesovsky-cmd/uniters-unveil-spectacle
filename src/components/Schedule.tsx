@@ -86,7 +86,7 @@ const Schedule = ({ language }: ScheduleProps) => {
   const t = content[language] ?? content.cs;
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-b from-background to-secondary/20">
+    <section className="py-16 sm:py-24 bg-gradient-to-b from-background via-background-light to-background-light">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
