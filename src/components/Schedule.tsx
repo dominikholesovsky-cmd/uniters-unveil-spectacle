@@ -1,4 +1,5 @@
 import { Clock, Info, Music, Gift } from "lucide-react";
+import loklokLogo from "@/assets/loklok-logo.png";
 
 interface ScheduleProps {
   language: "cs" | "en";
@@ -41,7 +42,7 @@ const Schedule = ({ language }: ScheduleProps) => {
           icon: Music,
         },
       ],
-      partner: "S podporou brandu LokLok",
+      partner: "S podporou kombucha",
     },
     en: {
       title: "Schedule",
@@ -78,7 +79,7 @@ const Schedule = ({ language }: ScheduleProps) => {
           icon: Music,
         },
       ],
-      partner: "Supported by LokLok brand",
+      partner: "Supported by kombucha",
     },
   };
 
@@ -138,11 +139,11 @@ const Schedule = ({ language }: ScheduleProps) => {
 
           {/* Partner Badge */}
           <div className="mt-12 text-center">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
-              <Gift className="w-5 h-5 text-white" />
+            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
               <span className="text-sm sm:text-base font-medium text-white">
                 {t.partner}
               </span>
+              <img src={loklokLogo} alt="LokLok" className="h-6 sm:h-8 w-auto brightness-0 invert" />
             </div>
           </div>
         </div>
