@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { MessageSquare } from "lucide-react";
 
-// --- Supabase konfigurace (Beze změny) ---
+// --- Supabase konfigurace ---
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
@@ -24,8 +24,25 @@ if (!REDIRECT_URL) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 💡 ROZHRANÍ UPRAVENO pro externí ovládání modalu
-interface ParticipantLoginProps {
+interface Profile {
+    id: string;
+    email: string;
+    name: string;
+    company: string | null;
+    unreadCount: number;
+}
+
+interface Message {
+    id: number;
+    created_at: string;
+    sender_id: string;
+    recipient_id: string;
+    content: string;
+    is_read: boolean;
+    chat_id: string;
+}
+
+interface ChatModalProps {
     language?: "cs" | "en";
     open: boolean; // Stav, zda je modal otevřený
     onOpenChange: (open: boolean) => void; // Funkce pro změnu stavu (zavření kliknutím mimo modal/escape)
@@ -41,16 +58,16 @@ const getChatId = (id1: string, id2: string): string => {
 };
 
 // --- KOMPONENTA ChatModal ---
-export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLoginProps) {
-    // ❌ Původní stav 'isOpen' odstraněn, nahrazen propsem 'open'
+export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProps) {
+    
     // Stavy pro data a UI
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
-    const [profiles, setProfiles] = useState<any[]>([]);
+    const [profiles, setProfiles] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [targetProfile, setTargetProfile] = useState<any | null>(null);
-    const [messages, setMessages] = useState<any[]>([]);
+    const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [messageInput, setMessageInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [totalUnreadCount, setTotalUnreadCount] = useState(0);
@@ -60,7 +77,7 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
 
-    // --- Textové překlady (Beze změny) ---
+    // --- Textové překlady ---
     const t = {
         cs: {
             openChat: "Otevřít Chat",
@@ -103,10 +120,10 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
             send: "Send",
         },
     }[language] ?? t.cs;
-
-    // ... [Zde následují všechny tvé funkce: markMessagesAsRead, loadProfiles, linkProfileToAuth, scrollToBottom, handleLogout, sendMagicLink, startChat, handleSendMessage] ...
     
-    const markMessagesAsRead = async (senderId: string) => {
+    // --- Funkce pro správu dat a UI ---
+
+    const markMessagesAsRead = useCallback(async (senderId: string) => {
         const currentUserId = session?.user?.id;
         if (!currentUserId) return;
         
@@ -118,11 +135,9 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
             .eq("is_read", false);
 
         if (error) console.error("Chyba při označování zpráv jako přečtené:", error.message);
-        
-        loadProfiles(currentUserId);
-    }
+    }, [session]);
 
-    const loadProfiles = async (currentUserId: string | null = session?.user?.id) => {
+    const loadProfiles = useCallback(async (currentUserId: string | null = session?.user?.id) => {
         setLoading(true);
         
         const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
@@ -162,7 +177,7 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
         
         setTotalUnreadCount(newTotalUnreadCount);
         
-        const profilesWithUnread = (profilesData || []).map(p => ({
+        const profilesWithUnread: Profile[] = (profilesData || []).map(p => ({
             ...p,
             unreadCount: unreadMap[p.id] || 0,
         }));
@@ -171,7 +186,7 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
             const aCompany = a.company || "";
             const bCompany = b.company || "";
             const aName = a.name || "";
-            const bName = b.name || "";
+            const bName = a.name || "";
 
             const companyCompare = aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
 
@@ -183,9 +198,10 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
         
         setProfiles(sorted);
         setLoading(false); 
-    };
+    }, [session?.user?.id, language]);
 
-    async function linkProfileToAuth(user: any) {
+
+    const linkProfileToAuth = useCallback(async (user: any) => {
         if (!user.email) return;
 
         const { data: profilesData, error: selectError } = await supabase
@@ -230,9 +246,72 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
         }
         
         loadProfiles(user.id);
-    }
+    }, [loadProfiles, language]);
     
-    // --- Efekty pro sledování Auth stavu a Realtime notifikace (Mírná úprava pro propojení s propsem) ---
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+    };
+
+    const handleLogout = async () => {
+        setLoading(true);
+        const { error } = await supabase.auth.signOut();
+        setLoading(false);
+        if (error) console.error('Chyba při odhlašování:', error.message);
+        else {
+            onOpenChange(false); // Zavření modalu
+            setSession(null);
+            setProfiles([]);
+            setSearchQuery('');
+            setTargetProfile(null);
+            setTotalUnreadCount(0);
+        }
+    };
+
+    const sendMagicLink = async () => {
+        setLoading(true);
+        const { error } = await supabase.auth.signInWithOtp({
+            email,
+            options: { emailRedirectTo: REDIRECT_URL },
+        });
+        setLoading(false);
+        if (error) {
+            console.error(error);
+            alert(t.emailFailed);
+        } else {
+            alert(t.emailSent);
+        }
+    };
+
+    const startChat = (target: Profile) => {
+        setTargetProfile(target);
+        setMessages([]);
+        markMessagesAsRead(target.id);
+        loadProfiles(); // Osvěžení seznamu po označení zpráv jako přečtené
+    };
+
+    const handleSendMessage = async () => {
+        if (!messageInput.trim() || !targetProfile || !session?.user) return;
+        const currentUserId = session.user.id;
+        const chatId = getChatId(currentUserId, targetProfile.id);
+        const content = messageInput.trim();
+        setMessageInput("");
+
+        const { error } = await supabase.from("messages").insert([{
+            chat_id: chatId,
+            sender_id: currentUserId,
+            recipient_id: targetProfile.id,
+            content,
+            is_read: false,
+        }]);
+        if (error) console.error("Chyba při odesílání zprávy:", error.message);
+    };
+
+
+    // --- Efekty pro sledování Auth stavu a Realtime notifikace ---
+
     useEffect(() => {
         
         supabase.auth.getSession().then(({ data }) => {
@@ -257,7 +336,6 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
                     const hasOpenedBefore = localStorage.getItem(MAGIC_LINK_OPENED_KEY);
                     
                     if (!hasOpenedBefore) {
-                        // 💡 Používáme prop onOpenChange k externímu otevření po přihlášení
                         onOpenChange(true); 
                         localStorage.setItem(MAGIC_LINK_OPENED_KEY, 'true');
                     }
@@ -279,7 +357,7 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
         return () => {
             listener?.subscription.unsubscribe();
         };
-    }, [onOpenChange]); // 💡 Přidáno onOpenChange do závislostí
+    }, [onOpenChange, linkProfileToAuth]); 
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -294,57 +372,15 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
             .subscribe();
 
         return () => supabase.removeChannel(subscription);
-    }, [session?.user?.id]);
+    }, [session?.user?.id, loadProfiles]);
     
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        if (chatContainerRef.current) {
-            chatContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-        }
-    };
-
+    // Auto-scroll po načtení zpráv
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
 
-    const handleLogout = async () => {
-        setLoading(true);
-        const { error } = await supabase.auth.signOut();
-        setLoading(false);
-        if (error) console.error('Chyba při odhlašování:', error.message);
-        else {
-            // 💡 Používáme prop onOpenChange k externímu zavření
-            onOpenChange(false);
-            setSession(null);
-            setProfiles([]);
-            setSearchQuery('');
-            setTargetProfile(null);
-            setTotalUnreadCount(0);
-        }
-    };
-
-    const sendMagicLink = async () => {
-        setLoading(true);
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: { emailRedirectTo: REDIRECT_URL },
-        });
-        setLoading(false);
-        if (error) {
-            console.error(error);
-            alert(t.emailFailed);
-        } else {
-            alert(t.emailSent);
-        }
-    };
-
-    const startChat = (target: any) => {
-        setTargetProfile(target);
-        setMessages([]);
-        markMessagesAsRead(target.id);
-    };
-
+    // Načtení chatu při výběru cílového profilu
     useEffect(() => {
         if (!targetProfile || !session?.user) return;
 
@@ -370,29 +406,13 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
             .on(
                 "postgres_changes",
                 { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
-                (payload) => setMessages((prev) => [...prev, payload.new])
+                (payload) => setMessages((prev) => [...prev, payload.new as Message])
             )
             .subscribe();
 
         return () => supabase.removeChannel(subscription);
     }, [targetProfile, session]);
 
-    const handleSendMessage = async () => {
-        if (!messageInput.trim() || !targetProfile || !session?.user) return;
-        const currentUserId = session.user.id;
-        const chatId = getChatId(currentUserId, targetProfile.id);
-        const content = messageInput.trim();
-        setMessageInput("");
-
-        const { error } = await supabase.from("messages").insert([{
-            chat_id: chatId,
-            sender_id: currentUserId,
-            recipient_id: targetProfile.id,
-            content,
-            is_read: false,
-        }]);
-        if (error) console.error("Chyba při odesílání zprávy:", error.message);
-    };
 
     const filteredProfiles = profiles.filter(p => {
         const query = searchQuery.toLowerCase();
@@ -406,7 +426,6 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
     // ----------------------------------------------------------------------------------
 
     return (
-        // 💡 Používá externí prop 'open' a 'onOpenChange'
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-4xl w-full h-[90vh] p-6 sm:p-8 overflow-y-auto bg-white text-gray-900 flex flex-col">
                 
@@ -416,13 +435,12 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ParticipantLo
                     </DialogTitle>
                 </DialogHeader>
 
-                {/* Obsah Modalu - Přihlášení, Seznam nebo Chat (Beze změny) */}
                 <div className="flex-grow overflow-y-auto">
 
                     {/* --- CHAT S KONKRÉTNÍM ÚČASTNÍKEM --- */}
                     {session && targetProfile && (
                         <div className="flex flex-col h-full">
-                            <div className="flex justify-between items-center mb-4 pb-3 border-b">
+                            <div className="flex justify-between items-center mb-4 pb-3 border-b flex-shrink-0">
                                 <h2 className="text-xl font-bold">
                                     {t.chatWith} <span className="text-blue-600">{targetProfile.name}</span>
                                 </h2>
