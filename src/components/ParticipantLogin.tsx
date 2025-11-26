@@ -237,25 +237,14 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
 
     // --- Efekty pro sledování Auth stavu a Realtime notifikace ---
     useEffect(() => {
-        // 1. Kontrola při spuštění/refresh stránky (pro Magic Link)
+        
+        // 1. Kontrola při spuštění/refresh stránky
         supabase.auth.getSession().then(({ data }) => {
             const session = data.session;
             setSession(session);
             
             if (session?.user) {
                 linkProfileToAuth(session.user);
-
-                // Logika pro automatické otevření Modalu po přihlášení
-                // Kontrola, zda se jedná o návrat z Magic Linku (tokeny se přidávají do URL hash)
-                const urlHash = window.location.hash;
-                if (urlHash.includes('access_token=') && urlHash.includes('refresh_token=')) {
-                    // Po úspěšném přihlášení se automaticky otevře modal
-                    setIsOpen(true);
-                    
-                    // 🔥 ÚPRAVA: Vyčištění hash z URL
-                    history.replaceState(null, '', window.location.pathname);
-                }
-
             } else {
                 setProfiles([]);
                 setTotalUnreadCount(0);
@@ -268,12 +257,21 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             setSession(session);
             if (session?.user) {
                 linkProfileToAuth(session.user);
-                
-                // 🔥 ÚPRAVA: Odebráno automatické setIsOpen(true) na event === 'SIGNED_IN'.
-                // To způsobovalo otevírání modalu při každém obnovení relace.
-                // Nyní se spoléháme POUZE na kontrolu URL hashe v bloku getSession.
+
+                // 🔥 OPRAVA: Automaticky otevřít modal POUZE při úspěšném přihlášení přes Magic Link
+                // (event 'SIGNED_IN' nastane po kliknutí na Magic Link a návratu na aplikaci)
+                if (event === 'SIGNED_IN') {
+                    setIsOpen(true);
+                    
+                    // ÚKLID: Vyčištění hash z URL po přihlášení
+                    // history.replaceState je bezpečnější než nastavení location.hash = ''
+                    if (window.location.hash.includes('access_token')) {
+                        history.replaceState(null, '', window.location.pathname);
+                    }
+                }
 
             } else {
+                // event === 'SIGNED_OUT'
                 setProfiles([]);
                 setTotalUnreadCount(0);
                 setTargetProfile(null);
