@@ -478,14 +478,14 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                 {/* ⭐ UPRAVENÁ SEKCE: Odesílací formulář (odstraněné zvýraznění) */}
                                 <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
                                     <Input
-                                        // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
-                                        className="bg-white border border-gray-300 focus:border-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors flex-grow"
                                         type="text"
                                         placeholder={t.writeMessage}
                                         value={messageInput}
                                         onChange={(e) => setMessageInput(e.target.value)}
                                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                                    />
+                                        className="bg-white border border-gray-300 text-black flex-grow
+                                                   focus:outline-none focus:ring-0 focus:border-gray-300 focus:shadow-none transition-colors"
+                                      />
                                     <Button 
                                         className="bg-blue-600 text-white hover:bg-blue-700 font-semibold" 
                                         onClick={handleSendMessage} 
@@ -507,7 +507,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
-                                        className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
+                                        className="bg-white border border-gray-300 text-black flex-grow
+                                                   focus:outline-none focus:ring-0 focus:border-gray-300 focus:shadow-none transition-colors"
                                     />
 
                                     <Button 
@@ -577,7 +578,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
-                                        className="bg-white border border-gray-300 text-black focus:border-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
+                                        className="bg-white border border-gray-300 text-black flex-grow focus:outline-none focus:ring-0 focus:border-gray-300 focus:shadow-none transition-colors"
                                     />
                                     <Button
                                         onClick={sendMagicLink}
