@@ -28,6 +28,9 @@ const getChatId = (id1: string, id2: string): string => {
   return `${sortedIds[0]}_${sortedIds[1]}`;
 };
 
+// Jednotný styl tlačítek a hover efekt
+const buttonClass = "bg-white text-black border border-gray-300 hover:bg-gray-100 transition-colors";
+
 export default function ParticipantLogin({ language = "cs" }: ParticipantLoginProps) {
   const [email, setEmail] = useState("");
   const [session, setSession] = useState<any>(null);
@@ -70,15 +73,26 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
 
   // Načtení seznamu účastníků
   const loadProfiles = async () => {
-    const { data, error } = await supabase.from("profiles").select("*").order("name", { ascending: true });
-    if (!error) setProfiles(data || []);
+    const { data, error } = await supabase.from("profiles").select("*");
+    if (!error) {
+      // Seřadit podle firmy a pak podle jména
+      const sorted = (data || []).sort((a, b) => {
+        if (a.company && b.company) {
+          if (a.company.toLowerCase() === b.company.toLowerCase()) {
+            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+          }
+          return a.company.toLowerCase().localeCompare(b.company.toLowerCase());
+        }
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      });
+      setProfiles(sorted);
+    }
   };
 
   useEffect(() => {
     if (session) loadProfiles();
   }, [session]);
 
-  // Start chat s uživatelem
   const startChat = (target: any) => {
     setTargetProfile(target);
     setMessages([]);
@@ -139,7 +153,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
               <h2 className="text-xl font-bold">
                 {language === "cs" ? "Chat s:" : "Chat with:"} {targetProfile.name}
               </h2>
-              <Button className="bg-white hover:bg-gray-100 transition-colors" variant="outline" onClick={() => setTargetProfile(null)}>
+              <Button className={buttonClass} onClick={() => setTargetProfile(null)}>
                 {language === "cs" ? "Zpět na seznam" : "Back to list"}
               </Button>
             </div>
@@ -176,11 +190,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 onChange={(e) => setMessageInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
-              <Button
-                className="bg-foreground hover:bg-gray-100 transition-colors"
-                onClick={handleSendMessage}
-                disabled={!messageInput.trim()}
-              >
+              <Button className={buttonClass} onClick={handleSendMessage} disabled={!messageInput.trim()}>
                 {language === "cs" ? "Odeslat" : "Send"}
               </Button>
             </div>
@@ -203,18 +213,8 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 : "Enter your email and we'll send you a magic login link."}
             </p>
             <div className="flex flex-col gap-4">
-              <Input
-                className="bg-white"
-                type="email"
-                placeholder="email@domain.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Button
-                className="bg-white hover:bg-gray-100 transition-colors"
-                onClick={sendMagicLink}
-                disabled={loading || !email}
-              >
+              <Input className="bg-white" type="email" placeholder="email@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Button className={buttonClass} onClick={sendMagicLink} disabled={loading || !email}>
                 {loading
                   ? language === "cs"
                     ? "Odesílám..."
@@ -241,11 +241,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                       {p.company && <span className="text-sm text-muted-foreground ml-2">({p.company})</span>}
                     </div>
                     {p.id !== session.user.id ? (
-                      <Button
-                        className="bg-foreground hover:bg-muted-foreground transition-colors"
-                        onClick={() => startChat(p)}
-                        size="sm"
-                      >
+                      <Button className={buttonClass} onClick={() => startChat(p)} size="sm">
                         {language === "cs" ? "Chat" : "Chat"}
                       </Button>
                     ) : (
