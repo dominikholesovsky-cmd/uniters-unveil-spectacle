@@ -9,9 +9,10 @@ import CookiesBanner from "@/components/CookiesBanner";
 import LanguageToggle from "@/components/LanguageToggle";
 import PhotoGallery from "@/components/PhotoGallery";
 import Schedule from "@/components/Schedule";
+import ParticipantLogin from "@/components/ParticipantLogin";
 
 const Index = () => {
-  const [language, setLanguage] = useState<"cs" | "en">("cs");
+  const [language, setLanguage] = useState("cs");
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "cs" ? "en" : "cs"));
@@ -24,7 +25,7 @@ const Index = () => {
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
-    document.documentElement.lang = language; // Dynamicky nastavujeme jazyk
+    document.documentElement.lang = language;
   }, [language]);
 
   const seoContent = {
@@ -54,21 +55,17 @@ const Index = () => {
         <meta name="keywords" content={seo.keywords} />
         <meta name="author" content="Uniters" />
 
-        {/* Open Graph */}
         <meta property="og:title" content={seo.title} />
         <meta property="og:description" content={seo.description} />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content={language === "cs" ? "cs_CZ" : "en_US"} />
 
-        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seo.title} />
         <meta name="twitter:description" content={seo.description} />
 
-        {/* Canonical */}
         <link rel="canonical" href="https://www.uniters.one" />
 
-        {/* ✅ GOOGLE FONTS */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
@@ -79,21 +76,17 @@ const Index = () => {
 
       <main>
         <LanguageToggle language={language} onToggle={toggleLanguage} />
-
         <Hero language={language} onRegisterClick={handleRegisterClick} />
-
         <RegistrationForm language={language} />
-
         <Schedule language={language} />
-
         <PhotoGallery language={language} />
 
+        {/* New Participant Login Section */}
+        <ParticipantLogin language={language} />
+
         <LocationMap language={language} />
-
         <Contact language={language} />
-
         <Footer language={language} />
-
         <CookiesBanner language={language} />
       </main>
     </>
