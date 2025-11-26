@@ -198,7 +198,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 : "Enter your email and we'll send you a magic login link."}
             </p>
             <div className="flex flex-col gap-4">
-              <Input type="email" placeholder="email@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input className="bg-white" type="email" placeholder="email@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} />
               <Button onClick={sendMagicLink} disabled={loading || !email}>
                 {loading
                   ? language === "cs"
