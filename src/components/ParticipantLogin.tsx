@@ -63,38 +63,54 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     }
   };
 
-  // Propojení profilu s Auth ID
-  async function linkProfileToAuth(user: any) {
-    if (!user.email) return;
+async function linkProfileToAuth(user: any) {
+    if (!user.email) return;
 
-    const { data: profilesData, error: selectError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', user.email);
+    // 1. Hledání profilu podle e-mailu
+    const { data: profilesData, error: selectError } = await supabase
+        .from('profiles')
+        .select('id, name, company') // Nyní načítáme více dat pro případ vložení
+        .eq('email', user.email);
 
-    if (selectError) {
-      console.error("Chyba při hledání profilu (SELECT):", selectError.message);
-      return;
-    }
-
-    const profileData = profilesData?.[0];
-
-    if (profileData && profileData.id !== user.id) {
-      console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email}`, 'color: orange; font-weight: bold;');
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ id: user.id })
-        .eq('email', user.email);
-      if (!updateError) {
-           console.log('Propojení profilu bylo úspěšné. Obnovuji data...');
-           loadProfiles(); // Znovu načíst se správným ID
-       }
-    } else {
-        // ID už je propojeno, nebo profil neexistuje (chyba se loguje výše).
-        // V obou případech by se měly načíst profily, aby se UI aktualizovalo.
-        loadProfiles();
+    if (selectError) {
+        console.error("Chyba při hledání profilu (SELECT):", selectError.message);
+        return;
     }
-  }
+
+    const profileData = profilesData?.[0];
+
+    if (profileData) {
+        // --- STÁVAJÍCÍ PROFIL ---
+        if (profileData.id !== user.id) {
+            console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email}`, 'color: orange; font-weight: bold;');
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ id: user.id })
+                .eq('email', user.email);
+
+            if (updateError) {
+                console.error('CHYBA PŘI AKTUALIZACI ID:', updateError.message);
+            }
+        }
+    } else {
+        // --- NOVÝ PROFIL (INZERCE) ---
+        console.log(`%cPropojení profilu: Vkládám nový řádek pro ${user.email}`, 'color: green; font-weight: bold;');
+        const { error: insertError } = await supabase
+            .from('profiles')
+            .insert([{
+                id: user.id, // Vložíme správné Auth UID hned
+                email: user.email,
+                // Poznámka: name a company budou NULL, pokud je nezískáte od uživatele
+            }]);
+
+        if (insertError) {
+            console.error('CHYBA PŘI VKLÁDÁNÍ NOVÉHO PROFILU:', insertError.message);
+        }
+    }
+
+    // Vždy načteme profily, aby se UI zaktualizovalo (včetně (Já) a nových uživatelů)
+    loadProfiles();
+}
 
   // Hlavní useEffect pro sledování Auth a načtení profilů (OPRAVENO)
   useEffect(() => {
