@@ -447,6 +447,7 @@ const loadProfiles = async () => {
                             <ul className="divide-y divide-border">
                                 {filteredProfiles.map((p) => {
                                   console.log(`Profil ${p.name}: Nepřečtených zpráv ${p.unreadCount}`);
+                                  console.log(`Profil ${p.name}: ID profilu ${p.id}, E-mail: ${p.email}`);
                                     const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
                                     return (
                                         <li key={p.id} className="py-3 px-1 flex justify-between items-center">
