@@ -397,7 +397,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     });
     
     return (
-        <section className="py-12 bg-gradient-to-b from-background via-background-light to-background-light min-h-screen flex items-center">
+        <section className="py-12 bg-gradient-to-b from-background via-background-dark to-background-darkmin-h-screen flex items-center">
             <div className="container mx-auto px-4 max-w-3xl">
                 
                 {/* Přihlašovací formulář */}
