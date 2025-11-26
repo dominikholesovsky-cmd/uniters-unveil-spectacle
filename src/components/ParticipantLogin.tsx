@@ -44,7 +44,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     // Pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Funkce pro načtení seznamu účastníků (posunuto nahoru)
+  // Funkce pro načtení seznamu účastníků
   const loadProfiles = async () => {
     const { data, error } = await supabase.from("profiles").select("*");
     if (!error) {
@@ -89,12 +89,11 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
            console.log('Propojení profilu bylo úspěšné. Obnovuji data...');
            loadProfiles(); // Znovu načíst se správným ID
        }
-    } else if (profileData && profileData.id === user.id) {
-        // ID už je propojeno, jen načteme profily
+    } else {
+        // ID už je propojeno, nebo profil neexistuje (chyba se loguje výše).
+        // V obou případech by se měly načíst profily, aby se UI aktualizovalo.
         loadProfiles();
-    } else if (!profileData) {
-      console.error('CHYBA PROPOJENÍ: Profil s tímto e-mailem neexistuje. (Zkontrolujte shodu e-mailu)');
-    }
+    }
   }
 
   // Hlavní useEffect pro sledování Auth a načtení profilů (OPRAVENO)
@@ -120,7 +119,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     return () => {
         listener?.subscription.unsubscribe();
     };
-  }, []); // Prázdné pole závislostí zajišťuje spuštění jen jednou
+  }, []); 
 
   // Scroll na konec chatu, když se načtou nové zprávy
   useEffect(() => {
@@ -128,7 +127,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
   }, [messages]);
 
 
-  // Odhlašování (PŘIDÁNO)
+  // Odhlašování
   const handleLogout = async () => {
     setLoading(true);
     const { error } = await supabase.auth.signOut();
@@ -203,7 +202,6 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     const content = messageInput.trim();
     setMessageInput("");
     
-    // Zajištění recipient_id pro RLS politiky
     const { error } = await supabase.from("messages").insert([{
       chat_id: chatId,
       sender_id: currentUserId,
@@ -307,7 +305,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
             <h2 className="text-2xl font-bold mb-4 text-center">
               {language === "cs" ? "Seznam účastníků" : "Participant List"}
             </h2>
-            {/* Tlačítko pro odhlášení (PŘIDÁNO) */}
+            {/* Tlačítko pro odhlášení */}
             <Button 
                 onClick={handleLogout} 
                 disabled={loading} 
@@ -323,8 +321,8 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
             ) : (
               <ul className="divide-y divide-border">
                 {profiles.map((p) => {
-                  // Použití toString pro bezpečné porovnání
-                  const isCurrentUser = p.id?.toString() === session.user.id.toString(); 
+                  // OPRAVENÉ POROVNÁNÍ: Přímé porovnání ID
+                  const isCurrentUser = p.id && session.user.id && p.id === session.user.id;
                   return (
                     <li key={p.id} className="py-3 px-1 flex justify-between items-center">
                       <div>
