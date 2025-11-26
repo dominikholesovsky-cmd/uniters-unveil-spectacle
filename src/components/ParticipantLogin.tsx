@@ -237,12 +237,25 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
 
     // --- Efekty pro sledování Auth stavu a Realtime notifikace ---
     useEffect(() => {
-        // Kontrola při spuštění/refresh stránky
+        // 1. Kontrola při spuštění/refresh stránky (pro Magic Link)
         supabase.auth.getSession().then(({ data }) => {
             const session = data.session;
             setSession(session);
+            
             if (session?.user) {
                 linkProfileToAuth(session.user);
+
+                // Logika pro automatické otevření Modalu po přihlášení
+                // Kontrola, zda se jedná o návrat z Magic Linku (tokeny se přidávají do URL hash)
+                const urlHash = window.location.hash;
+                if (urlHash.includes('access_token=') && urlHash.includes('refresh_token=')) {
+                    // Po úspěšném přihlášení se automaticky otevře modal
+                    setIsOpen(true);
+                    
+                    // VOLITELNÉ: Vyčištění hash z URL
+                    // history.replaceState(null, '', window.location.pathname);
+                }
+
             } else {
                 setProfiles([]);
                 setTotalUnreadCount(0);
@@ -250,11 +263,16 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             }
         });
 
-        // Naslouchání změnám stavu přihlášení
-        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+        // 2. Naslouchání změnám stavu přihlášení
+        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
             setSession(session);
             if (session?.user) {
                 linkProfileToAuth(session.user);
+                
+                // Otevřít modal, pokud se stav změnil na 'SIGNED_IN'
+                if (event === 'SIGNED_IN') {
+                     setIsOpen(true);
+                }
             } else {
                 setProfiles([]);
                 setTotalUnreadCount(0);
@@ -304,6 +322,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         setLoading(false);
         if (error) console.error('Chyba při odhlašování:', error.message);
         else {
+            setIsOpen(false); // Zavřít modal po odhlášení
             setSession(null);
             setProfiles([]);
             setSearchQuery('');
