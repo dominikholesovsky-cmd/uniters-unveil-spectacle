@@ -7,9 +7,13 @@ import { Input } from "@/components/ui/input";
 // Supabase konfigurace
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL; // <- přesměrování po přihlášení
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("Supabase URL nebo ANON KEY nejsou nastaveny v .env souboru");
+}
+if (!REDIRECT_URL) {
+  throw new Error("VITE_SUPABASE_REDIRECT_URL není nastaven v .env souboru");
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -44,14 +48,23 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
   // Odeslání magic link
   const sendMagicLink = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: REDIRECT_URL, // <--- přesměrování po přihlášení
+      },
+    });
     setLoading(false);
 
     if (error) {
       console.error(error);
       alert(language === "cs" ? "Nepodařilo se odeslat e-mail." : "Failed to send email.");
     } else {
-      alert(language === "cs" ? "Odkaz pro přihlášení byl odeslán na váš e-mail." : "Login link has been sent to your email.");
+      alert(
+        language === "cs"
+          ? "Odkaz pro přihlášení byl odeslán na váš e-mail."
+          : "Login link has been sent to your email."
+      );
     }
   };
 
@@ -137,13 +150,17 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
               ) : (
                 messages.map((msg, index) => (
                   <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
-                    <div className={`p-3 max-w-xs rounded-xl ${
-                      msg.sender_id === currentUserId
-                        ? "bg-primary text-primary-foreground rounded-br-none"
-                        : "bg-secondary text-secondary-foreground rounded-tl-none"
-                    }`}>
+                    <div
+                      className={`p-3 max-w-xs rounded-xl ${
+                        msg.sender_id === currentUserId
+                          ? "bg-primary text-primary-foreground rounded-br-none"
+                          : "bg-secondary text-secondary-foreground rounded-tl-none"
+                      }`}
+                    >
                       <p className="text-sm">{msg.content}</p>
-                      <span className="text-xs opacity-75 block text-right mt-1">{new Date(msg.created_at).toLocaleTimeString(language)}</span>
+                      <span className="text-xs opacity-75 block text-right mt-1">
+                        {new Date(msg.created_at).toLocaleTimeString(language)}
+                      </span>
                     </div>
                   </div>
                 ))
@@ -176,12 +193,20 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
           <Card className="p-6 bg-white shadow-lg border border-border rounded-2xl mb-10">
             <h2 className="text-2xl font-bold mb-4 text-center">{language === "cs" ? "Přihlášení účastníka" : "Participant Login"}</h2>
             <p className="text-muted-foreground text-center mb-6">
-              {language === "cs" ? "Zadejte svůj e-mail a my vám pošleme magický odkaz." : "Enter your email and we'll send you a magic login link."}
+              {language === "cs"
+                ? "Zadejte svůj e-mail a my vám pošleme magický odkaz."
+                : "Enter your email and we'll send you a magic login link."}
             </p>
             <div className="flex flex-col gap-4">
               <Input type="email" placeholder="email@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} />
               <Button onClick={sendMagicLink} disabled={loading || !email}>
-                {loading ? (language === "cs" ? "Odesílám..." : "Sending...") : (language === "cs" ? "Odeslat přihlašovací odkaz" : "Send login link")}
+                {loading
+                  ? language === "cs"
+                    ? "Odesílám..."
+                    : "Sending..."
+                  : language === "cs"
+                  ? "Odeslat přihlašovací odkaz"
+                  : "Send login link"}
               </Button>
             </div>
           </Card>
