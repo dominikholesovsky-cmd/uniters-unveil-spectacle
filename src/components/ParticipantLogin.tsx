@@ -386,7 +386,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             {/* Tlačítko pro otevření chatu - zobrazené na hlavní stránce */}
             <Button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
+                className="fixed bottom-6 left-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
             >
                 <MessageSquare className="w-6 h-6 mr-2" />
                 {t.openChat}
