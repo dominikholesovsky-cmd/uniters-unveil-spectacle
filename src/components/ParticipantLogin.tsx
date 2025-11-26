@@ -229,7 +229,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         {!session && (
           <Card className="max-w-md mx-auto bg-white rounded-2xl p-10 shadow-xl text-center">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              {language === "cs" ? "Přihlášení účastníka" : "Participant Login"}
+              {language === "cs" ? "Přihlášení do chatovací místnmosti" : "Participant Login"}
             </h2>
             <p className="text-gray-700 mb-6">
               {language === "cs"
