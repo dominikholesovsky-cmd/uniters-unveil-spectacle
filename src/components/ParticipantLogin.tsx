@@ -63,7 +63,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
     // Ref pro odesílací formulář (pro řešení mobilního skákání)
     const chatContainerRef = useRef<HTMLDivElement>(null); 
 
-    // Textové překlady
+    // Textové překlady (beze změn)
     const t = {
         cs: {
             openChat: "Otevřít Chat",
@@ -108,37 +108,43 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
     }[language] ?? t.cs;
 
 
-    // ✅ Značení zpráv jako přečtené (logika zůstává)
+    // Značení zpráv jako přečtené (upraveno pro volání loadProfiles s ID)
     const markMessagesAsRead = async (senderId: string) => {
-        if (!session?.user?.id) return;
+        const currentUserId = session?.user?.id; // Použijeme ID ze stavu session, je to bezpečné, protože jde o reakci na klik
+        if (!currentUserId) return;
         
         const { error } = await supabase
             .from("messages")
             .update({ is_read: true })
             .eq("sender_id", senderId)
-            .eq("recipient_id", session.user.id)
+            .eq("recipient_id", currentUserId)
             .eq("is_read", false);
 
         if (error) console.error("Chyba při označování zpráv jako přečtené:", error.message);
         
-        loadProfiles();
+        // Voláme s aktuálním ID
+        // ⭐ KLÍČOVÁ ZMĚNA: Volání loadProfiles s aktuálním ID
+        loadProfiles(currentUserId);
     }
 
-    // ✅ REVIDOVANÁ FUNKCE loadProfiles (Doplněno o výpočet totalUnreadCount)
-    const loadProfiles = async () => {
+    // ⭐ OPRAVENÁ FUNKCE loadProfiles - PŘIJÍMÁ currentUserId JAKO PARAMETR
+    const loadProfiles = async (currentUserId: string | null = session?.user?.id) => {
+        setLoading(true); 
+        
         const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
         
         if (profilesError) {
             console.error("Chyba při načítání profilů:", profilesError.message);
             setProfiles([]);
-            setTotalUnreadCount(0); // Důležité: vynulovat při chybě
+            setTotalUnreadCount(0);
+            setLoading(false);
             return;
         }
 
-        const currentUserId = session?.user?.id;
         if (!currentUserId) {
             setProfiles(profilesData || []);
-            setTotalUnreadCount(0); // Důležité: vynulovat bez přihlášení
+            setTotalUnreadCount(0);
+            setLoading(false);
             return;
         }
 
@@ -154,32 +160,30 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         }
 
         // 2. Mapování počtu notifikací ručním sčítáním
-        let newTotalUnreadCount = 0; // NOVÁ PROMĚNNÁ pro celkový součet
+        let newTotalUnreadCount = 0; 
 
         const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
             acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
-            newTotalUnreadCount += 1; // Započítání do celkového součtu
+            newTotalUnreadCount += 1; 
             return acc;
         }, {});
         
-        setTotalUnreadCount(newTotalUnreadCount); // ⭐ AKTUALIZACE NOVÉHO STAVU
+        setTotalUnreadCount(newTotalUnreadCount); 
         
         const profilesWithUnread = (profilesData || []).map(p => ({
             ...p,
             unreadCount: unreadMap[p.id] || 0,
         }));
 
-        // ZJEDNODUŠENÁ LOGIKA ŘAZENÍ (Firma > Jméno)
+        // Logika řazení
         const sorted = profilesWithUnread.sort((a, b) => {
             const aCompany = a.company || "";
             const bCompany = b.company || "";
             const aName = a.name || "";
             const bName = b.name || "";
 
-            // Primární řazení podle společnosti
             const companyCompare = aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
 
-            // Sekundární řazení podle jména
             if (companyCompare !== 0) {
                 return companyCompare;
             }
@@ -187,10 +191,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         });
         
         setProfiles(sorted);
+        setLoading(false); // Ukončení načítání po dokončení
     };
 
 
-    // ✅ REVIDOVANÁ FUNKCE linkProfileToAuth (logika zůstává)
+    // ⭐ OPRAVENÁ FUNKCE linkProfileToAuth - VOLÁ loadProfiles S AKTUÁLNÍM ID
     async function linkProfileToAuth(user: any) {
         if (!user.email) return;
 
@@ -218,7 +223,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 if (updateError) {
                     console.error('CHYBA PŘI AKTUALIZACI ID:', updateError.message);
                 } else {
-                    loadProfiles();
+                    // Voláme loadProfiles s aktuálním user.id
+                    loadProfiles(user.id);
                     return;
                 }
             }
@@ -239,11 +245,13 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             }
         }
         
-        loadProfiles();
+        // Voláme loadProfiles s aktuálním user.id
+        loadProfiles(user.id);
     }
 
-    // Hlavní useEffect pro sledování Auth a načtení profilů (logika zůstává)
+    // ⭐ OPRAVENÁ SEKCE: Hlavní useEffect pro sledování Auth a načtení profilů
     useEffect(() => {
+        // Kontrola při spuštění/refresh stránky
         supabase.auth.getSession().then(({ data }) => {
             const session = data.session;
             setSession(session);
@@ -251,13 +259,21 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 linkProfileToAuth(session.user);
             } else {
                 setProfiles([]);
-                setTotalUnreadCount(0); // Důležité: vynulovat bez přihlášení
+                setTotalUnreadCount(0);
+                setLoading(false); 
             }
         });
 
+        // Naslouchání změnám stavu přihlášení
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
-            if (session?.user) linkProfileToAuth(session.user);
+            if (session?.user) {
+                // Voláme pro propojení profilu a následné načtení seznamu
+                linkProfileToAuth(session.user);
+            } else {
+                setProfiles([]);
+                setTotalUnreadCount(0);
+            }
         });
         
         return () => {
@@ -265,7 +281,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         };
     }, []);
 
-    // ✅ Realtime listener pro notifikace (logika zůstává)
+    // Realtime listener pro notifikace (volá loadProfiles bez argumentu, použije ID ze stavu session)
     useEffect(() => {
         if (!session?.user?.id) return;
 
@@ -274,14 +290,14 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             .on(
                 "postgres_changes",
                 { event: "INSERT", schema: "public", table: "messages", filter: `recipient_id=eq.${session.user.id}` },
-                (_payload) => loadProfiles()
+                (_payload) => loadProfiles() // Zde je bezpečné volat bez argumentu, session.user.id je platné
             )
             .subscribe();
 
         return () => supabase.removeChannel(subscription);
     }, [session?.user?.id]);
     
-    // ✅ Scroll na konec chatu (logika zůstává)
+    // ... (Scroll logika a Odhlašování - beze změn)
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         if (chatContainerRef.current) {
@@ -294,7 +310,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
     }, [messages]);
 
 
-    // Odhlašování
+    // Odhlašování (beze změn)
     const handleLogout = async () => {
         setLoading(true);
         const { error } = await supabase.auth.signOut();
@@ -305,11 +321,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             setProfiles([]);
             setSearchQuery('');
             setTargetProfile(null);
-            setTotalUnreadCount(0); // Důležité: vynulovat při odhlášení
+            setTotalUnreadCount(0);
         }
     };
 
-    // Odeslání magic link
+    // Odeslání magic link (beze změn)
     const sendMagicLink = async () => {
         setLoading(true);
         const { error } = await supabase.auth.signInWithOtp({
@@ -331,7 +347,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         markMessagesAsRead(target.id);
     };
 
-    // Načtení historie zpráv + realtime (logika zůstává)
+    // Načtení historie zpráv + realtime (beze změn)
     useEffect(() => {
         if (!targetProfile || !session?.user) return;
 
@@ -381,7 +397,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         if (error) console.error("Chyba při odesílání zprávy:", error.message);
     };
 
-    // Filtrování profilů (logika zůstává)
+    // Filtrování profilů (beze změn)
     const filteredProfiles = profiles.filter(p => {
         const query = searchQuery.toLowerCase();
         const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
@@ -402,7 +418,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             >
                 <MessageSquare className="w-6 h-6 mr-2" />
                 {t.openChat}
-                {/* ⭐ ODZNAK s celkovým počtem nepřečtených zpráv */}
+                {/* ODZNAK s celkovým počtem nepřečtených zpráv */}
                 {totalUnreadCount > 0 && (
                     <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold ring-2 ring-white shadow-lg animate-bounce">
                         {totalUnreadCount}
@@ -410,9 +426,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 )}
             </Button>
 
-            {/* Modal pro celý chatovací systém (zbytek logiky zůstává stejný) */}
+            {/* Modal pro celý chatovací systém */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                {/* Nastavíme DialogContent, aby vypadal podobně jako váš TermsModal */}
                 <DialogContent className="max-w-4xl w-full h-[90vh] p-6 sm:p-8 overflow-y-auto bg-white text-gray-900 flex flex-col">
                     
                     <DialogHeader className="flex-shrink-0 border-b pb-3 mb-4">
@@ -465,10 +480,12 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     <div ref={messagesEndRef} />
                                 </div>
                                 
-                                {/* Odesílací formulář */}
+                                {/* ⭐ OPRAVENÁ SEKCE: Odesílací formulář s opraveným focus ringem */}
                                 <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
                                     <Input
-                                        className="bg-white border border-gray-300 focus:border-blue-500 transition-colors flex-grow"
+                                        // KLÍČOVÁ ZMĚNA PRO JEMNÝ FOCUS RING:
+                                        // focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-white
+                                        className="bg-white border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-white transition-colors flex-grow"
                                         type="text"
                                         placeholder={t.writeMessage}
                                         value={messageInput}
@@ -508,7 +525,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                 </div>
                                 
                                 <div className="flex-grow overflow-y-auto">
-                                    {profiles.length === 0 ? (
+                                    {loading && profiles.length === 0 ? (
                                         <p className="text-center text-gray-500 py-4">{t.loadingList}</p>
                                     ) : (
                                         <ul className="divide-y divide-gray-200">
