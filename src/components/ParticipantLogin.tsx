@@ -1,9 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, FC } from "react";
 import { createClient } from "@supabase/supabase-js";
-// Předpokládané UI komponenty (používají Tailwind CSS)
+// Předpokládané UI komponenty
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+// Nově přidané pro Modal
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogClose,
+} from "@/components/ui/dialog";
+import { MessageSquare, X } from "lucide-react"; // Ikonky pro tlačítko a zavření
 
 // Supabase konfigurace (předpokládáme, že proměnné jsou v .env)
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -28,7 +37,13 @@ const getChatId = (id1: string, id2: string): string => {
     return `${sortedIds[0]}_${sortedIds[1]}`;
 };
 
-export default function ParticipantLogin({ language = "cs" }: ParticipantLoginProps) {
+// ----------------------------------------------------------------------------------
+// Hlavní komponenta, nyní obalující logiku a renderující TLAČÍTKO + MODAL
+// ----------------------------------------------------------------------------------
+export default function ChatButtonAndModal({ language = "cs" }: ParticipantLoginProps) {
+    // Stav pro kontrolu viditelnosti MODALU
+    const [isOpen, setIsOpen] = useState(false); 
+
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
     const [profiles, setProfiles] = useState<any[]>([]);
@@ -45,7 +60,52 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     // Ref pro odesílací formulář (pro řešení mobilního skákání)
     const chatContainerRef = useRef<HTMLDivElement>(null); 
 
-    // ✅ Značení zpráv jako přečtené
+    // Textové překlady
+    const t = {
+        cs: {
+            openChat: "Otevřít Chat",
+            loginTitle: "Přihlášení do chatu",
+            loginNotice: "Zadejte svůj e-mail a my vám pošleme magický odkaz.",
+            sendLink: "Odeslat přihlašovací odkaz",
+            sending: "Odesílám...",
+            emailSent: "Odkaz pro přihlášení byl odeslán na váš e-mail.",
+            emailFailed: "Nepodařilo se odeslat e-mail.",
+            listTitle: "Seznam účastníků",
+            searchPlaceholder: "Hledat podle jména nebo společnosti...",
+            logout: "Odhlásit se",
+            loggingOut: "Odhlašuji...",
+            me: "Já",
+            loadingList: "Načítám seznam...",
+            chatWith: "Chat s:",
+            backToList: "Zpět na seznam",
+            loadingChat: "Načítám chat...",
+            writeMessage: "Napište zprávu...",
+            send: "Odeslat",
+        },
+        en: {
+            openChat: "Open Chat",
+            loginTitle: "Participant Login",
+            loginNotice: "Enter your email and we'll send you a magic login link.",
+            sendLink: "Send login link",
+            sending: "Sending...",
+            emailSent: "Login link has been sent to your email.",
+            emailFailed: "Failed to send email.",
+            listTitle: "Participant List",
+            searchPlaceholder: "Search by name or company...",
+            logout: "Log out",
+            loggingOut: "Logging out...",
+            me: "Me",
+            loadingList: "Loading list...",
+            chatWith: "Chat with:",
+            backToList: "Back to list",
+            loadingChat: "Loading chat...",
+            writeMessage: "Write a message...",
+            send: "Send",
+        },
+    }[language] ?? t.cs;
+
+
+    // ✅ Značení zpráv jako přečtené (logika zůstává)
     const markMessagesAsRead = async (senderId: string) => {
         if (!session?.user?.id) return;
         
@@ -61,7 +121,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         loadProfiles();
     }
 
-    // ✅ REVIDOVANÁ FUNKCE loadProfiles
+    // ✅ REVIDOVANÁ FUNKCE loadProfiles (logika zůstává)
     const loadProfiles = async () => {
         const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
         
@@ -120,7 +180,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     };
 
 
-    // ✅ REVIDOVANÁ FUNKCE linkProfileToAuth
+    // ✅ REVIDOVANÁ FUNKCE linkProfileToAuth (logika zůstává)
     async function linkProfileToAuth(user: any) {
         if (!user.email) return;
 
@@ -148,7 +208,6 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 if (updateError) {
                     console.error('CHYBA PŘI AKTUALIZACI ID:', updateError.message);
                 } else {
-                    // 🎉 ÚSPĚŠNÁ OPRAVA ID: IHNED ZNOVU NAČTEME PROFILY
                     loadProfiles();
                     return;
                 }
@@ -173,7 +232,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         loadProfiles();
     }
 
-    // Hlavní useEffect pro sledování Auth a načtení profilů
+    // Hlavní useEffect pro sledování Auth a načtení profilů (logika zůstává)
     useEffect(() => {
         supabase.auth.getSession().then(({ data }) => {
             const session = data.session;
@@ -195,7 +254,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         };
     }, []);
 
-    // ✅ Realtime listener pro notifikace
+    // ✅ Realtime listener pro notifikace (logika zůstává)
     useEffect(() => {
         if (!session?.user?.id) return;
 
@@ -211,19 +270,15 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         return () => supabase.removeChannel(subscription);
     }, [session?.user?.id]);
     
-    // ✅ ÚPRAVA: Scroll na konec chatu. Mělo by zabránit skákání.
+    // ✅ Scroll na konec chatu (logika zůstává)
     const scrollToBottom = () => {
-        // Používáme scrollIntoView na referenční div v chatovacím okně
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        
-        // Zkusíme posunout okno, aby chatovací formulář nebyl pod klávesnicí (pro mobil)
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         }
     };
 
     useEffect(() => {
-        // Voláme pouze při načtení/přijetí zprávy, NE při psaní
         scrollToBottom();
     }, [messages]);
 
@@ -242,7 +297,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         }
     };
 
-    // Odeslání magic link (ZŮSTÁVÁ STEJNÉ)
+    // Odeslání magic link
     const sendMagicLink = async () => {
         setLoading(true);
         const { error } = await supabase.auth.signInWithOtp({
@@ -252,12 +307,9 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         setLoading(false);
         if (error) {
             console.error(error);
-            alert(language === "cs" ? "Nepodařilo se odeslat e-mail." : "Failed to send email.");
+            alert(t.emailFailed);
         } else {
-            alert(language === "cs"
-                ? "Odkaz pro přihlášení byl odeslán na váš e-mail."
-                : "Login link has been sent to your email."
-            );
+            alert(t.emailSent);
         }
     };
 
@@ -267,7 +319,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         markMessagesAsRead(target.id);
     };
 
-    // Načtení historie zpráv + realtime (ZŮSTÁVÁ STEJNÉ)
+    // Načtení historie zpráv + realtime (logika zůstává)
     useEffect(() => {
         if (!targetProfile || !session?.user) return;
 
@@ -283,7 +335,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 .order("created_at", { ascending: true });
             if (!error) setMessages(data || []);
             setChatLoading(false);
-            scrollToBottom(); // Volat scroll po načtení
+            scrollToBottom(); 
         };
 
         loadMessages();
@@ -293,8 +345,6 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
             .on(
                 "postgres_changes",
                 { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
-                // ✅ DŮLEŽITÉ: Při realtime aktualizaci POUZE přidáme novou zprávu,
-                // scrollToBottom se automaticky spustí díky useEffect([messages])
                 (payload) => setMessages((prev) => [...prev, payload.new])
             )
             .subscribe();
@@ -307,10 +357,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         const currentUserId = session.user.id;
         const chatId = getChatId(currentUserId, targetProfile.id);
         const content = messageInput.trim();
-        setMessageInput(""); // Vynulování inputu
-
-        // Optimistická aktualizace (neprovedena, ale dobrý zvyk: 
-        // setMessages(prev => [...prev, { content, sender_id: currentUserId, created_at: new Date().toISOString() }]);)
+        setMessageInput("");
 
         const { error } = await supabase.from("messages").insert([{
             chat_id: chatId,
@@ -320,192 +367,200 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
             is_read: false,
         }]);
         if (error) console.error("Chyba při odesílání zprávy:", error.message);
-        
-        // Poznámka: Nová zpráva se do pole `messages` přidá přes Realtime listener (viz výše),
-        // čímž se spustí `useEffect([messages])` a scroll.
     };
 
-    // --- RENDER CHAT ---
-    if (session && targetProfile) {
-        const currentUserId = session.user.id;
-        return (
-            <section className="py-12 bg-gray-50 min-h-screen">
-                <div className="container mx-auto px-4 max-w-3xl">
-                    <Card className="p-6 bg-white shadow-xl border border-gray-200 rounded-2xl">
-                        <div className="flex justify-between items-center mb-4 border-b pb-3">
-                            <h2 className="text-xl font-bold">
-                                {language === "cs" ? "Chat s:" : "Chat with:"} <span className="text-blue-600">{targetProfile.name}</span>
-                            </h2>
-                            <Button className="bg-green-500 text-white hover:bg-green-600 transition-colors" onClick={() => setTargetProfile(null)}>
-                                {language === "cs" ? "Zpět na seznam" : "Back to list"}
-                            </Button>
-                        </div>
-
-                        {/* Chatovací okno */}
-                        <div className="h-96 overflow-y-auto mb-4 p-4 space-y-4 bg-gray-100 rounded-lg border border-gray-300">
-                            {chatLoading
-                                ? <p className="text-center text-gray-500">{language === "cs" ? "Načítám chat..." : "Loading chat..."}</p>
-                                : messages.map((msg, index) => (
-                                    <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
-                                        <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId 
-                                            ? "bg-blue-600 text-white rounded-br-none" 
-                                            : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
-                                            <p className="text-sm break-words">{msg.content}</p>
-                                            <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
-                                                {new Date(msg.created_at).toLocaleTimeString(language)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                            {/* Referenční bod pro scroll - je stále na dně chatovacího okna */}
-                            <div ref={messagesEndRef} />
-                        </div>
-                        
-                        {/* ✅ PŘIDÁN REF PRO SCROLL FORMULÁŘE */}
-                        <div ref={chatContainerRef} className="flex gap-2">
-                            <Input
-                                className="bg-white border border-gray-300 focus:border-blue-500 transition-colors flex-grow"
-                                type="text"
-                                placeholder={language === "cs" ? "Napište zprávu..." : "Write a message..."}
-                                value={messageInput}
-                                onChange={(e) => setMessageInput(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                            />
-                            <Button 
-                                className="bg-blue-600 text-white hover:bg-blue-700 font-semibold" 
-                                onClick={handleSendMessage} 
-                                disabled={!messageInput.trim() || chatLoading}
-                            >
-                                {language === "cs" ? "Odeslat" : "Send"}
-                            </Button>
-                        </div>
-                    </Card>
-                </div>
-            </section>
-        );
-    }
-
-    // --- RENDER LOGIN / SEZNAM ÚČASTNÍKŮ ---
-    
+    // Filtrování profilů (logika zůstává)
     const filteredProfiles = profiles.filter(p => {
-        // Kontrolujeme, jestli nejde o null nebo undefined před voláním toLowerCase()
         const query = searchQuery.toLowerCase();
         const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
         const companyMatch = p.company ? p.company.toLowerCase().includes(query) : false;
         return nameMatch || companyMatch;
     });
-    
+
+    // ----------------------------------------------------------------------------------
+    // RENDER - TLAČÍTKO a MODAL
+    // ----------------------------------------------------------------------------------
+
     return (
-        <section className="py-12 bg-gradient-to-b from-background via-background-dark to-background-darkmin-h-screen flex items-center">
-            <div className="container mx-auto px-4 max-w-3xl">
-                
-                {/* Přihlašovací formulář */}
-                {!session && (
-                    <Card className="p-6 bg-white shadow-xl border border-gray-200 rounded-2xl max-w-md mx-auto">
-                        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-                            {language === "cs" ? "Přihlášení do chatu" : "Participant Login"}
-                        </h2>
-                        <p className="text-gray-500 text-center mb-6">
-                            {language === "cs"
-                                ? "Zadejte svůj e-mail a my vám pošleme magický odkaz."
-                                : "Enter your email and we'll send you a magic login link."}
-                        </p>
-                        <div className="flex flex-col gap-4">
-                            <Input
-                                type="email"
-                                placeholder="email@domain.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="bg-white border border-gray-300 text-black focus:border-blue-500 transition-colors"
-                            />
-                            <Button
-                                onClick={sendMagicLink}
-                                disabled={loading || !email}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl h-12 w-full transition-colors"
-                            >
-                                {loading
-                                    ? language === "cs" ? "Odesílám..." : "Sending..."
-                                    : language === "cs" ? "Odeslat přihlašovací odkaz" : "Send login link"}
-                            </Button>
-                        </div>
-                    </Card>
-                )}
+        <>
+            {/* Tlačítko pro otevření chatu - zobrazené na hlavní stránce */}
+            <Button
+                onClick={() => setIsOpen(true)}
+                className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
+            >
+                <MessageSquare className="w-6 h-6 mr-2" />
+                {t.openChat}
+            </Button>
 
-                {/* Seznam účastníků - ZDE JE KOTVA PRO AUTOMATICKÝ SCROLL */}
-                {session && (
-                    <Card id="login-section" className="p-6 bg-white shadow-xl border border-gray-200 rounded-2xl animate-fade-in">
-                        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-                            {language === "cs" ? "Seznam účastníků" : "Participant List"}
-                        </h2>
-                        
-                        {/* ✅ NOVÉ ROZLOŽENÍ PRO VYHLEDÁVÁNÍ A ODHLÁŠENÍ */}
-                        <div className="flex flex-col md:flex-row gap-4 mb-6">
-                            <Input
-                                type="text"
-                                placeholder={language === "cs" ? "Hledat podle jména nebo společnosti..." : "Search by name or company..."}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-blue-500 transition-colors"
-                            />
-
-                            <Button 
-                                onClick={handleLogout} 
-                                disabled={loading} 
-                                className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors"
-                            >
-                                {loading ? "Odhlašuji..." : language === "cs" ? "Odhlásit se" : "Log out"}
+            {/* Modal pro celý chatovací systém */}
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                {/* Nastavíme DialogContent, aby vypadal podobně jako váš TermsModal */}
+                <DialogContent className="max-w-4xl w-full h-[90vh] p-6 sm:p-8 overflow-y-auto bg-white text-gray-900 flex flex-col">
+                    
+                    <DialogHeader className="flex-shrink-0 border-b pb-3 mb-4">
+                        <DialogTitle className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
+                            {/* Titulek se mění podle stavu */}
+                            {session ? t.listTitle : t.loginTitle}
+                        </DialogTitle>
+                        <DialogClose asChild>
+                            <Button variant="ghost" className="absolute right-4 top-4 text-gray-500 hover:text-gray-800">
+                                <X className="w-5 h-5" />
                             </Button>
-                        </div>
-                        
-                        {profiles.length === 0 ? (
-                            <p className="text-center text-gray-500 py-4">
-                                {language === "cs" ? "Načítám seznam..." : "Loading list..."}
-                            </p>
-                        ) : (
-                            <ul className="divide-y divide-gray-200">
-                                {filteredProfiles.map((p) => {
-                                    const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
-                                    return (
-                                        <li key={p.id} className="py-3 px-1 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-md">
-                                            <div>
-                                                <span className="font-medium text-gray-800">{p.name}</span>
-                                                {p.company && (
-                                                    <span className="text-sm text-gray-500 ml-2">
-                                                        ({p.company})
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {isCurrentUser ? (
-                                                <span className="text-gray-500 text-sm font-semibold">
-                                                    ({language === "cs" ? "Já" : "Me"})
-                                                </span>
-                                            ) : (
-                                                <div className="flex items-center gap-2">
-                                                    {/* ✅ RENDER NOTIFIKACE */}
-                                                    {p.unreadCount > 0 && (
-                                                        <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold shadow-md animate-pulse">
-                                                            {p.unreadCount}
+                        </DialogClose>
+                    </DialogHeader>
+
+                    {/* Obsah Modalu - Přihlášení, Seznam nebo Chat */}
+                    <div className="flex-grow overflow-y-auto">
+
+                        {/* --- CHAT S KONKRÉTNÍM ÚČASTNÍKEM --- */}
+                        {session && targetProfile && (
+                            <div className="flex flex-col h-full">
+                                <div className="flex justify-between items-center mb-4 pb-3 border-b">
+                                    <h2 className="text-xl font-bold">
+                                        {t.chatWith} <span className="text-blue-600">{targetProfile.name}</span>
+                                    </h2>
+                                    <Button className="bg-green-500 text-white hover:bg-green-600 transition-colors" onClick={() => setTargetProfile(null)}>
+                                        {t.backToList}
+                                    </Button>
+                                </div>
+
+                                {/* Chatovací okno */}
+                                <div className="flex-grow overflow-y-auto mb-4 p-4 space-y-4 bg-gray-100 rounded-lg border border-gray-300">
+                                    {chatLoading
+                                        ? <p className="text-center text-gray-500">{t.loadingChat}</p>
+                                        : messages.map((msg, index) => {
+                                            const currentUserId = session.user.id;
+                                            return (
+                                                <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
+                                                    <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId 
+                                                        ? "bg-blue-600 text-white rounded-br-none" 
+                                                        : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
+                                                        <p className="text-sm break-words">{msg.content}</p>
+                                                        <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
+                                                            {new Date(msg.created_at).toLocaleTimeString(language)}
                                                         </span>
-                                                    )}
-
-                                                    <Button
-                                                        className="bg-green-600 text-white hover:bg-green-700 transition-colors"
-                                                        onClick={() => startChat(p)}
-                                                        size="sm"
-                                                    >
-                                                        {language === "cs" ? "Chat" : "Chat"}
-                                                    </Button>
+                                                    </div>
                                                 </div>
-                                            )}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
+                                            );
+                                        })
+                                    }
+                                    <div ref={messagesEndRef} />
+                                </div>
+                                
+                                {/* Odesílací formulář */}
+                                <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
+                                    <Input
+                                        className="bg-white border border-gray-300 focus:border-blue-500 transition-colors flex-grow"
+                                        type="text"
+                                        placeholder={t.writeMessage}
+                                        value={messageInput}
+                                        onChange={(e) => setMessageInput(e.target.value)}
+                                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                                    />
+                                    <Button 
+                                        className="bg-blue-600 text-white hover:bg-blue-700 font-semibold" 
+                                        onClick={handleSendMessage} 
+                                        disabled={!messageInput.trim() || chatLoading}
+                                    >
+                                        {t.send}
+                                    </Button>
+                                </div>
+                            </div>
                         )}
-                    </Card>
-                )}
-            </div>
-        </section>
+
+                        {/* --- SEZNAM ÚČASTNÍKŮ --- */}
+                        {session && !targetProfile && (
+                            <div className="animate-fade-in h-full flex flex-col">
+                                <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0">
+                                    <Input
+                                        type="text"
+                                        placeholder={t.searchPlaceholder}
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-blue-500 transition-colors"
+                                    />
+
+                                    <Button 
+                                        onClick={handleLogout} 
+                                        disabled={loading} 
+                                        className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors"
+                                    >
+                                        {loading ? t.loggingOut : t.logout}
+                                    </Button>
+                                </div>
+                                
+                                <div className="flex-grow overflow-y-auto">
+                                    {profiles.length === 0 ? (
+                                        <p className="text-center text-gray-500 py-4">{t.loadingList}</p>
+                                    ) : (
+                                        <ul className="divide-y divide-gray-200">
+                                            {filteredProfiles.map((p) => {
+                                                const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
+                                                return (
+                                                    <li key={p.id} className="py-3 px-1 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-md">
+                                                        <div>
+                                                            <span className="font-medium text-gray-800">{p.name}</span>
+                                                            {p.company && (
+                                                                <span className="text-sm text-gray-500 ml-2">
+                                                                    ({p.company})
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        {isCurrentUser ? (
+                                                            <span className="text-gray-500 text-sm font-semibold">
+                                                                ({t.me})
+                                                            </span>
+                                                        ) : (
+                                                            <div className="flex items-center gap-2">
+                                                                {p.unreadCount > 0 && (
+                                                                    <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold shadow-md animate-pulse">
+                                                                        {p.unreadCount}
+                                                                    </span>
+                                                                )}
+
+                                                                <Button
+                                                                    className="bg-green-600 text-white hover:bg-green-700 transition-colors"
+                                                                    onClick={() => startChat(p)}
+                                                                    size="sm"
+                                                                >
+                                                                    {language === "cs" ? "Chat" : "Chat"}
+                                                                </Button>
+                                                            </div>
+                                                        )}
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* --- PŘIHLAŠOVACÍ FORMULÁŘ --- */}
+                        {!session && (
+                            <div className="max-w-md mx-auto py-12">
+                                <p className="text-gray-500 text-center mb-6">{t.loginNotice}</p>
+                                <div className="flex flex-col gap-4">
+                                    <Input
+                                        type="email"
+                                        placeholder="email@domain.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="bg-white border border-gray-300 text-black focus:border-blue-500 transition-colors"
+                                    />
+                                    <Button
+                                        onClick={sendMagicLink}
+                                        disabled={loading || !email}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl h-12 w-full transition-colors"
+                                    >
+                                        {loading ? t.sending : t.sendLink}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
