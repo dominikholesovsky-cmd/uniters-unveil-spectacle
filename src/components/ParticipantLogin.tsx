@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 // Supabase konfigurace
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL; // <- přesměrování po přihlášení
+const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("Supabase URL nebo ANON KEY nejsou nastaveny v .env souboru");
@@ -51,7 +51,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: REDIRECT_URL, // <--- přesměrování po přihlášení
+        emailRedirectTo: REDIRECT_URL,
       },
     });
     setLoading(false);
@@ -139,7 +139,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
               <h2 className="text-xl font-bold">
                 {language === "cs" ? "Chat s:" : "Chat with:"} {targetProfile.name}
               </h2>
-              <Button variant="outline" onClick={() => setTargetProfile(null)}>
+              <Button className="bg-white hover:bg-gray-100 transition-colors" variant="outline" onClick={() => setTargetProfile(null)}>
                 {language === "cs" ? "Zpět na seznam" : "Back to list"}
               </Button>
             </div>
@@ -169,13 +169,18 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
 
             <div className="flex gap-2">
               <Input
+                className="bg-white"
                 type="text"
                 placeholder={language === "cs" ? "Napište zprávu..." : "Write a message..."}
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
-              <Button onClick={handleSendMessage} disabled={!messageInput.trim()}>
+              <Button
+                className="bg-white hover:bg-gray-100 transition-colors"
+                onClick={handleSendMessage}
+                disabled={!messageInput.trim()}
+              >
                 {language === "cs" ? "Odeslat" : "Send"}
               </Button>
             </div>
@@ -198,8 +203,18 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 : "Enter your email and we'll send you a magic login link."}
             </p>
             <div className="flex flex-col gap-4">
-              <Input className="bg-white" type="email" placeholder="email@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <Button onClick={sendMagicLink} disabled={loading || !email}>
+              <Input
+                className="bg-white"
+                type="email"
+                placeholder="email@domain.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Button
+                className="bg-white hover:bg-gray-100 transition-colors"
+                onClick={sendMagicLink}
+                disabled={loading || !email}
+              >
                 {loading
                   ? language === "cs"
                     ? "Odesílám..."
@@ -221,9 +236,18 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
               <ul className="divide-y divide-border">
                 {profiles.map((p) => (
                   <li key={p.id} className="py-3 px-1 flex justify-between items-center">
-                    <span className="font-medium">{p.name}</span>
+                    <div>
+                      <span className="font-medium">{p.name}</span>
+                      {p.company && <span className="text-sm text-muted-foreground ml-2">({p.company})</span>}
+                    </div>
                     {p.id !== session.user.id ? (
-                      <Button onClick={() => startChat(p)} size="sm">{language === "cs" ? "Chat" : "Chat"}</Button>
+                      <Button
+                        className="bg-white hover:bg-gray-100 transition-colors"
+                        onClick={() => startChat(p)}
+                        size="sm"
+                      >
+                        {language === "cs" ? "Chat" : "Chat"}
+                      </Button>
                     ) : (
                       <span className="text-muted-foreground text-sm">({language === "cs" ? "Já" : "Me"})</span>
                     )}
