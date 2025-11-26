@@ -1,20 +1,18 @@
-import { useState, useEffect, useRef, FC } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
-// Předpokládané UI komponenty
-import { Card } from "@/components/ui/card";
+// Předpokládané UI komponenty z Shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// Nově přidané pro Modal
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogClose,
 } from "@/components/ui/dialog";
-import { MessageSquare, X } from "lucide-react"; // Ikonky pro tlačítko a zavření
+import { MessageSquare } from "lucide-react"; // Ikonka pro tlačítko
 
-// Supabase konfigurace (předpokládáme, že proměnné jsou v .env)
+// --- Supabase konfigurace ---
+// PŘEDPOKLAD: Tyto proměnné jsou správně nastaveny ve vašem .env souboru
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
@@ -32,38 +30,33 @@ interface ParticipantLoginProps {
     language?: "cs" | "en";
 }
 
+// Pomocná funkce pro generování unikátního chat ID (lexikograficky seřazené)
 const getChatId = (id1: string, id2: string): string => {
     const sortedIds = [id1, id2].sort();
     return `${sortedIds[0]}_${sortedIds[1]}`;
 };
 
-// ----------------------------------------------------------------------------------
-// Hlavní komponenta, nyní obalující logiku a renderující TLAČÍTKO + MODAL
-// ----------------------------------------------------------------------------------
+// --- Komponenta ChatButtonAndModal ---
 export default function ChatButtonAndModal({ language = "cs" }: ParticipantLoginProps) {
-    // Stav pro kontrolu viditelnosti MODALU
+    // Stavy pro UI a data
     const [isOpen, setIsOpen] = useState(false);
-
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
     const [profiles, setProfiles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-
     const [targetProfile, setTargetProfile] = useState<any | null>(null);
     const [messages, setMessages] = useState<any[]>([]);
     const [messageInput, setMessageInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
-    
-    // Nový stav pro CELKOVÝ počet nepřečtených zpráv
     const [totalUnreadCount, setTotalUnreadCount] = useState(0);
-    
-    // Pro scroll na konec chatu
+
+    // Ref pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    // Ref pro odesílací formulář (pro řešení mobilního skákání)
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
-    // Textové překlady (beze změn)
+
+    // --- Textové překlady ---
     const t = {
         cs: {
             openChat: "Otevřít Chat",
@@ -107,10 +100,9 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         },
     }[language] ?? t.cs;
 
-
-    // Značení zpráv jako přečtené (upraveno pro volání loadProfiles s ID)
+    // --- Funkce pro označení zpráv jako přečtené ---
     const markMessagesAsRead = async (senderId: string) => {
-        const currentUserId = session?.user?.id; // Použijeme ID ze stavu session, je to bezpečné, protože jde o reakci na klik
+        const currentUserId = session?.user?.id;
         if (!currentUserId) return;
         
         const { error } = await supabase
@@ -122,11 +114,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
 
         if (error) console.error("Chyba při označování zpráv jako přečtené:", error.message);
         
-        // Voláme s aktuálním ID
+        // Znovu načte profily pro aktualizaci notifikací
         loadProfiles(currentUserId);
     }
 
-    // ⭐ OPRAVENÁ FUNKCE loadProfiles - PŘIJÍMÁ currentUserId JAKO PARAMETR
+    // --- Funkce pro načtení profilů a notifikací ---
     const loadProfiles = async (currentUserId: string | null = session?.user?.id) => {
         setLoading(true);
         
@@ -147,7 +139,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             return;
         }
 
-        // 1. Získání NEPŘEČTENÝCH ZPRÁV
+        // 1. Získání NEPŘEČTENÝCH ZPRÁV pro aktuálního uživatele
         const { data: unreadData, error: unreadError } = await supabase
             .from("messages")
             .select("sender_id")
@@ -158,7 +150,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             console.error("CHYBA Supabase při načítání nepřečtených zpráv:", unreadError.message);
         }
 
-        // 2. Mapování počtu notifikací ručním sčítáním
+        // 2. Mapování počtu notifikací a sčítání celkového počtu
         let newTotalUnreadCount = 0;
 
         const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
@@ -174,7 +166,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             unreadCount: unreadMap[p.id] || 0,
         }));
 
-        // Logika řazení
+        // Logika řazení podle společnosti a jména
         const sorted = profilesWithUnread.sort((a, b) => {
             const aCompany = a.company || "";
             const bCompany = b.company || "";
@@ -190,11 +182,10 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         });
         
         setProfiles(sorted);
-        setLoading(false); // Ukončení načítání po dokončení
+        setLoading(false); 
     };
 
-
-    // ⭐ OPRAVENÁ FUNKCE linkProfileToAuth - VOLÁ loadProfiles S AKTUÁLNÍM ID
+    // --- Funkce pro propojení profilu s autentizovaným uživatelem ---
     async function linkProfileToAuth(user: any) {
         if (!user.email) return;
 
@@ -211,9 +202,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         const profileData = profilesData?.[0];
 
         if (profileData) {
+            // Profil existuje, zkontroluj/aktualizuj ID
             if (!profileData.id || profileData.id !== user.id) {
-                console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email} na ${user.id}`, 'color: orange; font-weight: bold;');
-                                        
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ id: user.id })
@@ -222,14 +212,12 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 if (updateError) {
                     console.error('CHYBA PŘI AKTUALIZACI ID:', updateError.message);
                 } else {
-                    // Voláme loadProfiles s aktuálním user.id
                     loadProfiles(user.id);
                     return;
                 }
             }
         } else {
-            console.warn(`Uživatel ${user.email} nebyl nalezen v seznamu profiles. Vytvářím nový profil.`);
-
+            // Profil neexistuje, vytvoř nový
             const { error: insertError } = await supabase
                 .from('profiles')
                 .insert({
@@ -244,11 +232,10 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             }
         }
         
-        // Voláme loadProfiles s aktuálním user.id
         loadProfiles(user.id);
     }
 
-    // ⭐ OPRAVENÁ SEKCE: Hlavní useEffect pro sledování Auth a načtení profilů
+    // --- Efekty pro sledování Auth stavu a Realtime notifikace ---
     useEffect(() => {
         // Kontrola při spuštění/refresh stránky
         supabase.auth.getSession().then(({ data }) => {
@@ -267,11 +254,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             if (session?.user) {
-                // Voláme pro propojení profilu a následné načtení seznamu
                 linkProfileToAuth(session.user);
             } else {
                 setProfiles([]);
                 setTotalUnreadCount(0);
+                setTargetProfile(null);
             }
         });
         
@@ -280,7 +267,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         };
     }, []);
 
-    // Realtime listener pro notifikace (volá loadProfiles bez argumentu, použije ID ze stavu session)
+    // Realtime listener pro notifikace (příchozí zprávy)
     useEffect(() => {
         if (!session?.user?.id) return;
 
@@ -289,17 +276,18 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             .on(
                 "postgres_changes",
                 { event: "INSERT", schema: "public", table: "messages", filter: `recipient_id=eq.${session.user.id}` },
-                (_payload) => loadProfiles() // Zde je bezpečné volat bez argumentu, session.user.id je platné
+                (_payload) => loadProfiles()
             )
             .subscribe();
 
         return () => supabase.removeChannel(subscription);
     }, [session?.user?.id]);
     
-    // ... (Scroll logika a Odhlašování - beze změn)
+    // --- Scroll logika pro chat ---
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         if (chatContainerRef.current) {
+            // Zajištění scrollu na formulář (užitečné na mobilu)
             chatContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         }
     };
@@ -309,7 +297,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
     }, [messages]);
 
 
-    // Odhlašování (beze změn)
+    // --- Obsluha přihlášení/odhlašování ---
     const handleLogout = async () => {
         setLoading(true);
         const { error } = await supabase.auth.signOut();
@@ -324,7 +312,6 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         }
     };
 
-    // Odeslání magic link (beze změn)
     const sendMagicLink = async () => {
         setLoading(true);
         const { error } = await supabase.auth.signInWithOtp({
@@ -340,13 +327,14 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         }
     };
 
+    // --- Obsluha chatu ---
     const startChat = (target: any) => {
         setTargetProfile(target);
         setMessages([]);
-        markMessagesAsRead(target.id);
+        markMessagesAsRead(target.id); // Označí zprávy jako přečtené při otevření chatu
     };
 
-    // Načtení historie zpráv + realtime (beze změn)
+    // Načtení historie a Realtime pro konkrétní chat
     useEffect(() => {
         if (!targetProfile || !session?.user) return;
 
@@ -367,6 +355,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
 
         loadMessages();
 
+        // Realtime listener pro aktuální chat
         const channel = supabase.channel(`chat_${chatId}`);
         const subscription = channel
             .on(
@@ -396,7 +385,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         if (error) console.error("Chyba při odesílání zprávy:", error.message);
     };
 
-    // Filtrování profilů (beze změn)
+    // Filtrování profilů
     const filteredProfiles = profiles.filter(p => {
         const query = searchQuery.toLowerCase();
         const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
@@ -410,10 +399,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
 
     return (
         <>
-            {/* Tlačítko pro otevření chatu - zobrazené na hlavní stránce */}
+            {/* Tlačítko pro otevření chatu - ZCELA BEZ FOCUS OKRAJE */}
             <Button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 left-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
+                // Potlačení focus ring i pro tlačítko na stránce
+                className="fixed bottom-6 left-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-105 focus-visible:ring-0 focus-visible:ring-offset-0"
             >
                 <MessageSquare className="w-6 h-6 mr-2" />
                 {t.openChat}
@@ -431,7 +421,6 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                     
                     <DialogHeader className="flex-shrink-0 border-b pb-3 mb-4">
                         <DialogTitle className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
-                            {/* Titulek se mění podle stavu */}
                             {session ? t.listTitle : t.loginTitle}
                         </DialogTitle>
                     </DialogHeader>
@@ -446,7 +435,10 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     <h2 className="text-xl font-bold">
                                         {t.chatWith} <span className="text-blue-600">{targetProfile.name}</span>
                                     </h2>
-                                    <Button className="bg-green-500 text-white hover:bg-green-600 transition-colors" onClick={() => setTargetProfile(null)}>
+                                    <Button 
+                                        className="bg-green-500 text-white hover:bg-green-600 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
+                                        onClick={() => setTargetProfile(null)}
+                                    >
                                         {t.backToList}
                                     </Button>
                                 </div>
@@ -474,7 +466,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     <div ref={messagesEndRef} />
                                 </div>
                                 
-                                {/* ⭐ UPRAVENÁ SEKCE: Odesílací formulář (přidány třídy pro potlačení focus okraje) */}
+                                {/* SEKCE pro ODESÍLÁNÍ ZPRÁV - MAXIMÁLNÍ POTLAČENÍ FOCUS STYLŮ */}
                                 <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
                                     <Input
                                         type="text"
@@ -482,10 +474,12 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         value={messageInput}
                                         onChange={(e) => setMessageInput(e.target.value)}
                                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors **focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none**"
+                                        // Všechny třídy pro potlačení modrého okraje/stínu
+                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none"
                                     />
                                     <Button
-                                        className="bg-blue-600 text-white hover:bg-blue-700 font-semibold"
+                                        // Všechny třídy pro potlačení modrého okraje/stínu
+                                        className="bg-blue-600 text-white hover:bg-blue-700 font-semibold focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none"
                                         onClick={handleSendMessage}
                                         disabled={!messageInput.trim() || chatLoading}
                                     >
@@ -504,13 +498,15 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder={t.searchPlaceholder}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors **focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none**"
+                                        // Všechny třídy pro potlačení modrého okraje/stínu
+                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none"
                                     />
 
                                     <Button
                                         onClick={handleLogout}
                                         disabled={loading}
-                                        className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors"
+                                        // Všechny třídy pro potlačení modrého okraje/stínu
+                                        className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
                                     >
                                         {loading ? t.loggingOut : t.logout}
                                     </Button>
@@ -546,7 +542,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                                                 )}
 
                                                                 <Button
-                                                                    className="bg-green-600 text-white hover:bg-green-700 transition-colors"
+                                                                    // Všechny třídy pro potlačení modrého okraje/stínu
+                                                                    className="bg-green-600 text-white hover:bg-green-700 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
                                                                     onClick={() => startChat(p)}
                                                                     size="sm"
                                                                 >
@@ -573,13 +570,14 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder="email@domain.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        // ⭐ ZMĚNA: Přidány třídy pro potlačení focus okraje/ringu
-                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors **focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none**"
+                                        // Všechny třídy pro potlačení modrého okraje/stínu
+                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none"
                                     />
                                     <Button
                                         onClick={sendMagicLink}
                                         disabled={loading || !email}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl h-12 w-full transition-colors"
+                                        // Všechny třídy pro potlačení modrého okraje/stínu
+                                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl h-12 w-full transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
                                     >
                                         {loading ? t.sending : t.sendLink}
                                     </Button>
