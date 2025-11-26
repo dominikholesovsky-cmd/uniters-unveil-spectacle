@@ -242,7 +242,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                     </div>
                     {p.id !== session.user.id ? (
                       <Button
-                        className="bg-white hover:bg-gray-100 transition-colors"
+                        className="bg-foreground hover:bg-gray-100 transition-colors"
                         onClick={() => startChat(p)}
                         size="sm"
                       >
