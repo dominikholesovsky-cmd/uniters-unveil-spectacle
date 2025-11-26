@@ -46,6 +46,7 @@ interface ChatModalProps {
     language?: "cs" | "en";
     open: boolean; // Stav, zda je modal otevřený
     onOpenChange: (open: boolean) => void; // Funkce pro změnu stavu (zavření kliknutím mimo modal/escape)
+    onTotalUnreadChange: (count: number) => void;
 }
 
 // KLÍČ pro lokální úložiště

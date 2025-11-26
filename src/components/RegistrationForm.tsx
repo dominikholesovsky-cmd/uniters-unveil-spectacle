@@ -42,10 +42,11 @@ const formSchema = z.object({
   }),
 });
 
-
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Nový stav pro zamezení vícenásobného odeslání
+  
   // Stav pro ovládání ChatModal
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   // Stav pro počet nepřečtených zpráv z ChatModal
@@ -57,7 +58,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     setIsSubmitted(submitted);
   }, []);
 
-  // --- Překlady ---
+  // --- Překlady (Bez změn) ---
   const content = {
     cs: {
       title: "Registrace",
@@ -85,6 +86,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       addToCalendar: "Přidat do kalendáře",
       alreadySubmitted: "Už jste se zaregistrovali. Nemůžete odeslat formulář znovu.",
       openChatRoom: "Vstoupit do chatovací místnosti",
+      submitting: "Odesílám...", // Nový překlad
     },
     en: {
       title: "Registration",
@@ -112,6 +114,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       addToCalendar: "Add to Calendar",
       alreadySubmitted: "You have already registered. You cannot submit again.",
       openChatRoom: "Enter Chat Room",
+      submitting: "Submitting...", // Nový překlad
     },
   };
 
@@ -130,8 +133,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     },
   });
 
-  // --- Logika Odeslání ---
+  // --- Logika Odeslání (S kontrolou isSubmitting) ---
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (isSubmitting) return; // Zabrání vícenásobnému odeslání
+    setIsSubmitting(true);
+
     try {
       const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
         method: "POST",
@@ -165,15 +171,22 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             : "Failed to send registration. Please try again.",
         variant: "destructive",
       });
+      setIsSubmitting(false); // Povolit odeslání znovu v případě chyby
+    } finally {
+      // V případě úspěchu necháme setIsSubmitting = true (přechod do Success state)
+      // V případě chyby jsme to již resetovali v catch bloku
+      if (isSubmitted) {
+        setIsSubmitting(false); // Reset po úspešném přechodu do success state
+      }
     }
   };
-  
+    
   // --- Navigace a Kalendář ---
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
-    // Opravená URL
+    // OPRAVENÁ URL pro správné otevření Google Maps
     window.open(
-      `http://maps.google.com/maps?q=${coordinates}`,
+      `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`,
       "_blank"
     );
   };
@@ -205,19 +218,20 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const handleOpenChat = useCallback(() => {
     setIsChatModalOpen(true);
   }, []);
-  
+    
   // Funkce pro aktualizaci stavu nepřečtených zpráv z ChatModal
   const handleUnreadCountChange = useCallback((count: number) => {
-      setUnreadCount(count);
+    // Toto je callback volaný z ChatModal, který aktualizuje badge
+    setUnreadCount(count);
   }, []);
 
 
   // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ (Success State) ---
   if (isSubmitted) {
-    
+      
     // Třídy pro sjednocení vzhledu všech tří tlačítek (standardní velikost)
     const commonButtonClasses = "w-full sm:w-80 mx-auto";
-    
+      
     return (
       <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light">
         <div className="container mx-auto px-4">
@@ -225,40 +239,40 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
-            
+              
             <div className="flex flex-col justify-center gap-4"> 
               
               {/* 1. TLAČÍTKO CHATU (první řádek) */}
               <Button 
-                  onClick={handleOpenChat} 
-                  variant="default" 
-                  className={commonButtonClasses + " relative"}
+                onClick={handleOpenChat} 
+                variant="default" 
+                className={commonButtonClasses + " relative"}
               >
-                  <MessageSquare className="w-5 h-5 mr-2" /> 
+                <MessageSquare className="w-5 h-5 mr-2" /> 
                   
-                  {t.openChatRoom}
+                {t.openChatRoom}
                   
-                  {/* ZOBRAZENÍ POČTU NEPŘEČTENÝCH ZPRÁV (Badge) */}
-                  {unreadCount > 0 && (
-                      <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
-                                        inline-flex items-center justify-center 
-                                        h-6 w-6 rounded-full bg-red-600 text-white 
-                                        text-xs font-bold shadow-md">
-                          {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                  )}
+                {/* ZOBRAZENÍ POČTU NEPŘEČTENÝCH ZPRÁV (Badge) - PONECHÁNO BEZ ZMĚN */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
+                                  inline-flex items-center justify-center 
+                                  h-6 w-6 rounded-full bg-red-600 text-white 
+                                  text-xs font-bold shadow-md">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </Button>
               
               {/* Ostatní tlačítka (druhý řádek - na desktopu vedle sebe) */}
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                   
-                  <Button onClick={handleNavigationClick} variant="secondary" className={commonButtonClasses}>
-                    <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
-                  </Button>
+                <Button onClick={handleNavigationClick} variant="secondary" className={commonButtonClasses}>
+                  <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
+                </Button>
                   
-                  <Button onClick={handleAddToCalendar} variant="secondary" className={commonButtonClasses}>
-                    <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
-                  </Button>
+                <Button onClick={handleAddToCalendar} variant="secondary" className={commonButtonClasses}>
+                  <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
+                </Button>
               </div>
 
             </div>
@@ -272,7 +286,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             onOpenChange={setIsChatModalOpen}
             onTotalUnreadChange={handleUnreadCountChange}
         />
-        
+          
       </section>
     );
   }
@@ -392,8 +406,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
               />
 
               {/* Tlačítko Odeslat */}
-              <Button type="submit" className="w-full text-lg h-14">
-                {t.submit}
+              <Button type="submit" className="w-full text-lg h-14" disabled={isSubmitting}>
+                {isSubmitting ? t.submitting : t.submit}
               </Button>
             </form>
           </Form>
