@@ -244,28 +244,45 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
           </Card>
         )}
 
-        {session && (
+                {session && (
           <Card className="p-6 bg-white shadow-lg border border-border rounded-2xl animate-fade-in">
-            <h2 className="text-2xl font-bold mb-4 text-center">{language === "cs" ? "Seznam účastníků" : "Participant List"}</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              {language === "cs" ? "Seznam účastníků" : "Participant List"}
+            </h2>
             {profiles.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4">{language === "cs" ? "Načítám seznam..." : "Loading list..."}</p>
+              <p className="text-center text-muted-foreground py-4">
+                {language === "cs" ? "Načítám seznam..." : "Loading list..."}
+              </p>
             ) : (
               <ul className="divide-y divide-border">
-                {profiles.map((p) => (
-                  <li key={p.id} className="py-3 px-1 flex justify-between items-center">
-                    <div>
-                      <span className="font-medium">{p.name}</span>
-                      {p.company && <span className="text-sm text-muted-foreground ml-2">({p.company})</span>}
-                    </div>
-                    {p.id !== session.user.id ? (
-                      <Button className="bg-white text-black border border-gray-300 hover:bg-gray-100 transition-colors" onClick={() => startChat(p)} size="sm">
-                        {language === "cs" ? "Chat" : "Chat"}
-                      </Button>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">({language === "cs" ? "Já" : "Me"})</span>
-                    )}
-                  </li>
-                ))}
+                {profiles.map((p) => {
+                  const isCurrentUser = p.id.toString() === session.user.id.toString(); // bezpečné porovnání
+                  return (
+                    <li key={p.id} className="py-3 px-1 flex justify-between items-center">
+                      <div>
+                        <span className="font-medium">{p.name}</span>
+                        {p.company && (
+                          <span className="text-sm text-muted-foreground ml-2">
+                            ({p.company})
+                          </span>
+                        )}
+                      </div>
+                      {isCurrentUser ? (
+                        <span className="text-muted-foreground text-sm">
+                          ({language === "cs" ? "Já" : "Me"})
+                        </span>
+                      ) : (
+                        <Button
+                          className="bg-white text-black border border-gray-300 hover:bg-gray-100 transition-colors"
+                          onClick={() => startChat(p)}
+                          size="sm"
+                        >
+                          {language === "cs" ? "Chat" : "Chat"}
+                        </Button>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </Card>
