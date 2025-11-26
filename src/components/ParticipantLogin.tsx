@@ -352,7 +352,7 @@ async function linkProfileToAuth(user: any) {
               <ul className="divide-y divide-border">
                 {profiles.map((p) => {
                   // OPRAVENÉ POROVNÁNÍ: Přímé porovnání ID
-                  const isCurrentUser = p.id && session.user.id && p.id === session.user.id;
+                  const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
                   return (
                     <li key={p.id} className="py-3 px-1 flex justify-between items-center">
                       <div>
