@@ -395,7 +395,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     
     return (
         <section className="py-12 bg-gradient-to-t from-background via-background-light to-background-light min-h-screen flex items-center">
-            <div className="container mx-auto px-4 max-w-3xl">
+            <div id="login-section" className="container mx-auto px-4 max-w-3xl">
                 {/* Přihlašovací formulář (ZŮSTÁVÁ STEJNÝ) */}
                 {!session && (
                     <Card className="p-6 bg-white shadow-lg border border-border rounded-2xl max-w-md mx-auto">
