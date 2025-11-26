@@ -45,23 +45,40 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Funkce pro načtení seznamu účastníků
-  const loadProfiles = async () => {
-    const { data, error } = await supabase.from("profiles").select("*");
-    if (!error) {
-      const sorted = (data || []).sort((a, b) => {
-        if (a.company && b.company) {
-          if (a.company.toLowerCase() === b.company.toLowerCase()) {
-            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-          }
-          return a.company.toLowerCase().localeCompare(b.company.toLowerCase());
-        }
-        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-      });
-      setProfiles(sorted);
-    } else {
+
+const loadProfiles = async () => {
+    // Načtení dat jako předtím
+    const { data, error } = await supabase.from("profiles").select("*");
+    
+    if (!error) {
+        const sorted = (data || []).sort((a, b) => {
+            // Bezpečný přístup k polím, nahrazujeme NULL/undefined prázdným řetězcem
+            const aName = a.name || "";
+            const bName = b.name || "";
+            const aCompany = a.company || "";
+            const bCompany = b.company || "";
+
+            // 1. Řazení primárně podle COMPANY
+            if (aCompany && bCompany) {
+                // Pokud jsou obě Company stejné, řadíme podle jména
+                if (aCompany.toLowerCase() === bCompany.toLowerCase()) {
+                    return aName.toLowerCase().localeCompare(bName.toLowerCase());
+                }
+                // Jinak řadíme podle Company
+                return aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
+            }
+
+            // 2. Pokud některá Company chybí, řadíme jen podle Jména
+            // (Tato logika se spouští i v případě, že obě Company jsou NULL,
+            // protože pak se porovnávají aName a bName)
+            return aName.toLowerCase().localeCompare(bName.toLowerCase());
+        });
+        
+        setProfiles(sorted);
+    } else {
         console.error("Chyba při načítání profilů:", error.message);
     }
-  };
+};
 
 async function linkProfileToAuth(user: any) {
     if (!user.email) return;
