@@ -387,124 +387,125 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     }
 
     // --- RENDER LOGIN / SEZNAM ÚČASTNÍKŮ ---
-const filteredProfiles = profiles.filter((p) => {
-  const query = searchQuery.toLowerCase();
-  const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
-  const companyMatch = p.company ? p.company.toLowerCase().includes(query) : false;
-  return nameMatch || companyMatch;
-});
+    
+    const filteredProfiles = profiles.filter(p => {
+        // Kontrolujeme, jestli nejde o null nebo undefined před voláním toLowerCase()
+        const query = searchQuery.toLowerCase();
+        const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
+        const companyMatch = p.company ? p.company.toLowerCase().includes(query) : false;
+        return nameMatch || companyMatch;
+    });
+    
+    return (
+        <section className="py-12 bg-gray-50 min-h-screen flex items-center">
+            <div className="container mx-auto px-4 max-w-3xl">
+                
+                {/* Přihlašovací formulář */}
+                {!session && (
+                    <Card className="p-6 bg-white shadow-xl border border-gray-200 rounded-2xl max-w-md mx-auto">
+                        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+                            {language === "cs" ? "Přihlášení do chatu" : "Participant Login"}
+                        </h2>
+                        <p className="text-gray-500 text-center mb-6">
+                            {language === "cs"
+                                ? "Zadejte svůj e-mail a my vám pošleme magický odkaz."
+                                : "Enter your email and we'll send you a magic login link."}
+                        </p>
+                        <div className="flex flex-col gap-4">
+                            <Input
+                                type="email"
+                                placeholder="email@domain.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="bg-white border border-gray-300 text-black focus:border-blue-500 transition-colors"
+                            />
+                            <Button
+                                onClick={sendMagicLink}
+                                disabled={loading || !email}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl h-12 w-full transition-colors"
+                            >
+                                {loading
+                                    ? language === "cs" ? "Odesílám..." : "Sending..."
+                                    : language === "cs" ? "Odeslat přihlašovací odkaz" : "Send login link"}
+                            </Button>
+                        </div>
+                    </Card>
+                )}
 
-return (
-  <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light min-h-screen flex items-center">
-    <div className="container mx-auto px-4 max-w-3xl">
+                {/* Seznam účastníků - ZDE JE KOTVA PRO AUTOMATICKÝ SCROLL */}
+                {session && (
+                    <Card id="login-section" className="p-6 bg-white shadow-xl border border-gray-200 rounded-2xl animate-fade-in">
+                        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+                            {language === "cs" ? "Seznam účastníků" : "Participant List"}
+                        </h2>
+                        
+                        {/* ✅ NOVÉ ROZLOŽENÍ PRO VYHLEDÁVÁNÍ A ODHLÁŠENÍ */}
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            <Input
+                                type="text"
+                                placeholder={language === "cs" ? "Hledat podle jména nebo společnosti..." : "Search by name or company..."}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-blue-500 transition-colors"
+                            />
 
-      {/* Přihlašovací formulář */}
-      {!session && (
-        <Card className="p-6 shadow-xl rounded-2xl max-w-md mx-auto bg-transparent border-none">
-          <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-            {language === "cs" ? "Přihlášení do chatu" : "Participant Login"}
-          </h2>
-          <p className="text-gray-500 text-center mb-6">
-            {language === "cs"
-              ? "Zadejte svůj e-mail a my vám pošleme magický odkaz."
-              : "Enter your email and we'll send you a magic login link."}
-          </p>
-          <div className="flex flex-col gap-4">
-            <Input
-              type="email"
-              placeholder="email@domain.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-white text-black border border-gray-300 focus:border-blue-500 transition-colors"
-            />
-            <Button
-              onClick={sendMagicLink}
-              disabled={loading || !email}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl h-12 w-full transition-colors"
-            >
-              {loading
-                ? language === "cs" ? "Odesílám..." : "Sending..."
-                : language === "cs" ? "Odeslat přihlašovací odkaz" : "Send login link"}
-            </Button>
-          </div>
-        </Card>
-      )}
+                            <Button 
+                                onClick={handleLogout} 
+                                disabled={loading} 
+                                className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors"
+                            >
+                                {loading ? "Odhlašuji..." : language === "cs" ? "Odhlásit se" : "Log out"}
+                            </Button>
+                        </div>
+                        
+                        {profiles.length === 0 ? (
+                            <p className="text-center text-gray-500 py-4">
+                                {language === "cs" ? "Načítám seznam..." : "Loading list..."}
+                            </p>
+                        ) : (
+                            <ul className="divide-y divide-gray-200">
+                                {filteredProfiles.map((p) => {
+                                    const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
+                                    return (
+                                        <li key={p.id} className="py-3 px-1 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-md">
+                                            <div>
+                                                <span className="font-medium text-gray-800">{p.name}</span>
+                                                {p.company && (
+                                                    <span className="text-sm text-gray-500 ml-2">
+                                                        ({p.company})
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {isCurrentUser ? (
+                                                <span className="text-gray-500 text-sm font-semibold">
+                                                    ({language === "cs" ? "Já" : "Me"})
+                                                </span>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    {/* ✅ RENDER NOTIFIKACE */}
+                                                    {p.unreadCount > 0 && (
+                                                        <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold shadow-md animate-pulse">
+                                                            {p.unreadCount}
+                                                        </span>
+                                                    )}
 
-      {/* Seznam účastníků */}
-      {session && (
-        <Card className="p-6 shadow-xl rounded-2xl bg-transparent border-none animate-fade-in">
-          <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-            {language === "cs" ? "Seznam účastníků" : "Participant List"}
-          </h2>
-
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <Input
-              type="text"
-              placeholder={language === "cs" ? "Hledat podle jména nebo společnosti..." : "Search by name or company..."}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-blue-500 transition-colors"
-            />
-
-            <Button
-              onClick={handleLogout}
-              disabled={loading}
-              className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors"
-            >
-              {loading ? "Odhlašuji..." : language === "cs" ? "Odhlásit se" : "Log out"}
-            </Button>
-          </div>
-
-          {profiles.length === 0 ? (
-            <p className="text-center text-gray-500 py-4">
-              {language === "cs" ? "Načítám seznam..." : "Loading list..."}
-            </p>
-          ) : (
-            <ul className="divide-y divide-gray-200">
-              {filteredProfiles.map((p) => {
-                const isCurrentUser =
-                  p.email &&
-                  session.user.email &&
-                  p.email.toLowerCase() === session.user.email.toLowerCase();
-
-                return (
-                  <li key={p.id} className="py-3 px-1 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-md">
-                    <div>
-                      <span className="font-medium text-gray-800">{p.name}</span>
-                      {p.company && (
-                        <span className="text-sm text-gray-500 ml-2">
-                          ({p.company})
-                        </span>
-                      )}
-                    </div>
-                    {isCurrentUser ? (
-                      <span className="text-gray-500 text-sm font-semibold">
-                        ({language === "cs" ? "Já" : "Me"})
-                      </span>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {p.unreadCount > 0 && (
-                          <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold shadow-md animate-pulse">
-                            {p.unreadCount}
-                          </span>
+                                                    <Button
+                                                        className="bg-green-600 text-white hover:bg-green-700 transition-colors"
+                                                        onClick={() => startChat(p)}
+                                                        size="sm"
+                                                    >
+                                                        {language === "cs" ? "Chat" : "Chat"}
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
                         )}
-                        <Button
-                          className="bg-green-600 text-white hover:bg-green-700 transition-colors"
-                          onClick={() => startChat(p)}
-                          size="sm"
-                        >
-                          {language === "cs" ? "Chat" : "Chat"}
-                        </Button>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Card>
-      )}
-    </div>
-  </section>
-);
+                    </Card>
+                )}
+            </div>
+        </section>
+    );
 }
