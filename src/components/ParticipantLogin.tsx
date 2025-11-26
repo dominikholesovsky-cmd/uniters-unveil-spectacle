@@ -46,7 +46,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     // Pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // ✅ Značení zpráv jako přečtené (NOVÁ FUNKCE)
+    // ✅ Značení zpráv jako přečtené
     const markMessagesAsRead = async (senderId: string) => {
         if (!session?.user?.id) return;
         
@@ -56,7 +56,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
             .update({ is_read: true })
             .eq("sender_id", senderId)      
             .eq("recipient_id", session.user.id) 
-            .eq("is_read", false);          
+            .eq("is_read", false);         
 
         if (error) console.error("Chyba při označování zpráv jako přečtené:", error.message);
         
@@ -65,80 +65,85 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
     }
 
     // ✅ REVIDOVANÁ FUNKCE loadProfiles
-const loadProfiles = async () => {
-    // Načtení všech profilů
-    const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
-    
-    if (profilesError) {
-        console.error("Chyba při načítání profilů:", profilesError.message);
-        setProfiles([]);
-        return;
-    }
-
-    const currentUserId = session?.user?.id;
-    if (!currentUserId) {
-        setProfiles(profilesData || []);
-        return;
-    }
-
-    // 1. Získání NEPŘEČTENÝCH ZPRÁV (BEZPEČNÝ DOTAZ)
-    const { data: unreadData, error: unreadError } = await supabase
-        .from("messages")
-        // Vrací jen sloupce sender_id pro ruční sčítání
-        .select("sender_id") 
-        .eq("recipient_id", currentUserId) // Jsem příjemce
-        .eq("is_read", false);           // A zpráva je nepřečtená
-
-    if (unreadError) {
-        console.error("CHYBA Supabase při načítání nepřečtených zpráv:", unreadError.message);
-        // Necháme unreadData být null/prázdné, abychom mohli pokračovat
-    }
-
-    // 2. Mapování počtu notifikací ručním sčítáním v JavaScriptu
-    // Vytvoří mapu: { 'sender_id_1': 3, 'sender_id_2': 1, ... }
-    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
-        // Sčítání v JS: Pokud odesílatel již existuje, přičteme 1, jinak začneme na 1.
-        acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1; 
-        return acc;
-    }, {});
-    
-    // 3. Přiřazení počtu k profilům a seřazení
-    const profilesWithUnread = (profilesData || []).map(p => ({
-        ...p,
-        // DŮLEŽITÉ: Přiřazení vlastnosti unreadCount. Použijeme 0, pokud neexistuje.
-        unreadCount: unreadMap[p.id] || 0, 
-    }));
-
-    // Zkontrolujte mapu v konzoli - pokud toto ukáže čísla > 0, je to opraveno
-    console.log('Vytvořená unread mapa:', unreadMap); 
-
-    const sorted = profilesWithUnread.sort((a, b) => {
-        // (Vaše stávající logika řazení zde)
-        const aName = a.name || "";
-        const bName = b.name || "";
-        const aCompany = a.company || "";
-        const bCompany = b.company || "";
-
-        if (aCompany && bCompany) {
-            if (aCompany.toLowerCase() === bCompany.toLowerCase()) {
-                return aName.toLowerCase().localeCompare(bName.toLowerCase());
-            }
-            return aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
+    const loadProfiles = async () => {
+        // Načtení všech profilů
+        const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
+        
+        if (profilesError) {
+            console.error("Chyba při načítání profilů:", profilesError.message);
+            setProfiles([]);
+            return;
         }
-        return aName.toLowerCase().localeCompare(bName.toLowerCase());
-    });
-    
-    setProfiles(sorted);
-};
+
+        const currentUserId = session?.user?.id;
+        if (!currentUserId) {
+            setProfiles(profilesData || []);
+            return;
+        }
+
+        // 1. Získání NEPŘEČTENÝCH ZPRÁV (BEZPEČNÝ DOTAZ)
+        const { data: unreadData, error: unreadError } = await supabase
+            .from("messages")
+            // Vrací jen sloupce sender_id pro ruční sčítání
+            .select("sender_id") 
+            .eq("recipient_id", currentUserId) // Jsem příjemce
+            .eq("is_read", false);           // A zpráva je nepřečtená
+
+        if (unreadError) {
+            console.error("CHYBA Supabase při načítání nepřečtených zpráv:", unreadError.message);
+            // Necháme unreadData být null/prázdné, abychom mohli pokračovat
+        }
+
+        // 2. Mapování počtu notifikací ručním sčítáním v JavaScriptu
+        // Vytvoří mapu: { 'sender_id_1': 3, 'sender_id_2': 1, ... }
+        const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
+            // Sčítání v JS: Pokud odesílatel již existuje, přičteme 1, jinak začneme na 1.
+            acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1; 
+            return acc;
+        }, {});
+        
+        // Zkontrolujte mapu v konzoli
+        console.log('Vytvořená unread mapa:', unreadMap); 
+
+        // 3. Přiřazení počtu k profilům a seřazení
+        const profilesWithUnread = (profilesData || []).map(p => ({
+            ...p,
+            // DŮLEŽITÉ: Přiřazení vlastnosti unreadCount. Použijeme 0, pokud neexistuje.
+            // Zde p.id MUSÍ odpovídat sender_id v messages (tj. Auth ID)
+            unreadCount: unreadMap[p.id] || 0, 
+        }));
+
+        // ZJEDNODUŠENÁ LOGIKA ŘAZENÍ (Firma > Jméno)
+        const sorted = profilesWithUnread.sort((a, b) => {
+            const aCompany = a.company || "";
+            const bCompany = b.company || "";
+            const aName = a.name || "";
+            const bName = b.name || "";
+
+            // Primární řazení podle společnosti
+            const companyCompare = aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
+
+            // Pokud se společnosti shodují (výsledek je 0), řadíme podle jména
+            if (companyCompare !== 0) {
+                return companyCompare;
+            }
+
+            // Sekundární řazení podle jména (pokud se společnosti shodují nebo jsou prázdné)
+            return aName.toLowerCase().localeCompare(bName.toLowerCase());
+        });
+        
+        setProfiles(sorted);
+    };
 
 
+    // ✅ REVIDOVANÁ FUNKCE linkProfileToAuth
     async function linkProfileToAuth(user: any) {
         if (!user.email) return;
 
         // 1. Hledání profilu podle e-mailu
         const { data: profilesData, error: selectError } = await supabase
           .from('profiles')
-          .select('id, name') 
+          .select('id, name') 
           .eq('email', user.email);
 
         if (selectError) {
@@ -150,9 +155,10 @@ const loadProfiles = async () => {
 
         if (profileData) {
             // --- PROFIL NALEZEN (stávající uživatel) ---
+            // Musíme zajistit, že ID profilu se shoduje s Auth ID
             if (!profileData.id || profileData.id !== user.id) {
                 console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email} na ${user.id}`, 'color: orange; font-weight: bold;');
-                
+                                
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ id: user.id })
@@ -160,6 +166,10 @@ const loadProfiles = async () => {
 
                 if (updateError) {
                     console.error('CHYBA PŘI AKTUALIZACI ID:', updateError.message);
+                } else {
+                    // 🎉 ÚSPĚŠNÁ OPRAVA ID: IHNED ZNOVU NAČTEME PROFILY
+                    loadProfiles(); 
+                    return; // Vracíme se, abychom zabránili volání loadProfiles na konci
                 }
             }
         } else {
@@ -180,6 +190,7 @@ const loadProfiles = async () => {
             }
         }
         
+        // Načte profily v případě, že se profil vložil nebo existovalo shodné ID
         loadProfiles();
     }
 
@@ -205,7 +216,7 @@ const loadProfiles = async () => {
         };
     }, []);
 
-    // ✅ Realtime listener pro notifikace (NOVÝ)
+    // ✅ Realtime listener pro notifikace
     useEffect(() => {
         if (!session?.user?.id) return;
 
@@ -239,6 +250,7 @@ const loadProfiles = async () => {
             setSession(null);
             setProfiles([]);
             setSearchQuery('');
+            setTargetProfile(null); // Zavřít chat po odhlášení
         }
     };
 
@@ -431,9 +443,9 @@ const loadProfiles = async () => {
                         />
 
                         {/* Tlačítko pro odhlášení */}
-                        <Button 
-                            onClick={handleLogout} 
-                            disabled={loading} 
+                        <Button 
+                            onClick={handleLogout} 
+                            disabled={loading} 
                             className="w-full mb-6 bg-red-500 hover:bg-red-600 text-white font-semibold"
                         >
                             {loading ? "Odhlašuji..." : language === "cs" ? "Odhlásit se" : "Log out"}
@@ -446,8 +458,8 @@ const loadProfiles = async () => {
                         ) : (
                             <ul className="divide-y divide-border">
                                 {filteredProfiles.map((p) => {
-                                  console.log(`Profil ${p.name}: Nepřečtených zpráv ${p.unreadCount}`);
-                                  console.log(`Profil ${p.name}: ID profilu ${p.id}, E-mail: ${p.email}`);
+                                    console.log(`Profil ${p.name}: ID profilu ${p.id}, E-mail: ${p.email}`); // KONTROLNÍ LOG
+                                    console.log(`Profil ${p.name}: Nepřečtených zpráv ${p.unreadCount}`); // KONTROLNÍ LOG
                                     const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
                                     return (
                                         <li key={p.id} className="py-3 px-1 flex justify-between items-center">
@@ -465,7 +477,7 @@ const loadProfiles = async () => {
                                                 </span>
                                             ) : (
                                                 <div className="flex items-center gap-2"> 
-                                                    {/* ✅ RENDER NOTIFIKACE (NOVÝ) */}
+                                                    {/* ✅ RENDER NOTIFIKACE */}
                                                     {p.unreadCount > 0 && (
                                                         <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-xs font-bold mr-1">
                                                             {p.unreadCount}
