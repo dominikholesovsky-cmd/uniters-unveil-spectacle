@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar, MessageSquare } from "lucide-react";
 
 // 💡 Import tvé komponenty ChatModal
-import { ChatModal } from "./ChatModal"; // Uprav cestu podle struktury tvého projektu
+import { ChatModal } from "./ChatModal"; 
 
 const POWER_AUTOMATE_SUBMIT_URL =
   "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
@@ -26,10 +26,26 @@ interface RegistrationFormProps {
   language: "cs" | "en";
 }
 
+// Zod Schema (Beze změny)
+const formSchema = z.object({
+  name: z.string().trim().min(2),
+  email: z.string().trim().email(),
+  phone: z.string().trim().max(20).optional(),
+  company: z.string().trim().min(1),
+  guidedTour: z.boolean().optional(),
+  gdprConsent: z.literal(true, {
+    errorMap: () => ({ message: "Souhlas je povinný" }),
+  }),
+  photoVideoConsent: z.literal(true, {
+    errorMap: () => ({ message: "Souhlas je povinný" }),
+  }),
+});
+
+
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  // 💡 Nový stav pro ovládání ChatModal
+  // 💡 Stav pro ovládání ChatModal
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   useEffect(() => {
@@ -98,21 +114,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const t = content[language];
 
-  // ... (Zbytek formSchema a useForm je beze změny) ...
-  const formSchema = z.object({
-    name: z.string().trim().min(2),
-    email: z.string().trim().email(),
-    phone: z.string().trim().max(20).optional(),
-    company: z.string().trim().min(1),
-    guidedTour: z.boolean().optional(),
-    gdprConsent: z.literal(true, {
-      errorMap: () => ({ message: language === "cs" ? "Souhlas je povinný" : "Consent is required" }),
-    }),
-    photoVideoConsent: z.literal(true, {
-      errorMap: () => ({ message: language === "cs" ? "Souhlas je povinný" : "Consent is required" }),
-    }),
-  });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -168,7 +169,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const coordinates = "49.1956718,16.5913221";
     // Opravená URL
     window.open(
-      `https://www.google.com/maps/search/?api=1&query=$${coordinates}`,
+      `http://maps.google.com/maps?q=${coordinates}`,
       "_blank"
     );
   };
@@ -184,7 +185,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
     const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 
-    const icsUrl = "/uniters-event.ics";
+    // Poznámka: ICS soubor musí být dostupný na serveru
+    const icsUrl = "/uniters-event.ics"; 
 
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
@@ -211,18 +213,29 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              {/* 💡 TLAČÍTKO CHATU spouštějící handleOpenChat */}
-              <Button onClick={handleOpenChat} variant="secondary">
+            
+            {/* 💡 FLEX-COL pro zobrazení každého tlačítka na novém řádku */}
+            <div className="flex flex-col justify-center gap-4"> 
+              
+              {/* TLAČÍTKO CHATU (První řádek) */}
+              <Button 
+                  onClick={handleOpenChat} 
+                  variant="default" 
+                  className="w-full sm:w-80 mx-auto text-lg font-semibold h-12"
+              >
                 <MessageSquare className="w-5 h-5 mr-2" /> {t.openChatRoom}
               </Button>
-              {/* Původní tlačítka */}
-              <Button onClick={handleNavigationClick}>
-                <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
-              </Button>
-              <Button onClick={handleAddToCalendar}>
-                <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
-              </Button>
+              
+              {/* Ostatní tlačítka (Druhý řádek - na mobilu pod sebou, na desktopu vedle sebe) */}
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <Button onClick={handleNavigationClick} variant="secondary">
+                    <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
+                  </Button>
+                  <Button onClick={handleAddToCalendar} variant="secondary">
+                    <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
+                  </Button>
+              </div>
+
             </div>
           </div>
         </div>
@@ -230,15 +243,15 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
         {/* 💡 VLOŽENÍ A OVLÁDÁNÍ KOMPONENTY ChatModal */}
         <ChatModal 
             language={language}
-            open={isChatModalOpen} // Předáme stav
-            onOpenChange={setIsChatModalOpen} // Předáme setter
+            open={isChatModalOpen}
+            onOpenChange={setIsChatModalOpen}
         />
         
       </section>
     );
   }
 
-  // --- RENDEROVÁNÍ FORMULÁŘE ---
+  // --- RENDEROVÁNÍ FORMULÁŘE (Beze změny) ---
   return (
     <section
       id="registration-form"
@@ -251,7 +264,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* ... (Pole formuláře) ... */}
+              
+              {/* ... Pole formuláře ... */}
               {["name", "email", "phone", "company"].map((fieldName) => (
                 <FormField
                   key={fieldName}
