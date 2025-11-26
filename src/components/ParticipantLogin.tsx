@@ -74,8 +74,9 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 : "Enter your email and we'll send you a magic login link."}
             </p>
 
-            <div className="flex flex-col gap-4 bg-white">
+            <div className="flex flex-col gap-4">
               <Input
+                className="bg-white"
                 type="email"
                 placeholder={language === "cs" ? "email@domena.cz" : "email@domain.com"}
                 value={email}
