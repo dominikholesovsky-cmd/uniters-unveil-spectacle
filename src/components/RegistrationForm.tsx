@@ -16,22 +16,23 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Navigation, Calendar, MessageSquare } from "lucide-react";
 
-// 💡 Import tvé komponenty ChatModal
+// 💡 Import komponenty chatu
 import { ChatModal } from "./ChatModal"; 
 
+// --- URL pro odesílání dat ---
 const POWER_AUTOMATE_SUBMIT_URL =
-  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
+  "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNKzpk5dRI8nM_HBi6WYL46drPA"; // Změňte na vaši reálnou URL!
 
 interface RegistrationFormProps {
   language: "cs" | "en";
 }
 
-// Zod Schema (Beze změny)
+// --- Zod Schema pro validaci ---
 const formSchema = z.object({
-  name: z.string().trim().min(2),
-  email: z.string().trim().email(),
+  name: z.string().trim().min(2, "Jméno je povinné"),
+  email: z.string().trim().email("Neplatný e-mailový formát"),
   phone: z.string().trim().max(20).optional(),
-  company: z.string().trim().min(1),
+  company: z.string().trim().min(1, "Název firmy je povinný"),
   guidedTour: z.boolean().optional(),
   gdprConsent: z.literal(true, {
     errorMap: () => ({ message: "Souhlas je povinný" }),
@@ -45,14 +46,18 @@ const formSchema = z.object({
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  // 💡 Stav pro ovládání ChatModal
+  // Stav pro ovládání ChatModal
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  // Stav pro počet nepřečtených zpráv z ChatModal
+  const [unreadCount, setUnreadCount] = useState(0); 
 
   useEffect(() => {
+    // Kontrola, zda uživatel již formulář odeslal
     const submitted = localStorage.getItem("registrationSubmitted") === "true";
     setIsSubmitted(submitted);
   }, []);
 
+  // --- Překlady ---
   const content = {
     cs: {
       title: "Registrace",
@@ -79,7 +84,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       openNavigation: "Otevřít navigaci",
       addToCalendar: "Přidat do kalendáře",
       alreadySubmitted: "Už jste se zaregistrovali. Nemůžete odeslat formulář znovu.",
-      // 💡 Nový text pro tlačítko
       openChatRoom: "Vstoupit do chatovací místnosti",
     },
     en: {
@@ -107,7 +111,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       openNavigation: "Open Navigation",
       addToCalendar: "Add to Calendar",
       alreadySubmitted: "You have already registered. You cannot submit again.",
-      // 💡 Nový text pro tlačítko
       openChatRoom: "Enter Chat Room",
     },
   };
@@ -127,7 +130,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     },
   });
 
-
+  // --- Logika Odeslání ---
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch(POWER_AUTOMATE_SUBMIT_URL, {
@@ -164,7 +167,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       });
     }
   };
-
+  
+  // --- Navigace a Kalendář ---
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
     // Opravená URL
@@ -185,7 +189,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
     const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 
-    // Poznámka: ICS soubor musí být dostupný na serveru
     const icsUrl = "/uniters-event.ics"; 
 
     const ua = navigator.userAgent;
@@ -198,14 +201,23 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     }
   };
 
-  // 💡 Funkce pro otevření ChatModal
+  // --- Chat logiky ---
   const handleOpenChat = useCallback(() => {
     setIsChatModalOpen(true);
   }, []);
+  
+  // Funkce pro aktualizaci stavu nepřečtených zpráv z ChatModal
+  const handleUnreadCountChange = useCallback((count: number) => {
+      setUnreadCount(count);
+  }, []);
 
 
-  // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ ---
+  // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ (Success State) ---
   if (isSubmitted) {
+    
+    // Třídy pro sjednocení vzhledu všech tří tlačítek (standardní velikost)
+    const commonButtonClasses = "w-full sm:w-80 mx-auto";
+    
     return (
       <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light">
         <div className="container mx-auto px-4">
@@ -214,24 +226,37 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
             
-            {/* 💡 FLEX-COL pro zobrazení každého tlačítka na novém řádku */}
             <div className="flex flex-col justify-center gap-4"> 
               
-              {/* TLAČÍTKO CHATU (První řádek) */}
+              {/* 1. TLAČÍTKO CHATU (první řádek) */}
               <Button 
                   onClick={handleOpenChat} 
                   variant="default" 
-                  className="w-full sm:w-80 mx-auto text-lg font-semibold h-12"
+                  className={commonButtonClasses + " relative"}
               >
-                <MessageSquare className="w-5 h-5 mr-2" /> {t.openChatRoom}
+                  <MessageSquare className="w-5 h-5 mr-2" /> 
+                  
+                  {t.openChatRoom}
+                  
+                  {/* ZOBRAZENÍ POČTU NEPŘEČTENÝCH ZPRÁV (Badge) */}
+                  {unreadCount > 0 && (
+                      <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
+                                        inline-flex items-center justify-center 
+                                        h-6 w-6 rounded-full bg-red-600 text-white 
+                                        text-xs font-bold shadow-md">
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                  )}
               </Button>
               
-              {/* Ostatní tlačítka (Druhý řádek - na mobilu pod sebou, na desktopu vedle sebe) */}
+              {/* Ostatní tlačítka (druhý řádek - na desktopu vedle sebe) */}
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Button onClick={handleNavigationClick} variant="secondary">
+                  
+                  <Button onClick={handleNavigationClick} variant="secondary" className={commonButtonClasses}>
                     <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
                   </Button>
-                  <Button onClick={handleAddToCalendar} variant="secondary">
+                  
+                  <Button onClick={handleAddToCalendar} variant="secondary" className={commonButtonClasses}>
                     <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
                   </Button>
               </div>
@@ -240,18 +265,19 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           </div>
         </div>
 
-        {/* 💡 VLOŽENÍ A OVLÁDÁNÍ KOMPONENTY ChatModal */}
+        {/* VLOŽENÍ A OVLÁDÁNÍ KOMPONENTY ChatModal */}
         <ChatModal 
             language={language}
             open={isChatModalOpen}
             onOpenChange={setIsChatModalOpen}
+            onTotalUnreadChange={handleUnreadCountChange}
         />
         
       </section>
     );
   }
 
-  // --- RENDEROVÁNÍ FORMULÁŘE (Beze změny) ---
+  // --- RENDEROVÁNÍ PŘI NEODESLANÉM FORMULÁŘI (Form State) ---
   return (
     <section
       id="registration-form"
@@ -265,7 +291,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               
-              {/* ... Pole formuláře ... */}
+              {/* Textová pole */}
               {["name", "email", "phone", "company"].map((fieldName) => (
                 <FormField
                   key={fieldName}
@@ -275,6 +301,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                     <FormItem>
                       <FormLabel>
                         {t[fieldName as keyof typeof t]}{" "}
+                        {/* Povinné hvězdičky */}
                         {["name", "email", "company"].includes(fieldName) && (
                           <span className="text-red-500">*</span>
                         )}
@@ -294,6 +321,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 />
               ))}
 
+              {/* Checkbox Prohlídka */}
               <FormField
                 control={form.control}
                 name="guidedTour"
@@ -317,6 +345,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 )}
               />
 
+              {/* GDPR Souhlas */}
               <FormField
                 control={form.control}
                 name="gdprConsent"
@@ -339,6 +368,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 )}
               />
 
+              {/* Photo/Video Souhlas */}
               <FormField
                 control={form.control}
                 name="photoVideoConsent"
@@ -361,6 +391,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 )}
               />
 
+              {/* Tlačítko Odeslat */}
               <Button type="submit" className="w-full text-lg h-14">
                 {t.submit}
               </Button>
