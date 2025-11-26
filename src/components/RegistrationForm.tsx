@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,7 +14,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, Navigation, Calendar } from "lucide-react";
+import { CheckCircle2, Navigation, Calendar, MessageSquare } from "lucide-react";
+
+// 💡 Import tvé komponenty ChatModal
+import { ChatModal } from "./ChatModal"; // Uprav cestu podle struktury tvého projektu
 
 const POWER_AUTOMATE_SUBMIT_URL =
   "https://default54b8b3209661409e9b3e7fc3e0adae.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e4728fa129c4a869c877437c791fcea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ae_Ysv7Bovz-dFpy-KNXpk5dRI8nM_HBi6WYL46drPA";
@@ -26,6 +29,8 @@ interface RegistrationFormProps {
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  // 💡 Nový stav pro ovládání ChatModal
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   useEffect(() => {
     const submitted = localStorage.getItem("registrationSubmitted") === "true";
@@ -58,6 +63,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       openNavigation: "Otevřít navigaci",
       addToCalendar: "Přidat do kalendáře",
       alreadySubmitted: "Už jste se zaregistrovali. Nemůžete odeslat formulář znovu.",
+      // 💡 Nový text pro tlačítko
+      openChatRoom: "Vstoupit do chatovací místnosti",
     },
     en: {
       title: "Registration",
@@ -84,19 +91,26 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       openNavigation: "Open Navigation",
       addToCalendar: "Add to Calendar",
       alreadySubmitted: "You have already registered. You cannot submit again.",
+      // 💡 Nový text pro tlačítko
+      openChatRoom: "Enter Chat Room",
     },
   };
 
   const t = content[language];
 
+  // ... (Zbytek formSchema a useForm je beze změny) ...
   const formSchema = z.object({
     name: z.string().trim().min(2),
     email: z.string().trim().email(),
     phone: z.string().trim().max(20).optional(),
     company: z.string().trim().min(1),
     guidedTour: z.boolean().optional(),
-    gdprConsent: z.literal(true),
-    photoVideoConsent: z.literal(true),
+    gdprConsent: z.literal(true, {
+      errorMap: () => ({ message: language === "cs" ? "Souhlas je povinný" : "Consent is required" }),
+    }),
+    photoVideoConsent: z.literal(true, {
+      errorMap: () => ({ message: language === "cs" ? "Souhlas je povinný" : "Consent is required" }),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -111,6 +125,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       photoVideoConsent: undefined as any,
     },
   });
+
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -151,8 +166,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
+    // Opravená URL
     window.open(
-      `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`,
+      `https://www.google.com/maps/search/?api=1&query=$${coordinates}`,
       "_blank"
     );
   };
@@ -162,26 +178,31 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const details = encodeURIComponent("Vodojemy Žlutý Kopec");
     const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
 
-    const start = "2026-01-22T17:00:00Z";
-    const end = "2026-01-22T21:00:00Z";
+    // Časy ve formátu UTC
+    const start = "20260122T170000Z"; 
+    const end = "20260122T210000Z";
 
-    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start.replace(/-|:|\.\d+/g,"")}/${end.replace(/-|:|\.\d+/g,"")}&details=${details}&location=${location}`;
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 
-    // ICS soubor v public složce Vercelu
     const icsUrl = "/uniters-event.ics";
 
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
 
     if (isIOS) {
-      // iOS: otevře nativní kalendář přes ICS
       window.location.href = icsUrl;
     } else {
-      // Android / Desktop: otevře Google Calendar
       window.open(gcalUrl, "_blank");
     }
   };
 
+  // 💡 Funkce pro otevření ChatModal
+  const handleOpenChat = useCallback(() => {
+    setIsChatModalOpen(true);
+  }, []);
+
+
+  // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ ---
   if (isSubmitted) {
     return (
       <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light">
@@ -191,6 +212,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
+              {/* 💡 TLAČÍTKO CHATU spouštějící handleOpenChat */}
+              <Button onClick={handleOpenChat} variant="secondary">
+                <MessageSquare className="w-5 h-5 mr-2" /> {t.openChatRoom}
+              </Button>
+              {/* Původní tlačítka */}
               <Button onClick={handleNavigationClick}>
                 <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
               </Button>
@@ -200,10 +226,19 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             </div>
           </div>
         </div>
+
+        {/* 💡 VLOŽENÍ A OVLÁDÁNÍ KOMPONENTY ChatModal */}
+        <ChatModal 
+            language={language}
+            open={isChatModalOpen} // Předáme stav
+            onOpenChange={setIsChatModalOpen} // Předáme setter
+        />
+        
       </section>
     );
   }
 
+  // --- RENDEROVÁNÍ FORMULÁŘE ---
   return (
     <section
       id="registration-form"
@@ -216,11 +251,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* ... (Pole formuláře) ... */}
               {["name", "email", "phone", "company"].map((fieldName) => (
                 <FormField
                   key={fieldName}
                   control={form.control}
-                  name={fieldName as any}
+                  name={fieldName as "name" | "email" | "phone" | "company"}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -259,7 +295,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       <FormLabel className="font-semibold text-blue-700 m-0">
                         {t.guidedTour}
                       </FormLabel>
-                      <p className="text-sm text-blue-600 mt-1 m-0">{t.guidedTourNote}</p>
+                      <p className="text-sm text-blue-600 mt-1 m-0">
+                        {t.guidedTourNote}
+                      </p>
                     </div>
                   </FormItem>
                 )}
@@ -269,17 +307,20 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 control={form.control}
                 name="gdprConsent"
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
+                  <FormItem className="flex items-start space-x-3 space-y-0">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(v) => field.onChange(!!v)}
+                        className="mt-1"
                       />
                     </FormControl>
-                    <FormLabel>
-                      <span className="text-red-500">*</span> {t.gdprConsent}
-                    </FormLabel>
-                    <FormMessage />
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        <span className="text-red-500">*</span> {t.gdprConsent}
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
                   </FormItem>
                 )}
               />
@@ -288,17 +329,20 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 control={form.control}
                 name="photoVideoConsent"
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
+                  <FormItem className="flex items-start space-x-3 space-y-0">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(v) => field.onChange(!!v)}
+                        className="mt-1"
                       />
                     </FormControl>
-                    <FormLabel>
-                      <span className="text-red-500">*</span> {t.photoVideoConsent}
-                    </FormLabel>
-                    <FormMessage />
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        <span className="text-red-500">*</span> {t.photoVideoConsent}
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
                   </FormItem>
                 )}
               />
