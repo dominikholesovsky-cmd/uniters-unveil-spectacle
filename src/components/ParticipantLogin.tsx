@@ -214,7 +214,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         if (profileData) {
             if (!profileData.id || profileData.id !== user.id) {
                 console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email} na ${user.id}`, 'color: orange; font-weight: bold;');
-                                        
+                                                    
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ id: user.id })
@@ -457,20 +457,20 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     {chatLoading
                                         ? <p className="text-center text-gray-500">{t.loadingChat}</p>
                                         : messages.map((msg, index) => {
-                                            const currentUserId = session.user.id;
-                                            return (
-                                                <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
-                                                    <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId 
-                                                        ? "bg-blue-600 text-white rounded-br-none" 
-                                                        : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
-                                                        <p className="text-sm break-words">{msg.content}</p>
-                                                        <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
-                                                            {new Date(msg.created_at).toLocaleTimeString(language)}
-                                                        </span>
+                                                const currentUserId = session.user.id;
+                                                return (
+                                                    <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
+                                                        <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId 
+                                                            ? "bg-blue-600 text-white rounded-br-none" 
+                                                            : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
+                                                            <p className="text-sm break-words">{msg.content}</p>
+                                                            <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
+                                                                {new Date(msg.created_at).toLocaleTimeString(language)}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })
+                                                );
+                                            })
                                     }
                                     <div ref={messagesEndRef} />
                                 </div>
@@ -478,9 +478,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                 {/* ⭐ OPRAVENÁ SEKCE: Odesílací formulář s opraveným focus ringem */}
                                 <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
                                     <Input
-                                        // KLÍČOVÁ ZMĚNA PRO JEMNÝ FOCUS RING:
-                                        // focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-white
-                                        className="bg-white border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-white transition-colors flex-grow"
+                                        // ZMĚNA Z MODRÉ NA JEMNOU ŠEDOU
+                                        className="bg-white border border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:ring-offset-1 focus:ring-offset-white transition-colors flex-grow"
                                         type="text"
                                         placeholder={t.writeMessage}
                                         value={messageInput}
@@ -507,7 +506,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder={t.searchPlaceholder}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-blue-500 transition-colors"
+                                        // ZMĚNA Z MODRÉ NA JEMNOU ŠEDOU
+                                        className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:ring-offset-1 focus:ring-offset-white transition-colors"
                                     />
 
                                     <Button 
@@ -576,7 +576,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder="email@domain.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="bg-white border border-gray-300 text-black focus:border-blue-500 transition-colors"
+                                        // ZMĚNA Z MODRÉ NA JEMNOU ŠEDOU
+                                        className="bg-white border border-gray-300 text-black focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:ring-offset-1 focus:ring-offset-white transition-colors"
                                     />
                                     <Button
                                         onClick={sendMagicLink}
