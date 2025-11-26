@@ -177,7 +177,7 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
               <Button
-                className="bg-white hover:bg-gray-100 transition-colors"
+                className="bg-foreground hover:bg-gray-100 transition-colors"
                 onClick={handleSendMessage}
                 disabled={!messageInput.trim()}
               >
