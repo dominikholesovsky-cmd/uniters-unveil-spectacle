@@ -69,11 +69,15 @@ const TermsModal: FC<TermsModalProps> = ({ open, onClose, language }) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-full h-[80vh] p-6 sm:p-8 overflow-y-auto bg-gray-900 text-white">
-        <DialogHeader className="flex-shrink-0 border-b pb-3 mb-4">
-            <DialogTitle className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
-               {/* Titulek se mění podle stavu */}
-            {session ? t.listTitle : t.loginTitle}
-            </DialogTitle>
+        <DialogHeader className="sticky top-0 bg-gray-900 z-10 mb-4">
+          <DialogTitle className="text-2xl sm:text-3xl font-bold text-center text-white">
+            {t.title}
+          </DialogTitle>
+          <DialogClose asChild>
+            <Button variant="ghost" className="absolute right-4 top-4 text-white">
+              <X className="w-5 h-5" />
+            </Button>
+          </DialogClose>
         </DialogHeader>
 
         <div className="space-y-4">
