@@ -475,11 +475,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     <div ref={messagesEndRef} />
                                 </div>
                                 
-                                {/* ⭐ OPRAVENÁ SEKCE: Odesílací formulář s opraveným focus ringem */}
+                                {/* ⭐ UPRAVENÁ SEKCE: Odesílací formulář (odstraněné zvýraznění) */}
                                 <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
                                     <Input
-                                        // ZMĚNA Z MODRÉ NA JEMNOU ŠEDOU
-                                        className="bg-white border border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:ring-offset-1 focus:ring-offset-white transition-colors flex-grow"
+                                        // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
+                                        className="bg-white border border-gray-300 focus:border-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors flex-grow"
                                         type="text"
                                         placeholder={t.writeMessage}
                                         value={messageInput}
@@ -506,8 +506,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder={t.searchPlaceholder}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        // ZMĚNA Z MODRÉ NA JEMNOU ŠEDOU
-                                        className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:ring-offset-1 focus:ring-offset-white transition-colors"
+                                        // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
+                                        className="bg-gray-100 border border-gray-300 text-black flex-grow focus:border-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
                                     />
 
                                     <Button 
@@ -576,8 +576,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder="email@domain.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        // ZMĚNA Z MODRÉ NA JEMNOU ŠEDOU
-                                        className="bg-white border border-gray-300 text-black focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:ring-offset-1 focus:ring-offset-white transition-colors"
+                                        // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
+                                        className="bg-white border border-gray-300 text-black focus:border-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
                                     />
                                     <Button
                                         onClick={sendMagicLink}
