@@ -9,8 +9,7 @@ import CookiesBanner from "@/components/CookiesBanner";
 import LanguageToggle from "@/components/LanguageToggle";
 import PhotoGallery from "@/components/PhotoGallery";
 import Schedule from "@/components/Schedule";
-// ❌ PŮVODNÍ CHYBNÝ IMPORT ODSTRANĚN
-// import ParticipantLogin from "@/components/ParticipantLogin"; 
+// ❌ Původní chybný import odstraněn
 
 const Index = () => {
   const [language, setLanguage] = useState("cs");
@@ -20,7 +19,8 @@ const Index = () => {
   };
 
   const handleRegisterClick = () => {
-    const registrationSection = document.getElementById("registration-form"); // Používám ID z RegistrationForm.jsx
+    // Odrolování na sekci s formulářem
+    const registrationSection = document.getElementById("registration-form"); 
     registrationSection?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -79,8 +79,9 @@ const Index = () => {
         <LanguageToggle language={language} onToggle={toggleLanguage} />
         <Hero language={language} onRegisterClick={handleRegisterClick} />
         
-        {/* RegistrationForm nyní obsluhuje logiku chatu po úspěšném odeslání */}
+        {/* RegistrationForm nyní obsahuje logiku pro zobrazení ChatModal */}
         <RegistrationForm language={language} /> 
+        
         <Schedule language={language} />
         <PhotoGallery language={language} />
         <LocationMap language={language} />
