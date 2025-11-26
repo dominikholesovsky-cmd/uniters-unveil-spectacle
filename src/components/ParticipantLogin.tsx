@@ -55,6 +55,9 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
     const [messageInput, setMessageInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     
+    // Nový stav pro CELKOVÝ počet nepřečtených zpráv
+    const [totalUnreadCount, setTotalUnreadCount] = useState(0); 
+    
     // Pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
     // Ref pro odesílací formulář (pro řešení mobilního skákání)
@@ -121,19 +124,21 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         loadProfiles();
     }
 
-    // ✅ REVIDOVANÁ FUNKCE loadProfiles (logika zůstává)
+    // ✅ REVIDOVANÁ FUNKCE loadProfiles (Doplněno o výpočet totalUnreadCount)
     const loadProfiles = async () => {
         const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
         
         if (profilesError) {
             console.error("Chyba při načítání profilů:", profilesError.message);
             setProfiles([]);
+            setTotalUnreadCount(0); // Důležité: vynulovat při chybě
             return;
         }
 
         const currentUserId = session?.user?.id;
         if (!currentUserId) {
             setProfiles(profilesData || []);
+            setTotalUnreadCount(0); // Důležité: vynulovat bez přihlášení
             return;
         }
 
@@ -149,10 +154,15 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         }
 
         // 2. Mapování počtu notifikací ručním sčítáním
+        let newTotalUnreadCount = 0; // NOVÁ PROMĚNNÁ pro celkový součet
+
         const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
             acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
+            newTotalUnreadCount += 1; // Započítání do celkového součtu
             return acc;
         }, {});
+        
+        setTotalUnreadCount(newTotalUnreadCount); // ⭐ AKTUALIZACE NOVÉHO STAVU
         
         const profilesWithUnread = (profilesData || []).map(p => ({
             ...p,
@@ -199,7 +209,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         if (profileData) {
             if (!profileData.id || profileData.id !== user.id) {
                 console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email} na ${user.id}`, 'color: orange; font-weight: bold;');
-                                
+                                        
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ id: user.id })
@@ -241,6 +251,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 linkProfileToAuth(session.user);
             } else {
                 setProfiles([]);
+                setTotalUnreadCount(0); // Důležité: vynulovat bez přihlášení
             }
         });
 
@@ -294,6 +305,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             setProfiles([]);
             setSearchQuery('');
             setTargetProfile(null);
+            setTotalUnreadCount(0); // Důležité: vynulovat při odhlášení
         }
     };
 
@@ -390,9 +402,15 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             >
                 <MessageSquare className="w-6 h-6 mr-2" />
                 {t.openChat}
+                {/* ⭐ ODZNAK s celkovým počtem nepřečtených zpráv */}
+                {totalUnreadCount > 0 && (
+                    <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold ring-2 ring-white shadow-lg animate-bounce">
+                        {totalUnreadCount}
+                    </span>
+                )}
             </Button>
 
-            {/* Modal pro celý chatovací systém */}
+            {/* Modal pro celý chatovací systém (zbytek logiky zůstává stejný) */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 {/* Nastavíme DialogContent, aby vypadal podobně jako váš TermsModal */}
                 <DialogContent className="max-w-4xl w-full h-[90vh] p-6 sm:p-8 overflow-y-auto bg-white text-gray-900 flex flex-col">
