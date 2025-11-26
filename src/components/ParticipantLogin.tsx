@@ -30,6 +30,9 @@ interface ParticipantLoginProps {
     language?: "cs" | "en";
 }
 
+// KLÍČ pro lokální úložiště
+const MAGIC_LINK_OPENED_KEY = "chat_modal_opened_after_magic_link";
+
 // Pomocná funkce pro generování unikátního chat ID (lexikograficky seřazené)
 const getChatId = (id1: string, id2: string): string => {
     const sortedIds = [id1, id2].sort();
@@ -258,13 +261,18 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             if (session?.user) {
                 linkProfileToAuth(session.user);
 
-                // 🔥 OPRAVA: Automaticky otevřít modal POUZE při úspěšném přihlášení přes Magic Link
-                // (event 'SIGNED_IN' nastane po kliknutí na Magic Link a návratu na aplikaci)
+                // 🔥 KLÍČOVÁ LOGIKA: Otevření pouze PŘI SIGNED_IN a POUZE JEDNOU
                 if (event === 'SIGNED_IN') {
-                    setIsOpen(true);
+                    // Kontrola, zda se modal již neotevřel po předchozím Magic Linku
+                    const hasOpenedBefore = localStorage.getItem(MAGIC_LINK_OPENED_KEY);
                     
-                    // ÚKLID: Vyčištění hash z URL po přihlášení
-                    // history.replaceState je bezpečnější než nastavení location.hash = ''
+                    if (!hasOpenedBefore) {
+                        setIsOpen(true);
+                        // Označení, že k automatickému otevření došlo
+                        localStorage.setItem(MAGIC_LINK_OPENED_KEY, 'true');
+                    }
+                    
+                    // ÚKLID: Vyčištění hash z URL po přihlášení (důležité pro Supabase)
                     if (window.location.hash.includes('access_token')) {
                         history.replaceState(null, '', window.location.pathname);
                     }
@@ -275,13 +283,17 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 setProfiles([]);
                 setTotalUnreadCount(0);
                 setTargetProfile(null);
+                
+                // 🔥 VYMAZÁNÍ LOKÁLNÍHO ÚLOŽIŠTĚ PŘI ODHLÁŠENÍ
+                // To zajistí, že při DALŠÍM přihlášení (novém Magic Linku) se modal znovu otevře
+                localStorage.removeItem(MAGIC_LINK_OPENED_KEY);
             }
         });
         
         return () => {
             listener?.subscription.unsubscribe();
         };
-    }, []);
+    }, []); // Prázdné pole závislostí pro spuštění pouze jednou při mountu
 
     // Realtime listener pro notifikace (příchozí zprávy)
     useEffect(() => {
