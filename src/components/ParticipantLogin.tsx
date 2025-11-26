@@ -252,8 +252,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                     // Po úspěšném přihlášení se automaticky otevře modal
                     setIsOpen(true);
                     
-                    // VOLITELNÉ: Vyčištění hash z URL
-                    // history.replaceState(null, '', window.location.pathname);
+                    // 🔥 ÚPRAVA: Vyčištění hash z URL
+                    history.replaceState(null, '', window.location.pathname);
                 }
 
             } else {
@@ -269,10 +269,10 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             if (session?.user) {
                 linkProfileToAuth(session.user);
                 
-                // Otevřít modal, pokud se stav změnil na 'SIGNED_IN'
-                if (event === 'SIGNED_IN') {
-                     setIsOpen(true);
-                }
+                // 🔥 ÚPRAVA: Odebráno automatické setIsOpen(true) na event === 'SIGNED_IN'.
+                // To způsobovalo otevírání modalu při každém obnovení relace.
+                // Nyní se spoléháme POUZE na kontrolu URL hashe v bloku getSession.
+
             } else {
                 setProfiles([]);
                 setTotalUnreadCount(0);
@@ -467,20 +467,20 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     {chatLoading
                                         ? <p className="text-center text-gray-500">{t.loadingChat}</p>
                                         : messages.map((msg, index) => {
-                                                    const currentUserId = session.user.id;
-                                                    return (
-                                                        <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
-                                                            <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId
-                                                                ? "bg-blue-600 text-white rounded-br-none"
-                                                                : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
-                                                                <p className="text-sm break-words">{msg.content}</p>
-                                                                <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
-                                                                    {new Date(msg.created_at).toLocaleTimeString(language)}
-                                                                </span>
-                                                            </div>
+                                                const currentUserId = session.user.id;
+                                                return (
+                                                    <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
+                                                        <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId
+                                                            ? "bg-blue-600 text-white rounded-br-none"
+                                                            : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
+                                                            <p className="text-sm break-words">{msg.content}</p>
+                                                            <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
+                                                                {new Date(msg.created_at).toLocaleTimeString(language)}
+                                                            </span>
                                                         </div>
-                                                    );
-                                                })
+                                                    </div>
+                                                );
+                                            })
                                     }
                                     <div ref={messagesEndRef} />
                                 </div>
