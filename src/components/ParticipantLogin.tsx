@@ -64,69 +64,72 @@ export default function ParticipantLogin({ language = "cs" }: ParticipantLoginPr
         loadProfiles();
     }
 
-    // ✅ Rozšířená funkce pro načtení profilů s počtem notifikací (UPRAVENO)
-    const loadProfiles = async () => {
-        const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
-        
-        if (profilesError) {
-            console.error("Chyba při načítání profilů:", profilesError.message);
-            setProfiles([]);
-            return;
-        }
+    // ✅ REVIDOVANÁ FUNKCE loadProfiles
+const loadProfiles = async () => {
+    // Načtení všech profilů
+    const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
+    
+    if (profilesError) {
+        console.error("Chyba při načítání profilů:", profilesError.message);
+        setProfiles([]);
+        return;
+    }
 
-        const currentUserId = session?.user?.id;
-        if (!currentUserId) {
-            setProfiles(profilesData || []);
-            return;
-        }
+    const currentUserId = session?.user?.id;
+    if (!currentUserId) {
+        setProfiles(profilesData || []);
+        return;
+    }
 
-        // 1. Získání nepřečtených zpráv pro aktuálního uživatele (agregace)
-        const { data: unreadData, error: unreadError } = await supabase
-            .from("messages")
-            // Získáváme sender_id a počítáme, kolik zpráv od něj máme
-            .select("sender_id, count", { count: 'exact' }) 
-            .eq("recipient_id", currentUserId) // Jsem příjemce
-            .eq("is_read", false)           // A zpráva je nepřečtená
-            .group("sender_id"); // Důležité: seskupíme podle odesílatele
+    // 1. Získání NEPŘEČTENÝCH ZPRÁV (BEZPEČNÝ DOTAZ)
+    const { data: unreadData, error: unreadError } = await supabase
+        .from("messages")
+        // Vrací jen sloupce sender_id pro ruční sčítání
+        .select("sender_id") 
+        .eq("recipient_id", currentUserId) // Jsem příjemce
+        .eq("is_read", false);           // A zpráva je nepřečtená
 
-        if (unreadError) {
-            console.error("Chyba při načítání nepřečtených zpráv:", unreadError.message);
-            // Pokračujeme s profily bez notifikací
-        }
+    if (unreadError) {
+        console.error("CHYBA Supabase při načítání nepřečtených zpráv:", unreadError.message);
+        // Necháme unreadData být null/prázdné, abychom mohli pokračovat
+    }
 
-        // 2. Mapování počtu notifikací na odesílatele
-        // Poznámka: Supabase vrací count jako součást datového objektu, 
-        // ale musíme to správně agregovat, pokud bychom dělali GROUP BY
-        // Pro jednoduchost použijeme mapu na získaný výsledek (i když Supabase API pro count je trochu složitější, předpokládáme, že vrátí pole s objekty {sender_id: ..., count: ...})
-        const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: any) => {
-             // Použijeme zjednodušenou logiku, kde 'count' je přímo počet řádků
-            acc[msg.sender_id] = msg.count;
-            return acc;
-        }, {});
-        
-        // 3. Přiřazení počtu k profilům a seřazení
-        const profilesWithUnread = (profilesData || []).map(p => ({
-            ...p,
-            unreadCount: unreadMap[p.id] || 0, // Přidáme unreadCount
-        }));
+    // 2. Mapování počtu notifikací ručním sčítáním v JavaScriptu
+    // Vytvoří mapu: { 'sender_id_1': 3, 'sender_id_2': 1, ... }
+    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
+        // Sčítání v JS: Pokud odesílatel již existuje, přičteme 1, jinak začneme na 1.
+        acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1; 
+        return acc;
+    }, {});
+    
+    // 3. Přiřazení počtu k profilům a seřazení
+    const profilesWithUnread = (profilesData || []).map(p => ({
+        ...p,
+        // DŮLEŽITÉ: Přiřazení vlastnosti unreadCount. Použijeme 0, pokud neexistuje.
+        unreadCount: unreadMap[p.id] || 0, 
+    }));
 
-        const sorted = profilesWithUnread.sort((a, b) => {
-            const aName = a.name || "";
-            const bName = b.name || "";
-            const aCompany = a.company || "";
-            const bCompany = b.company || "";
+    // Zkontrolujte mapu v konzoli - pokud toto ukáže čísla > 0, je to opraveno
+    console.log('Vytvořená unread mapa:', unreadMap); 
 
-            if (aCompany && bCompany) {
-                if (aCompany.toLowerCase() === bCompany.toLowerCase()) {
-                    return aName.toLowerCase().localeCompare(bName.toLowerCase());
-                }
-                return aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
+    const sorted = profilesWithUnread.sort((a, b) => {
+        // (Vaše stávající logika řazení zde)
+        const aName = a.name || "";
+        const bName = b.name || "";
+        const aCompany = a.company || "";
+        const bCompany = b.company || "";
+
+        if (aCompany && bCompany) {
+            if (aCompany.toLowerCase() === bCompany.toLowerCase()) {
+                return aName.toLowerCase().localeCompare(bName.toLowerCase());
             }
-            return aName.toLowerCase().localeCompare(bName.toLowerCase());
-        });
-        
-        setProfiles(sorted);
-    };
+            return aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
+        }
+        return aName.toLowerCase().localeCompare(bName.toLowerCase());
+    });
+    
+    setProfiles(sorted);
+};
 
 
     async function linkProfileToAuth(user: any) {
