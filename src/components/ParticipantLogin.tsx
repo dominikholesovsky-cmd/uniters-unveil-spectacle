@@ -42,7 +42,7 @@ const getChatId = (id1: string, id2: string): string => {
 // ----------------------------------------------------------------------------------
 export default function ChatButtonAndModal({ language = "cs" }: ParticipantLoginProps) {
     // Stav pro kontrolu viditelnosti MODALU
-    const [isOpen, setIsOpen] = useState(false); 
+    const [isOpen, setIsOpen] = useState(false);
 
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
@@ -56,12 +56,12 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
     const [chatLoading, setChatLoading] = useState(false);
     
     // Nový stav pro CELKOVÝ počet nepřečtených zpráv
-    const [totalUnreadCount, setTotalUnreadCount] = useState(0); 
+    const [totalUnreadCount, setTotalUnreadCount] = useState(0);
     
     // Pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
     // Ref pro odesílací formulář (pro řešení mobilního skákání)
-    const chatContainerRef = useRef<HTMLDivElement>(null); 
+    const chatContainerRef = useRef<HTMLDivElement>(null);
 
     // Textové překlady (beze změn)
     const t = {
@@ -123,13 +123,12 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         if (error) console.error("Chyba při označování zpráv jako přečtené:", error.message);
         
         // Voláme s aktuálním ID
-        // ⭐ KLÍČOVÁ ZMĚNA: Volání loadProfiles s aktuálním ID
         loadProfiles(currentUserId);
     }
 
     // ⭐ OPRAVENÁ FUNKCE loadProfiles - PŘIJÍMÁ currentUserId JAKO PARAMETR
     const loadProfiles = async (currentUserId: string | null = session?.user?.id) => {
-        setLoading(true); 
+        setLoading(true);
         
         const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
         
@@ -160,15 +159,15 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         }
 
         // 2. Mapování počtu notifikací ručním sčítáním
-        let newTotalUnreadCount = 0; 
+        let newTotalUnreadCount = 0;
 
         const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
             acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
-            newTotalUnreadCount += 1; 
+            newTotalUnreadCount += 1;
             return acc;
         }, {});
         
-        setTotalUnreadCount(newTotalUnreadCount); 
+        setTotalUnreadCount(newTotalUnreadCount);
         
         const profilesWithUnread = (profilesData || []).map(p => ({
             ...p,
@@ -214,7 +213,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
         if (profileData) {
             if (!profileData.id || profileData.id !== user.id) {
                 console.log(`%cPropojení profilu: Aktualizuji ID pro ${user.email} na ${user.id}`, 'color: orange; font-weight: bold;');
-                                                    
+                                        
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ id: user.id })
@@ -260,7 +259,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
             } else {
                 setProfiles([]);
                 setTotalUnreadCount(0);
-                setLoading(false); 
+                setLoading(false);
             }
         });
 
@@ -363,7 +362,7 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                 .order("created_at", { ascending: true });
             if (!error) setMessages(data || []);
             setChatLoading(false);
-            scrollToBottom(); 
+            scrollToBottom();
         };
 
         loadMessages();
@@ -457,25 +456,25 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                     {chatLoading
                                         ? <p className="text-center text-gray-500">{t.loadingChat}</p>
                                         : messages.map((msg, index) => {
-                                                const currentUserId = session.user.id;
-                                                return (
-                                                    <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
-                                                        <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId 
-                                                            ? "bg-blue-600 text-white rounded-br-none" 
-                                                            : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
-                                                            <p className="text-sm break-words">{msg.content}</p>
-                                                            <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
-                                                                {new Date(msg.created_at).toLocaleTimeString(language)}
-                                                            </span>
+                                                    const currentUserId = session.user.id;
+                                                    return (
+                                                        <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
+                                                            <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId
+                                                                ? "bg-blue-600 text-white rounded-br-none"
+                                                                : "bg-white text-gray-800 rounded-tl-none border border-gray-200"}`}>
+                                                                <p className="text-sm break-words">{msg.content}</p>
+                                                                <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
+                                                                    {new Date(msg.created_at).toLocaleTimeString(language)}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            })
+                                                    );
+                                                })
                                     }
                                     <div ref={messagesEndRef} />
                                 </div>
                                 
-                                {/* ⭐ UPRAVENÁ SEKCE: Odesílací formulář (odstraněné zvýraznění) */}
+                                {/* ⭐ UPRAVENÁ SEKCE: Odesílací formulář (přidány třídy pro potlačení focus okraje) */}
                                 <div ref={chatContainerRef} className="flex gap-2 flex-shrink-0">
                                     <Input
                                         type="text"
@@ -483,11 +482,11 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         value={messageInput}
                                         onChange={(e) => setMessageInput(e.target.value)}
                                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors"
-                                      />
-                                    <Button 
-                                        className="bg-blue-600 text-white hover:bg-blue-700 font-semibold" 
-                                        onClick={handleSendMessage} 
+                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors **focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none**"
+                                    />
+                                    <Button
+                                        className="bg-blue-600 text-white hover:bg-blue-700 font-semibold"
+                                        onClick={handleSendMessage}
                                         disabled={!messageInput.trim() || chatLoading}
                                     >
                                         {t.send}
@@ -505,12 +504,12 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder={t.searchPlaceholder}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors"
+                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors **focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none**"
                                     />
 
-                                    <Button 
-                                        onClick={handleLogout} 
-                                        disabled={loading} 
+                                    <Button
+                                        onClick={handleLogout}
+                                        disabled={loading}
                                         className="md:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold flex-shrink-0 transition-colors"
                                     >
                                         {loading ? t.loggingOut : t.logout}
@@ -574,8 +573,8 @@ export default function ChatButtonAndModal({ language = "cs" }: ParticipantLogin
                                         placeholder="email@domain.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        // ZMĚNA: focus:border a focus:ring odstraněny/nastaveny na 0/původní barvu
-                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors"
+                                        // ⭐ ZMĚNA: Přidány třídy pro potlačení focus okraje/ringu
+                                        className="bg-white border text-black flex-grow focus:outline-none focus:border-gray-300 focus:shadow-none transition-colors **focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none**"
                                     />
                                     <Button
                                         onClick={sendMagicLink}
