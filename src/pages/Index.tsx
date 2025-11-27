@@ -12,7 +12,7 @@ import Schedule from "@/components/Schedule";
 // ❌ Původní chybný import odstraněn
 
 const Index = () => {
-  const [language, setLanguage] = useState("cs");
+  const [language, setLanguage] = useState<"cs" | "en">("cs");
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "cs" ? "en" : "cs"));
@@ -46,7 +46,7 @@ const Index = () => {
     },
   };
 
-  const seo = seoContent[language];
+  const seo = seoContent[language as keyof typeof seoContent];
 
   return (
     <>
