@@ -20,7 +20,7 @@ const Schedule = ({ language }: ScheduleProps) => {
         {
           time: "18:00",
           title: "Příchod hostů",
-          description: "Vítací drink a začátek smyčcového kvartetu",
+          description: "Vítací drink a začátek smyčcového kvartetu. Rozklikněte pro ukázku hudby.",
           icon: Music,
         },
         {
@@ -57,7 +57,7 @@ const Schedule = ({ language }: ScheduleProps) => {
         {
           time: "18:00",
           title: "Guest Arrival",
-          description: "Welcome drink and string quartet performance begins",
+          description: "Welcome drink and string quartet performance begins. Click to hear a music preview.",
           icon: Music,
         },
         {
