@@ -44,8 +44,8 @@ interface Message {
 
 interface ChatModalProps {
     language?: "cs" | "en";
-    open: boolean; // Stav, zda je modal otevřený
-    onOpenChange: (open: boolean) => void; // Funkce pro změnu stavu (zavření kliknutím mimo modal/escape)
+    open: boolean;
+    onOpenChange: (open: boolean) => void; 
     onTotalUnreadChange: (count: number) => void;
 }
 
@@ -59,8 +59,8 @@ const getChatId = (id1: string, id2: string): string => {
 };
 
 // --- KOMPONENTA ChatModal ---
-export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProps) {
-    
+export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadChange }: ChatModalProps) {
+
     // Stavy pro data a UI
     const [email, setEmail] = useState("");
     const [session, setSession] = useState<any>(null);
@@ -74,8 +74,10 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProp
     const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
     useEffect(() => {
-  onTotalUnreadChange(totalUnreadCount);
-}, [totalUnreadCount, onTotalUnreadChange]);
+      if (onTotalUnreadChange) {
+        onTotalUnreadChange(totalUnreadCount);
+      }
+    }, [totalUnreadCount, onTotalUnreadChange]);
 
     // Ref pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
