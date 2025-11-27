@@ -73,6 +73,10 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProp
     const [chatLoading, setChatLoading] = useState(false);
     const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
+    useEffect(() => {
+  onTotalUnreadChange(totalUnreadCount);
+}, [totalUnreadCount, onTotalUnreadChange]);
+
     // Ref pro scroll na konec chatu
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
