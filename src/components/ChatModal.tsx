@@ -46,7 +46,7 @@ interface ChatModalProps {
     language?: "cs" | "en";
     open: boolean;
     onOpenChange: (open: boolean) => void; 
-    onTotalUnreadChange: (count: number) => void;
+    onTotalUnreadChange?: (count: number) => void;
 }
 
 // KLÍČ pro lokální úložiště
