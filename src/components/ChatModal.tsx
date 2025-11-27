@@ -79,7 +79,7 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProp
 
 
     // --- Textové překlady ---
-    const t = {
+    const content = {
         cs: {
             openChat: "Otevřít Chat",
             loginTitle: "Přihlášení do chatu",
@@ -120,7 +120,9 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProp
             writeMessage: "Write a message...",
             send: "Send",
         },
-    }[language] ?? t.cs;
+    };
+    
+    const t = content[language] ?? content.cs;
     
     // --- Funkce pro správu dat a UI ---
 
@@ -372,7 +374,9 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProp
             )
             .subscribe();
 
-        return () => supabase.removeChannel(subscription);
+        return () => {
+            supabase.removeChannel(subscription);
+        };
     }, [session?.user?.id, loadProfiles]);
     
     // Auto-scroll po načtení zpráv
@@ -411,7 +415,9 @@ export function ChatModal({ language = "cs", open, onOpenChange }: ChatModalProp
             )
             .subscribe();
 
-        return () => supabase.removeChannel(subscription);
+        return () => {
+            supabase.removeChannel(subscription);
+        };
     }, [targetProfile, session]);
 
 
