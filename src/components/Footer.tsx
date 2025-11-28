@@ -29,13 +29,13 @@ const Footer = ({ language }: FooterProps) => {
     <footer className="bg-gradient-to-b from-[#1a1a1a] via-primary/70 to-primary text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-4 sm:py-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <div className="grid grid-cols-3 items-center gap-2 sm:gap-4">
               {/* Logo - vlevo */}
-              <div className="flex justify-center md:justify-start">
+              <div className="flex justify-start">
                 <img 
                   src={unitersLogo} 
                   alt="Uniters" 
-                  className="h-8 sm:h-10 w-auto"
+                  className="h-6 sm:h-8 md:h-10 w-auto"
                 />
               </div>
 
@@ -46,7 +46,7 @@ const Footer = ({ language }: FooterProps) => {
               </div>
 
               {/* GDPR Link - vpravo */}
-              <div className="flex justify-center md:justify-end">
+              <div className="flex justify-end">
                 <button
                   type="button"
                   className="text-xs text-white sm:text-sm hover:text-white/80 transition-colors inline-block hover:underline"
