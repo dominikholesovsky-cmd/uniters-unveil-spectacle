@@ -29,9 +29,9 @@ const Footer = ({ language }: FooterProps) => {
     <footer className="bg-gradient-to-b from-[#1a1a1a] via-primary/70 to-primary text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-4 sm:py-5">
-            <div className="grid grid-cols-3 items-center gap-2 sm:gap-4">
+            <div className="relative flex items-center justify-between gap-4">
               {/* Logo - vlevo */}
-              <div className="flex justify-start">
+              <div className="flex-shrink-0 z-10">
                 <img 
                   src={unitersLogo} 
                   alt="Uniters" 
@@ -39,17 +39,17 @@ const Footer = ({ language }: FooterProps) => {
                 />
               </div>
 
-              {/* Center content - perfektně na středu */}
-              <div className="text-white text-center">
+              {/* Center content - perfektně na středu obrazovky */}
+              <div className="absolute left-1/2 -translate-x-1/2 text-white text-center">
                 <p className="text-xs text-white/90 sm:text-sm whitespace-nowrap">{t.copyright}</p>
                 <p className="text-xs text-white/90 sm:text-sm whitespace-nowrap">{t.ico}</p>
               </div>
 
               {/* GDPR Link - vpravo */}
-              <div className="flex justify-end">
+              <div className="flex-shrink-0 z-10">
                 <button
                   type="button"
-                  className="text-xs text-white sm:text-sm hover:text-white/80 transition-colors inline-block hover:underline"
+                  className="text-xs text-white sm:text-sm hover:text-white/80 transition-colors inline-block hover:underline whitespace-nowrap"
                   onClick={() => setIsTermsOpen(true)}
                 >
                   {t.gdpr}
