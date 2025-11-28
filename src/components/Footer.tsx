@@ -40,9 +40,9 @@ const Footer = ({ language }: FooterProps) => {
               </div>
 
               {/* Center content - perfektně na středu */}
-              <div className="text-white text-center space-y-0.5 sm:space-y-1">
-                <p className="text-xs text-white/90 sm:text-sm">{t.copyright}</p>
-                <p className="text-xs text-white/90 sm:text-sm">{t.ico}</p>
+              <div className="text-white text-center">
+                <p className="text-xs text-white/90 sm:text-sm whitespace-nowrap">{t.copyright}</p>
+                <p className="text-xs text-white/90 sm:text-sm whitespace-nowrap">{t.ico}</p>
               </div>
 
               {/* GDPR Link - vpravo */}
