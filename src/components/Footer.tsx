@@ -28,8 +28,8 @@ const Footer = ({ language }: FooterProps) => {
   return (
     <footer className="bg-gradient-to-b from-[#1a1a1a] via-primary/70 to-primary text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto py-4 sm:py-5">
-            <div className="relative flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto py-4 sm:py-5">
+            <div className="relative flex items-center justify-between gap-8 sm:gap-12">
               {/* Logo - vlevo */}
               <div className="flex-shrink-0 z-10">
                 <img 
