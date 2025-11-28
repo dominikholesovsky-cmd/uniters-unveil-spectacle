@@ -233,8 +233,44 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const commonButtonClasses = "w-full sm:w-80 mx-auto";
       
     return (
-      <section className="py-12 sm:py-16 bg-gray-900 relative">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 relative overflow-hidden" style={{
+        background: 'linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 100%)'
+      }}>
+        {/* Underground atmosphere layers */}
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `
+            radial-gradient(circle at 30% 20%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
+            radial-gradient(circle at 70% 80%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+          `
+        }} />
+        {/* Concrete texture */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.1) 2px,
+            rgba(255, 255, 255, 0.1) 4px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.1) 2px,
+            rgba(255, 255, 255, 0.1) 4px
+          )`
+        }} />
+        {/* Water droplets */}
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `radial-gradient(circle at 25% 30%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
+                            radial-gradient(circle at 75% 60%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
+                            radial-gradient(circle at 50% 85%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%)`
+        }} />
+        {/* Vignette */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+        }} />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
@@ -295,10 +331,48 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   return (
     <section
       id="registration-form"
-      className="py-10 bg-gradient-to-b from-black to-gray-900 relative"
+      className="py-10 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #000000 0%, #1a1a1a 100%)',
+      }}
     >
+      {/* Underground atmosphere layers */}
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: `
+          radial-gradient(circle at 20% 30%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+        `
+      }} />
+      {/* Concrete texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        )`
+      }} />
+      {/* Water droplets effect */}
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `radial-gradient(circle at 15% 20%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
+                          radial-gradient(circle at 85% 40%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
+                          radial-gradient(circle at 40% 80%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%),
+                          radial-gradient(circle at 70% 15%, rgba(100, 150, 200, 0.1) 0%, transparent 2%)`
+      }} />
+      {/* Vignette */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+      }} />
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl">
+        <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl relative z-10">
           <h2 className="text-4xl font-bold text-center mb-4">{t.title}</h2>
           <p className="text-center text-gray-600 mb-8">{t.subtitle}</p>
 

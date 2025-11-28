@@ -53,9 +53,43 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   }, [api]);
 
   return (
-    <section id="gallery" className="py-10 sm:py-10 bg-gray-900 relative overflow-hidden">
-      {/* Underground atmosphere */}
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
+    <section id="gallery" className="py-10 sm:py-10 relative overflow-hidden" style={{
+      background: 'linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 100%)'
+    }}>
+      {/* Underground atmosphere layers */}
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: `
+          radial-gradient(circle at 50% 30%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
+          radial-gradient(circle at 20% 80%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+        `
+      }} />
+      {/* Concrete texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        )`
+      }} />
+      {/* Water droplets */}
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `radial-gradient(circle at 35% 45%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
+                          radial-gradient(circle at 65% 20%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
+                          radial-gradient(circle at 55% 90%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%)`
+      }} />
+      {/* Vignette */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+      }} />
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Nadpis */}
