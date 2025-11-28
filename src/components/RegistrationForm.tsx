@@ -415,7 +415,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 control={form.control}
                 name="guidedTour"
                 render={({ field }) => (
-                  <FormItem className="p-4 border-2 border-blue-500 rounded-xl bg-blue-50 flex items-center gap-4">
+                  <FormItem className="p-4 border-2 border-primary rounded-xl bg-primary/5 flex items-center gap-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -423,10 +423,10 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                       />
                     </FormControl>
                     <div className="flex flex-col m-0">
-                      <FormLabel className="font-semibold text-blue-700 m-0">
+                      <FormLabel className="font-semibold text-primary m-0">
                         {t.guidedTour}
                       </FormLabel>
-                      <p className="text-sm text-blue-600 mt-1 m-0">
+                      <p className="text-sm text-primary/80 mt-1 m-0">
                         {t.guidedTourNote}
                       </p>
                     </div>
