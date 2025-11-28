@@ -92,9 +92,50 @@ const Schedule = ({ language }: ScheduleProps) => {
   const t = content[language] ?? content.cs;
 
   return (
-    <section className="py-10 sm:py-12 bg-gray-900 relative overflow-hidden">
-      {/* Underground texture overlay */}
-      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+    <section className="py-10 sm:py-12 relative overflow-hidden" style={{
+      background: 'linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 100%)'
+    }}>
+      {/* Underground atmosphere layers */}
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: `
+          radial-gradient(circle at 60% 40%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
+          radial-gradient(circle at 30% 70%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+        `
+      }} />
+      {/* Concrete texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        )`
+      }} />
+      {/* Water tank circles pattern */}
+      <div className="absolute inset-0 opacity-[0.05]" style={{
+        backgroundImage: `radial-gradient(circle, transparent 40%, rgba(255,255,255,0.1) 41%, transparent 42%),
+                          radial-gradient(circle, transparent 40%, rgba(255,255,255,0.1) 41%, transparent 42%)`,
+        backgroundSize: '150px 150px',
+        backgroundPosition: '0 0, 75px 75px'
+      }} />
+      {/* Water droplets */}
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `radial-gradient(circle at 45% 25%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
+                          radial-gradient(circle at 80% 50%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
+                          radial-gradient(circle at 20% 75%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%)`
+      }} />
+      {/* Vignette */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+      }} />
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
