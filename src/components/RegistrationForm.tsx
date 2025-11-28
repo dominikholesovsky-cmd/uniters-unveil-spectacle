@@ -233,7 +233,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const commonButtonClasses = "w-full sm:w-80 mx-auto";
       
     return (
-      <section className="py-12 sm:py-16 relative overflow-hidden" style={{
+      <section id="submitted" className="py-12 sm:py-16 relative overflow-hidden" style={{
         background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
       }}>
         {/* Underground atmosphere layers */}
