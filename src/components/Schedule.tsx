@@ -92,7 +92,7 @@ const Schedule = ({ language }: ScheduleProps) => {
   const t = content[language] ?? content.cs;
 
   return (
-    <section className="py-10 sm:py-12 bg-gradient-to-b from-background via-gray-900 to-black relative overflow-hidden">
+    <section className="py-10 sm:py-12 bg-gray-900 relative overflow-hidden">
       {/* Underground texture overlay */}
       <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
       <div className="container mx-auto px-4 relative z-10">
