@@ -29,9 +29,9 @@ const Footer = ({ language }: FooterProps) => {
     <footer className="bg-gradient-to-b from-[#1a1a1a] via-primary/70 to-primary text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-4 sm:py-5">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
-              {/* Logo */}
-              <div className="flex-shrink-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+              {/* Logo - vlevo */}
+              <div className="flex justify-center md:justify-start">
                 <img 
                   src={unitersLogo} 
                   alt="Uniters" 
@@ -39,14 +39,14 @@ const Footer = ({ language }: FooterProps) => {
                 />
               </div>
 
-              {/* Center content */}
+              {/* Center content - perfektně na středu */}
               <div className="text-white text-center space-y-0.5 sm:space-y-1">
                 <p className="text-xs text-white/90 sm:text-sm">{t.copyright}</p>
                 <p className="text-xs text-white/90 sm:text-sm">{t.ico}</p>
               </div>
 
-              {/* GDPR Link */}
-              <div>
+              {/* GDPR Link - vpravo */}
+              <div className="flex justify-center md:justify-end">
                 <button
                   type="button"
                   className="text-xs text-white sm:text-sm hover:text-white/80 transition-colors inline-block hover:underline"
