@@ -26,7 +26,7 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
-    <footer className="bg-gradient-to-br from-primary/90 to-primary text-white">
+    <footer className="bg-gradient-to-b from-[#1a1a1a] via-primary/70 to-primary text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto py-4 sm:py-5">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
