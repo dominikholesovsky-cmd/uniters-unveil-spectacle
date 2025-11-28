@@ -12,9 +12,9 @@ const LanguageToggle = ({ language, onToggle }: LanguageToggleProps) => {
         onClick={onToggle}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border/50 bg-background/80 backdrop-blur-sm text-xs font-medium text-muted-foreground hover:text-foreground hover:border-border transition-all duration-200"
       >
-        <span className={isCzech ? "text-foreground" : ""}>CZ</span>
+        <span className={isCzech ? "text-white font-semibold" : ""}>CZ</span>
         <span className="text-border">|</span>
-        <span className={!isCzech ? "text-foreground" : ""}>EN</span>
+        <span className={!isCzech ? "text-white font-semibold" : ""}>EN</span>
       </button>
     </div>
   );

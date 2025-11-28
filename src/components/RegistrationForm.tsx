@@ -234,41 +234,41 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       
     return (
       <section className="py-12 sm:py-16 relative overflow-hidden" style={{
-        background: 'linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 100%)'
+        background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
       }}>
         {/* Underground atmosphere layers */}
-        <div className="absolute inset-0 opacity-30" style={{
+        <div className="absolute inset-0 opacity-40" style={{
           backgroundImage: `
-            radial-gradient(circle at 30% 20%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
-            radial-gradient(circle at 70% 80%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+            radial-gradient(circle at 30% 20%, rgba(70, 70, 70, 0.6) 0%, transparent 40%),
+            radial-gradient(circle at 70% 80%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)
           `
         }} />
         {/* Concrete texture */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
+        <div className="absolute inset-0 opacity-[0.08]" style={{
           backgroundImage: `repeating-linear-gradient(
             90deg,
             transparent,
-            transparent 2px,
-            rgba(255, 255, 255, 0.1) 2px,
-            rgba(255, 255, 255, 0.1) 4px
+            transparent 3px,
+            rgba(255, 255, 255, 0.15) 3px,
+            rgba(255, 255, 255, 0.15) 6px
           ),
           repeating-linear-gradient(
             0deg,
             transparent,
-            transparent 2px,
-            rgba(255, 255, 255, 0.1) 2px,
-            rgba(255, 255, 255, 0.1) 4px
+            transparent 3px,
+            rgba(255, 255, 255, 0.15) 3px,
+            rgba(255, 255, 255, 0.15) 6px
           )`
         }} />
         {/* Water droplets */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `radial-gradient(circle at 25% 30%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
-                            radial-gradient(circle at 75% 60%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
-                            radial-gradient(circle at 50% 85%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%)`
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `radial-gradient(circle at 25% 30%, rgba(120, 180, 220, 0.15) 0%, transparent 4%),
+                            radial-gradient(circle at 75% 60%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
+                            radial-gradient(circle at 50% 85%, rgba(120, 180, 220, 0.12) 0%, transparent 3.5%)`
         }} />
-        {/* Vignette */}
-        <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+        {/* Atmospheric glow */}
+        <div className="absolute inset-0 opacity-20" style={{
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
         }} />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
@@ -333,43 +333,44 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       id="registration-form"
       className="py-10 relative overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #000000 0%, #1a1a1a 100%)',
+        background: 'linear-gradient(180deg, #000000 0%, #2d2d2d 50%, #1a1a1a 100%)',
       }}
     >
       {/* Underground atmosphere layers */}
-      <div className="absolute inset-0 opacity-30" style={{
+      <div className="absolute inset-0 opacity-40" style={{
         backgroundImage: `
-          radial-gradient(circle at 20% 30%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
-          radial-gradient(circle at 80% 70%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+          radial-gradient(circle at 20% 30%, rgba(70, 70, 70, 0.6) 0%, transparent 40%),
+          radial-gradient(circle at 80% 70%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)
         `
       }} />
-      {/* Concrete texture */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
+      {/* Concrete texture - more visible */}
+      <div className="absolute inset-0 opacity-[0.08]" style={{
         backgroundImage: `repeating-linear-gradient(
           90deg,
           transparent,
-          transparent 2px,
-          rgba(255, 255, 255, 0.1) 2px,
-          rgba(255, 255, 255, 0.1) 4px
+          transparent 3px,
+          rgba(255, 255, 255, 0.15) 3px,
+          rgba(255, 255, 255, 0.15) 6px
         ),
         repeating-linear-gradient(
           0deg,
           transparent,
-          transparent 2px,
-          rgba(255, 255, 255, 0.1) 2px,
-          rgba(255, 255, 255, 0.1) 4px
+          transparent 3px,
+          rgba(255, 255, 255, 0.15) 3px,
+          rgba(255, 255, 255, 0.15) 6px
         )`
       }} />
-      {/* Water droplets effect */}
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: `radial-gradient(circle at 15% 20%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
-                          radial-gradient(circle at 85% 40%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
-                          radial-gradient(circle at 40% 80%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%),
-                          radial-gradient(circle at 70% 15%, rgba(100, 150, 200, 0.1) 0%, transparent 2%)`
+      {/* Water droplets effect - more visible */}
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: `radial-gradient(circle at 15% 20%, rgba(120, 180, 220, 0.15) 0%, transparent 4%),
+                          radial-gradient(circle at 85% 40%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
+                          radial-gradient(circle at 40% 80%, rgba(120, 180, 220, 0.15) 0%, transparent 3.5%),
+                          radial-gradient(circle at 70% 15%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
+                          radial-gradient(circle at 25% 60%, rgba(120, 180, 220, 0.12) 0%, transparent 2.5%)`
       }} />
-      {/* Vignette */}
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+      {/* Atmospheric glow */}
+      <div className="absolute inset-0 opacity-20" style={{
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
       }} />
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl relative z-10">
