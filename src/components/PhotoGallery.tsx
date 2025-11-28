@@ -53,7 +53,7 @@ const PhotoGallery = ({ language }: PhotoGalleryProps) => {
   }, [api]);
 
   return (
-    <section id="gallery" className="py-10 sm:py-10 bg-gradient-to-b from-black via-gray-900 to-background relative overflow-hidden">
+    <section id="gallery" className="py-10 sm:py-10 bg-gray-900 relative overflow-hidden">
       {/* Underground atmosphere */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
       <div className="container mx-auto px-4 relative z-10">

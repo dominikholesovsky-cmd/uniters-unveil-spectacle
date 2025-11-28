@@ -19,7 +19,7 @@ const Contact = ({ language }: ContactProps) => {
   const t = content[language];
 
   return (
-    <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-background via-gray-900 to-black relative">
+    <section className="py-8 sm:py-10 md:py-12 bg-gray-900 relative">
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="bg-card rounded-xl sm:rounded-2xl p-8 sm:p-10 md:p-12 shadow-elegant border border-border animate-fade-in max-w-xl mx-auto text-center">
