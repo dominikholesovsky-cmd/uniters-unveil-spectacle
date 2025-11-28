@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Wine, Music, Info, Gift } from "lucide-react"; // přidán Gift
 import unitersLogo from "@/assets/full-logo_uniters_light.png";
@@ -8,6 +9,27 @@ interface HeroProps {
 }
 
 const Hero = ({ language, onRegisterClick }: HeroProps) => {
+  const [isRegistered, setIsRegistered] = useState(false);
+
+  useEffect(() => {
+    // Check if user has already registered
+    const checkRegistration = () => {
+      const submitted = localStorage.getItem("registrationSubmitted") === "true";
+      setIsRegistered(submitted);
+    };
+
+    checkRegistration();
+
+    // Listen for storage changes (in case user registers in another tab)
+    window.addEventListener("storage", checkRegistration);
+    window.addEventListener("focus", checkRegistration);
+
+    return () => {
+      window.removeEventListener("storage", checkRegistration);
+      window.removeEventListener("focus", checkRegistration);
+    };
+  }, []);
+
   const content = {
     cs: {
       title: "Uniters Undeground Night",
@@ -16,6 +38,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       time: "18:00 - 22:00",
       location: "Vodojemy Žlutý Kopec, Brno",
       cta: "Registrovat se",
+      ctaRegistered: "K události",
       description:
         "Přidejte se k nám na jedinečný večerní program plný zážitků",
       features: [
@@ -48,6 +71,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
       time: "6:00 PM - 10:00 PM",
       location: "Žlutý Kopec Water Tanks, Brno",
       cta: "Register",
+      ctaRegistered: "To the Event",
       description:
         "Join us for a unique evening program full of experiences",
       features: [
@@ -157,7 +181,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
                 }}
                 className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
               >
-                {t.cta}
+                {isRegistered ? t.ctaRegistered : t.cta}
               </Button>
 
             </div>
