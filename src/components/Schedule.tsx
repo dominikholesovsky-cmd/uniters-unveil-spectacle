@@ -93,48 +93,48 @@ const Schedule = ({ language }: ScheduleProps) => {
 
   return (
     <section className="py-10 sm:py-12 relative overflow-hidden" style={{
-      background: 'linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 100%)'
+      background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
     }}>
       {/* Underground atmosphere layers */}
-      <div className="absolute inset-0 opacity-30" style={{
+      <div className="absolute inset-0 opacity-40" style={{
         backgroundImage: `
-          radial-gradient(circle at 60% 40%, rgba(30, 30, 30, 0.8) 0%, transparent 50%),
-          radial-gradient(circle at 30% 70%, rgba(30, 30, 30, 0.8) 0%, transparent 50%)
+          radial-gradient(circle at 60% 40%, rgba(70, 70, 70, 0.6) 0%, transparent 40%),
+          radial-gradient(circle at 30% 70%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)
         `
       }} />
       {/* Concrete texture */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
+      <div className="absolute inset-0 opacity-[0.08]" style={{
         backgroundImage: `repeating-linear-gradient(
           90deg,
           transparent,
-          transparent 2px,
-          rgba(255, 255, 255, 0.1) 2px,
-          rgba(255, 255, 255, 0.1) 4px
+          transparent 3px,
+          rgba(255, 255, 255, 0.15) 3px,
+          rgba(255, 255, 255, 0.15) 6px
         ),
         repeating-linear-gradient(
           0deg,
           transparent,
-          transparent 2px,
-          rgba(255, 255, 255, 0.1) 2px,
-          rgba(255, 255, 255, 0.1) 4px
+          transparent 3px,
+          rgba(255, 255, 255, 0.15) 3px,
+          rgba(255, 255, 255, 0.15) 6px
         )`
       }} />
       {/* Water tank circles pattern */}
-      <div className="absolute inset-0 opacity-[0.05]" style={{
-        backgroundImage: `radial-gradient(circle, transparent 40%, rgba(255,255,255,0.1) 41%, transparent 42%),
-                          radial-gradient(circle, transparent 40%, rgba(255,255,255,0.1) 41%, transparent 42%)`,
+      <div className="absolute inset-0 opacity-[0.08]" style={{
+        backgroundImage: `radial-gradient(circle, transparent 40%, rgba(255,255,255,0.12) 41%, transparent 42%),
+                          radial-gradient(circle, transparent 40%, rgba(255,255,255,0.12) 41%, transparent 42%)`,
         backgroundSize: '150px 150px',
         backgroundPosition: '0 0, 75px 75px'
       }} />
       {/* Water droplets */}
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: `radial-gradient(circle at 45% 25%, rgba(100, 150, 200, 0.1) 0%, transparent 3%),
-                          radial-gradient(circle at 80% 50%, rgba(100, 150, 200, 0.1) 0%, transparent 2%),
-                          radial-gradient(circle at 20% 75%, rgba(100, 150, 200, 0.1) 0%, transparent 2.5%)`
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: `radial-gradient(circle at 45% 25%, rgba(120, 180, 220, 0.15) 0%, transparent 4%),
+                          radial-gradient(circle at 80% 50%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
+                          radial-gradient(circle at 20% 75%, rgba(120, 180, 220, 0.12) 0%, transparent 3.5%)`
       }} />
-      {/* Vignette */}
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)'
+      {/* Atmospheric glow */}
+      <div className="absolute inset-0 opacity-20" style={{
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
       }} />
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
@@ -157,7 +157,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                       className="bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-xl sm:rounded-2xl overflow-hidden hover:bg-white/15 dark:hover:bg-white/10 transition-all duration-300"
                       style={{ animationDelay: '0s' }}
                     >
-                      <AccordionTrigger className="p-6 sm:p-8 hover:no-underline [&[data-state=open]>div]:mb-4">
+                      <AccordionTrigger className="p-6 sm:p-8 hover:no-underline [&[data-state=open]>div]:mb-4 [&>svg]:text-white">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full">
                           {/* Time Badge */}
                           <div className="flex items-center gap-3 sm:min-w-[140px]">
