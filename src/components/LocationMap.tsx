@@ -26,7 +26,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
   return (
     <section
       id="location-map"
-      className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-background via-background-light to-background-light"
+      className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-background via-gray-900 to-black relative"
     >
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto text-center">

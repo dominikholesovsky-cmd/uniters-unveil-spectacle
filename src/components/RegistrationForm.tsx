@@ -233,7 +233,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     const commonButtonClasses = "w-full sm:w-80 mx-auto";
       
     return (
-      <section className="py-12 sm:py-16 bg-gradient-to-t from-background via-background-light to-background-light">
+      <section className="py-12 sm:py-16 bg-gradient-to-b from-black via-gray-900 to-background relative">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -295,7 +295,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   return (
     <section
       id="registration-form"
-      className="py-10 bg-gradient-to-t from-background via-background-light to-background-light"
+      className="py-10 bg-gradient-to-b from-black via-gray-900 to-background relative"
     >
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl">
