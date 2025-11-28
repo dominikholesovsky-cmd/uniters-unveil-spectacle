@@ -176,7 +176,8 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
               <Button
                 size="lg"
                 onClick={() => {
-                  const el = document.getElementById("registration-form");
+                  const targetId = isRegistered ? "submitted" : "registration-form";
+                  const el = document.getElementById(targetId);
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
                 className="bg-white text-primary hover:bg-white/90 px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-full shadow-elegant transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
