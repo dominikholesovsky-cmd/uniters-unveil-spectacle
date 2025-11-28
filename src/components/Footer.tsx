@@ -26,30 +26,30 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
-    <footer className="bg-muted-foreground text-white">
+    <footer className="bg-gradient-to-br from-primary/90 to-primary text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto py-6 sm:py-6 md:py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
+          <div className="max-w-6xl mx-auto py-4 sm:py-5">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
               {/* Logo */}
               <div className="flex-shrink-0">
                 <img 
                   src={unitersLogo} 
                   alt="Uniters" 
-                  className="h-10 sm:h-12 w-auto"
+                  className="h-8 sm:h-10 w-auto"
                 />
               </div>
 
               {/* Center content */}
-              <div className="text-white text-center space-y-1 sm:space-y-2">
-                <p className="text-xs text-white sm:text-sm ">{t.copyright}</p>
-                <p className="text-xs text-white sm:text-sm ">{t.ico}</p>
+              <div className="text-white text-center space-y-0.5 sm:space-y-1">
+                <p className="text-xs text-white/90 sm:text-sm">{t.copyright}</p>
+                <p className="text-xs text-white/90 sm:text-sm">{t.ico}</p>
               </div>
 
               {/* GDPR Link */}
               <div>
                 <button
                   type="button"
-                  className="text-xs text-white sm:text-sm hover:text-accent transition-colors inline-block hover:underline"
+                  className="text-xs text-white sm:text-sm hover:text-white/80 transition-colors inline-block hover:underline"
                   onClick={() => setIsTermsOpen(true)}
                 >
                   {t.gdpr}
