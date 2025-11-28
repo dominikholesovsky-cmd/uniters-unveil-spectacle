@@ -28,7 +28,7 @@ const LocationMap = ({ language }: LocationMapProps) => {
       id="location-map"
       className="py-8 sm:py-10 md:py-12 relative overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
+        background: 'linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%)'
       }}
     >
       {/* Underground atmosphere layers */}
