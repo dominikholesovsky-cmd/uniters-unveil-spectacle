@@ -25,34 +25,45 @@ const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
 
 export default function ChatSection() {
   const [session, setSession] = useState<any>(null);
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  // Načtení session z URL (magic link) nebo z localStorage
+  // Načtení session
   useEffect(() => {
-    // čekáme, až Supabase zpracuje token z URL
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-    };
-    getSession();
-
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => listener?.subscription.unsubscribe();
   }, []);
 
+  // Odeslání magic linku
+  const sendMagicLink = async () => {
+    if (!email) return;
+    setLoading(true);
+    setMessage("");
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL },
+    });
+    if (error) setMessage(`Chyba: ${error.message}`);
+    else setMessage("Magic link byl odeslán na váš email.");
+    setLoading(false);
+  };
+
   // Načtení profilů a nepřečtených zpráv
   const loadProfiles = useCallback(async () => {
     if (!session?.user?.id) return;
-    setLoading(true);
+    setProfiles([]);
     const currentUserId = session.user.id;
 
     const { data: profilesData } = await supabase.from("profiles").select("*");
@@ -69,7 +80,6 @@ export default function ChatSection() {
 
     const profilesWithUnread = (profilesData || []).map(p => ({ ...p, unreadCount: unreadMap[p.id] || 0 }));
     setProfiles(profilesWithUnread);
-    setLoading(false);
   }, [session?.user?.id]);
 
   useEffect(() => {
@@ -94,15 +104,12 @@ export default function ChatSection() {
     const chatId = getChatId(currentUserId, profile.id);
 
     setChatLoading(true);
-    const { data } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("chat_id", chatId)
-      .order("created_at", { ascending: true });
+    const { data } = await supabase.from("messages").select("*").eq("chat_id", chatId).order("created_at", { ascending: true });
     setMessages(data || []);
     setChatLoading(false);
     scrollToBottom();
 
+    // Označit zprávy jako přečtené
     await supabase.from("messages").update({ is_read: true })
       .eq("sender_id", profile.id)
       .eq("recipient_id", currentUserId)
@@ -144,13 +151,31 @@ export default function ChatSection() {
     (p.company?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
-  if (!session?.user) return <p>Přihlaste se do chatu (magic link).</p>;
+  if (!session?.user) {
+    return (
+      <div className="p-4 border rounded max-w-md mx-auto mt-6">
+        <h2 className="text-lg font-bold mb-2">Přihlášení do chatu</h2>
+        <Input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="Váš email"
+          className="mb-2"
+        />
+        <Button onClick={sendMagicLink} disabled={!email || loading} className="w-full">
+          {loading ? "Odesílám..." : "Odeslat magic link"}
+        </Button>
+        {message && <p className="mt-2 text-sm">{message}</p>}
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-[80vh] border rounded">
+      {/* Sidebar */}
       <div className="w-64 border-r p-2 flex flex-col">
         <Input placeholder="Hledat..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="mb-2" />
-        {loading ? <p>Načítám...</p> : (
+        {profiles.length === 0 ? <p>Načítám...</p> : (
           <ul className="flex-grow overflow-y-auto divide-y">
             {filteredProfiles.map(p => (
               <li key={p.id} className="flex justify-between items-center py-2">
@@ -164,6 +189,7 @@ export default function ChatSection() {
         )}
       </div>
 
+      {/* Chat */}
       <div className="flex-1 flex flex-col p-2">
         {targetProfile ? (
           <>
