@@ -192,26 +192,24 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </div>
       )}
 
-      {/* Section Header with Heart Icon */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 mb-6 pt-2">
-        <div className="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-[#6cc4cc] to-[#405196] shadow-md">
-          <Heart className="w-6 h-6 text-white fill-white" />
+      {/* Section Header */}
+      <div className="text-center mb-6 pt-2">
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-r from-[#6cc4cc] to-[#405196] shadow-md mb-3">
+          <Heart className="w-5 h-5 text-white fill-white" />
         </div>
-        <div className="text-center sm:text-left">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
-            {t.sectionTitle}
-          </h2>
-          <p className="text-[#6cc4cc] font-medium text-sm mb-2">
-            {t.sectionSubtitle}
-          </p>
-          <p className="text-gray-600 text-sm leading-relaxed max-w-md">
-            {t.intro}
-          </p>
-        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+          {t.sectionTitle}
+        </h2>
+        <p className="text-[#6cc4cc] font-semibold text-sm uppercase tracking-wide mb-3">
+          {t.sectionSubtitle}
+        </p>
+        <p className="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto">
+          {t.intro}
+        </p>
       </div>
 
       {/* Divider */}
-      <div className="w-full h-px bg-gradient-to-r from-[#6cc4cc]/20 via-[#6cc4cc]/40 to-[#405196]/20 mb-6" />
+      <div className="w-16 h-0.5 bg-gradient-to-r from-[#6cc4cc] to-[#405196] mx-auto mb-6" />
 
       {/* Total Donation Header */}
       <div className="text-center mb-6">
