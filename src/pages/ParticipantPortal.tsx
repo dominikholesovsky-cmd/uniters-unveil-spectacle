@@ -2,12 +2,19 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { ArrowLeft } from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
 import LanguageToggle from "@/components/LanguageToggle";
 import { ChatSection } from "@/components/ChatSection";
+import { CharityVoting } from "@/components/CharityVoting";
 import logoLight from "@/assets/full-logo_uniters_light.png";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ParticipantPortal = () => {
   const [language, setLanguage] = useState<"cs" | "en">("cs");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,6 +23,21 @@ const ParticipantPortal = () => {
       navigate("/");
     }
   }, [navigate]);
+
+  // Listen for auth state to get user email for voting
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUserEmail(data.session?.user?.email || null);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user?.email || null);
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "cs" ? "en" : "cs"));
@@ -115,6 +137,11 @@ const ParticipantPortal = () => {
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-white font-['Raleway',sans-serif]">{t.title}</h1>
             <p className="text-sm sm:text-base text-white/70">{t.subtitle}</p>
+          </div>
+
+          {/* Charity Voting Section */}
+          <div className="max-w-2xl mx-auto">
+            <CharityVoting language={language} userEmail={userEmail} />
           </div>
 
           {/* Chat Section */}
