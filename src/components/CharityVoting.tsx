@@ -193,19 +193,17 @@ export function CharityVoting({ language }: CharityVotingProps) {
       )}
 
       {/* Section Header with Heart Icon */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-4">
-        <div className="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#6cc4cc] to-[#405196]">
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#6cc4cc] to-[#405196] mb-2">
           <Heart className="w-5 h-5 text-white fill-white" />
         </div>
-        <div className="text-center sm:text-left flex-1">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-800 leading-tight">
-            {t.sectionTitle}
-            <span className="text-[#6cc4cc] font-medium text-sm ml-2">— {t.sectionSubtitle}</span>
-          </h2>
-          <p className="text-gray-600 text-sm mt-1 leading-snug">
-            {t.intro}
-          </p>
-        </div>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800 leading-tight">
+          {t.sectionTitle}
+          <span className="text-[#6cc4cc] font-medium text-sm ml-2">— {t.sectionSubtitle}</span>
+        </h2>
+        <p className="text-gray-600 text-sm mt-1 leading-snug max-w-lg mx-auto">
+          {t.intro}
+        </p>
       </div>
 
       {/* Divider */}
