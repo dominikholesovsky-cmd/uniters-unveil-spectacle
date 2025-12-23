@@ -94,20 +94,18 @@ const ParticipantPortal = () => {
 
         {/* Header */}
         <header className="relative z-10 p-4 sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex flex-col gap-2">
-              <img src={logoLight} alt="Uniters" className="h-8 sm:h-10 w-fit" />
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate("/")}
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110"
                 aria-label={t.back}
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
+              <img src={logoLight} alt="Uniters" className="h-8 sm:h-10" />
             </div>
-            <div className="self-end sm:self-auto">
-              <LanguageToggle language={language} onToggle={toggleLanguage} />
-            </div>
+            <LanguageToggle language={language} onToggle={toggleLanguage} />
           </div>
         </header>
 
