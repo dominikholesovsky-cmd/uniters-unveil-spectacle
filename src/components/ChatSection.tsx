@@ -1,4 +1,3 @@
-// ChatSection.tsx
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Input } from "@/components/ui/input";
@@ -22,13 +21,9 @@ interface Message {
   created_at: string;
 }
 
-interface ChatSectionProps {
-  language: "cs" | "en";
-}
-
 const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
 
-export default function ChatSection({ language }: ChatSectionProps) {
+export default function ChatSection() {
   const [session, setSession] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
@@ -39,19 +34,23 @@ export default function ChatSection({ language }: ChatSectionProps) {
   const [chatLoading, setChatLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
+  // Načtení session z URL (magic link) nebo z localStorage
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSessionFromUrl().then(({ data: { session } }) => {
+      if (session) setSession(session);
+      else supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    });
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => listener?.subscription.unsubscribe();
   }, []);
 
+  // Načtení profilů a nepřečtených zpráv
   const loadProfiles = useCallback(async () => {
     if (!session?.user?.id) return;
     setLoading(true);
-
     const currentUserId = session.user.id;
 
     const { data: profilesData } = await supabase.from("profiles").select("*");
@@ -72,10 +71,6 @@ export default function ChatSection({ language }: ChatSectionProps) {
   }, [session?.user?.id]);
 
   useEffect(() => {
-  console.log("SESSION:", session);
-}, [session]);
-
-  useEffect(() => {
     if (!session?.user?.id) return;
     loadProfiles();
 
@@ -90,13 +85,18 @@ export default function ChatSection({ language }: ChatSectionProps) {
     return () => supabase.removeChannel(channel);
   }, [session, loadProfiles]);
 
+  // Načtení zpráv chatu
   const loadMessages = useCallback(async (profile: Profile) => {
     if (!session?.user?.id) return;
     const currentUserId = session.user.id;
     const chatId = getChatId(currentUserId, profile.id);
 
     setChatLoading(true);
-    const { data } = await supabase.from("messages").select("*").eq("chat_id", chatId).order("created_at", { ascending: true });
+    const { data } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("chat_id", chatId)
+      .order("created_at", { ascending: true });
     setMessages(data || []);
     setChatLoading(false);
     scrollToBottom();
