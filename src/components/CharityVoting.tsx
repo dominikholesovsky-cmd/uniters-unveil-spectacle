@@ -131,7 +131,6 @@ export function CharityVoting({ language }: CharityVotingProps) {
       .from("charity_votes")
       .insert({
         charity_id: charityId,
-        token_id: crypto.randomUUID(),
       })
       .select("id")
       .single();
@@ -238,7 +237,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
       </div>
 
       {/* Total Amount Display */}
-      <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 mb-6 text-center text-primary-foreground relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#6cc4cc] to-[#312783] rounded-xl p-6 mb-6 text-center text-white relative overflow-hidden shadow-xl">
         <div className="absolute inset-0 bg-white/10 animate-pulse-slow" />
         <p className="text-sm uppercase tracking-wider opacity-90 mb-1">
           {t.totalCollected}
@@ -320,8 +319,9 @@ export function CharityVoting({ language }: CharityVotingProps) {
                       disabled={voting}
                       className={cn(
                         "px-4 py-2 rounded-lg font-medium transition-all",
-                        "bg-primary text-primary-foreground hover:bg-primary/90",
-                        "active:scale-95 disabled:opacity-50"
+                        "bg-gradient-to-r from-[#6cc4cc] to-[#312783] text-white",
+                        "hover:from-[#5ab8c0] hover:to-[#3d2f99]",
+                        "active:scale-95 disabled:opacity-50 shadow-lg"
                       )}
                     >
                       <span className="flex items-center gap-2">

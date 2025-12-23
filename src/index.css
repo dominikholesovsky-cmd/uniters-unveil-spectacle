@@ -53,9 +53,9 @@
 @layer base {
   :root {
     /* Základní barvy pozadí a textu */
-    --background: 220 10% 25%;        /* světlejší pozadí */
-    --background-light: 220 15% 35%;  
-    --foreground: 220 15% 12%;        /* tmavší text pro kontrast */
+    --background: 220 10% 25%;
+    --background-light: 220 15% 35%;
+    --foreground: 220 15% 12%;
 
     /* Card / popover barvy */
     --card: 0 0% 100%;
@@ -64,27 +64,31 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 12%;
 
-    /* Uniters brand colors - from logo (orange/coral tones) */
-    --primary: 15 85% 55%;
+    /* Uniters brand colors - teal to purple gradient (#6cc4cc to #312783) */
+    --primary: 184 50% 61%;           /* #6cc4cc - teal */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 25 90% 50%;
+    --secondary: 255 53% 33%;         /* #312783 - purple */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 180 55% 60%;
-    --accent-foreground: 220 15% 12%;
+    --accent: 184 50% 61%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 15 85% 55%;
+    --ring: 184 50% 61%;
 
     --radius: 0.75rem;
+
+    /* Gradient colors for buttons/banners */
+    --gradient-start: 184 50% 61%;    /* #6cc4cc */
+    --gradient-end: 255 53% 33%;      /* #312783 */
 
     /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
@@ -98,33 +102,37 @@
   }
 
   .dark {
-    --background: 220 20% 18%;
+    --background: 220 20% 10%;
     --foreground: 0 0% 98%;
 
-    --card: 220 20% 22%;
+    --card: 220 20% 15%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 20% 22%;
+    --popover: 220 20% 15%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 15 85% 60%;
+    /* Teal to purple gradient */
+    --primary: 184 50% 61%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 25 90% 55%;
+    --secondary: 255 53% 40%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 180 55% 65%;
-    --accent-foreground: 220 15% 12%;
+    --accent: 184 50% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 217.2 32.6% 20%;
     --input: 217.2 32.6% 20%;
-    --ring: 15 85% 60%;
+    --ring: 184 50% 61%;
+
+    --gradient-start: 184 50% 61%;
+    --gradient-end: 255 53% 40%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
