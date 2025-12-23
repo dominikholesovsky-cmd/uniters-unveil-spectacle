@@ -25,6 +25,24 @@ interface Message {
   created_at: string;
 }
 
+interface DbProfile {
+  id: string;
+  email: string;
+  name: string;
+  company: string | null;
+  created_at: string;
+}
+
+interface DbMessage {
+  id: number;
+  chat_id: string;
+  sender_id: string;
+  recipient_id: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
 
 export default function ChatSection({ language = "cs" }: ChatSectionProps) {
@@ -54,6 +72,7 @@ export default function ChatSection({ language = "cs" }: ChatSectionProps) {
       selectProfile: "Select a profile to start chatting.",
     },
   }[language];
+
   const [session, setSession] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
@@ -66,9 +85,7 @@ export default function ChatSection({ language = "cs" }: ChatSectionProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  // Načtení session z URL (magic link) nebo z localStorage
   useEffect(() => {
-    // čekáme, až Supabase zpracuje token z URL
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
@@ -79,25 +96,29 @@ export default function ChatSection({ language = "cs" }: ChatSectionProps) {
     return () => listener?.subscription.unsubscribe();
   }, []);
 
-  // Načtení profilů a nepřečtených zpráv
   const loadProfiles = useCallback(async () => {
     if (!session?.user?.id) return;
     setLoading(true);
     const currentUserId = session.user.id;
 
-    const { data: profilesData } = await supabase.from("profiles").select("*");
-    const { data: unreadData } = await supabase
-      .from("messages")
+    const { data: profilesData } = await (supabase.from("profiles") as any).select("*") as { data: DbProfile[] | null };
+    const { data: unreadData } = await (supabase.from("messages") as any)
       .select("sender_id")
       .eq("recipient_id", currentUserId)
-      .eq("is_read", false);
+      .eq("is_read", false) as { data: { sender_id: string }[] | null };
 
-    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
+    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg) => {
       acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
       return acc;
     }, {});
 
-    const profilesWithUnread = (profilesData || []).map(p => ({ ...p, unreadCount: unreadMap[p.id] || 0 }));
+    const profilesWithUnread: Profile[] = (profilesData || []).map(p => ({ 
+      id: p.id,
+      email: p.email,
+      name: p.name,
+      company: p.company || undefined,
+      unreadCount: unreadMap[p.id] || 0 
+    }));
     setProfiles(profilesWithUnread);
     setLoading(false);
   }, [session?.user?.id]);
@@ -114,26 +135,24 @@ export default function ChatSection({ language = "cs" }: ChatSectionProps) {
       () => loadProfiles()
     ).subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => { supabase.removeChannel(channel); };
   }, [session, loadProfiles]);
 
-  // Načtení zpráv chatu
   const loadMessages = useCallback(async (profile: Profile) => {
     if (!session?.user?.id) return;
     const currentUserId = session.user.id;
     const chatId = getChatId(currentUserId, profile.id);
 
     setChatLoading(true);
-    const { data } = await supabase
-      .from("messages")
+    const { data } = await (supabase.from("messages") as any)
       .select("*")
       .eq("chat_id", chatId)
-      .order("created_at", { ascending: true });
-    setMessages(data || []);
+      .order("created_at", { ascending: true }) as { data: DbMessage[] | null };
+    setMessages((data || []) as Message[]);
     setChatLoading(false);
     scrollToBottom();
 
-    await supabase.from("messages").update({ is_read: true })
+    await (supabase.from("messages") as any).update({ is_read: true })
       .eq("sender_id", profile.id)
       .eq("recipient_id", currentUserId)
       .eq("is_read", false);
@@ -145,7 +164,7 @@ export default function ChatSection({ language = "cs" }: ChatSectionProps) {
       (payload) => setMessages(prev => [...prev, payload.new as Message])
     ).subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => { supabase.removeChannel(channel); };
   }, [session]);
 
   const startChat = async (profile: Profile) => {
@@ -158,7 +177,7 @@ export default function ChatSection({ language = "cs" }: ChatSectionProps) {
     const currentUserId = session.user.id;
     const chatId = getChatId(currentUserId, targetProfile.id);
 
-    await supabase.from("messages").insert([{
+    await (supabase.from("messages") as any).insert([{
       chat_id: chatId,
       sender_id: currentUserId,
       recipient_id: targetProfile.id,

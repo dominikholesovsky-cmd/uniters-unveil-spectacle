@@ -24,14 +24,30 @@ interface Message {
   chat_id: string;
 }
 
+interface DbProfile {
+  id: string;
+  email: string;
+  name: string;
+  company: string | null;
+  created_at: string;
+}
+
+interface DbMessage {
+  id: number;
+  chat_id: string;
+  sender_id: string;
+  recipient_id: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 interface ChatModalProps {
   language?: "cs" | "en";
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTotalUnreadChange?: (count: number) => void;
 }
-
-const MAGIC_LINK_OPENED_KEY = "chat_modal_opened_after_magic_link";
 
 const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
 
@@ -96,14 +112,14 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
 
   useEffect(() => {
     if (onTotalUnreadChange) onTotalUnreadChange(totalUnreadCount);
-  }, [totalUnreadCount]);
+  }, [totalUnreadCount, onTotalUnreadChange]);
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const markMessagesAsRead = useCallback(async (senderId: string) => {
     const currentUserId = session?.user?.id;
     if (!currentUserId) return;
-    await supabase.from("messages").update({ is_read: true })
+    await (supabase.from("messages") as any).update({ is_read: true })
       .eq("sender_id", senderId)
       .eq("recipient_id", currentUserId)
       .eq("is_read", false);
@@ -114,16 +130,22 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
     if (!currentUserId) return;
 
     setLoading(true);
-    const { data: profilesData } = await supabase.from("profiles").select("*");
-    const { data: unreadData } = await supabase.from("messages").select("sender_id").eq("recipient_id", currentUserId).eq("is_read", false);
+    const { data: profilesData } = await (supabase.from("profiles") as any).select("*") as { data: DbProfile[] | null };
+    const { data: unreadData } = await (supabase.from("messages") as any).select("sender_id").eq("recipient_id", currentUserId).eq("is_read", false) as { data: { sender_id: string }[] | null };
 
-    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
+    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg) => {
       acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
       return acc;
     }, {});
 
-    const profilesWithUnread = (profilesData || []).map(p => ({ ...p, unreadCount: unreadMap[p.id] || 0 }));
-    const totalUnread = Object.values(unreadMap).reduce<number>((a, b) => a + (b as number), 0);
+    const profilesWithUnread: Profile[] = (profilesData || []).map(p => ({ 
+      id: p.id,
+      email: p.email,
+      name: p.name,
+      company: p.company,
+      unreadCount: unreadMap[p.id] || 0 
+    }));
+    const totalUnread = Object.values(unreadMap).reduce((a, b) => a + b, 0);
     setTotalUnreadCount(totalUnread);
 
     setProfiles(profilesWithUnread.sort((a, b) => (a.company || "").localeCompare(b.company || "")));
@@ -132,20 +154,20 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
 
   const linkProfileToAuth = useCallback(async (user: any) => {
     if (!user.email) return;
-    const { data: profilesData } = await supabase.from('profiles').select('id').eq('email', user.email);
+    const { data: profilesData } = await (supabase.from('profiles') as any).select('id').eq('email', user.email) as { data: { id: string }[] | null };
     if (profilesData?.[0]) {
-      if (profilesData[0].id !== user.id) await supabase.from('profiles').update({ id: user.id }).eq('email', user.email);
+      if (profilesData[0].id !== user.id) await (supabase.from('profiles') as any).update({ id: user.id }).eq('email', user.email);
     } else {
-      await supabase.from('profiles').insert({ id: user.id, email: user.email, name: user.email.split('@')[0], company: language === "cs" ? "Nový Uživatel" : "New User" });
+      await (supabase.from('profiles') as any).insert({ id: user.id, email: user.email, name: user.email.split('@')[0], company: language === "cs" ? "Nový Uživatel" : "New User" });
     }
     loadProfiles();
-  }, [loadProfiles]);
+  }, [loadProfiles, language]);
 
   const handleSendMessage = async () => {
     if (!messageInput.trim() || !targetProfile || !session?.user) return;
     const currentUserId = session.user.id;
     const chatId = getChatId(currentUserId, targetProfile.id);
-    await supabase.from("messages").insert([{
+    await (supabase.from("messages") as any).insert([{
       chat_id: chatId,
       sender_id: currentUserId,
       recipient_id: targetProfile.id,
@@ -201,7 +223,7 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
 
     const channel = supabase.channel(`notifications_${currentUserId}`);
     channel.on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `recipient_id=eq.${currentUserId}` }, () => loadProfiles()).subscribe();
-    return () => supabase.removeChannel(channel);
+    return () => { supabase.removeChannel(channel); };
   }, [session, loadProfiles]);
 
   useEffect(() => scrollToBottom(), [messages]);
@@ -213,8 +235,8 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
     setChatLoading(true);
 
     const loadMessages = async () => {
-      const { data } = await supabase.from("messages").select("*").eq("chat_id", chatId).order("created_at", { ascending: true });
-      setMessages(data || []);
+      const { data } = await (supabase.from("messages") as any).select("*").eq("chat_id", chatId).order("created_at", { ascending: true }) as { data: DbMessage[] | null };
+      setMessages((data || []) as Message[]);
       setChatLoading(false);
       scrollToBottom();
     };
@@ -223,7 +245,7 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
 
     const channel = supabase.channel(`chat_${chatId}`);
     channel.on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` }, (payload) => setMessages(prev => [...prev, payload.new as Message])).subscribe();
-    return () => supabase.removeChannel(channel);
+    return () => { supabase.removeChannel(channel); };
   }, [targetProfile, session]);
 
   const filteredProfiles = profiles.filter(p => {
