@@ -72,6 +72,10 @@ export default function ChatSection({ language }: ChatSectionProps) {
   }, [session?.user?.id]);
 
   useEffect(() => {
+  console.log("SESSION:", session);
+}, [session]);
+
+  useEffect(() => {
     if (!session?.user?.id) return;
     loadProfiles();
 
