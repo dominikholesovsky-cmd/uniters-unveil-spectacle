@@ -53,10 +53,10 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   const t = content[language];
 
-  // Charity colors - teal and purple (from brand)
+  // Charity colors - teal and navy
   const charityColors = [
-    { bg: "bg-primary", text: "text-primary", accent: "#6cc4cc" },
-    { bg: "bg-secondary", text: "text-secondary", accent: "#312783" },
+    { bg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
+    { bg: "bg-[#405196]", text: "text-[#405196]" },
   ];
 
   const loadData = async () => {
@@ -159,7 +159,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
   }
 
   return (
-    <div className="space-y-8 relative">
+    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative">
       {/* Confetti animation overlay */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -174,7 +174,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
               }}
             >
               <Sparkles
-                className="text-primary"
+                className="text-[#6cc4cc]"
                 style={{
                   width: `${12 + Math.random() * 12}px`,
                   transform: `rotate(${Math.random() * 360}deg)`,
@@ -185,14 +185,14 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </div>
       )}
 
-      {/* Total Donation Card */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg text-center">
+      {/* Total Donation Header */}
+      <div className="text-center mb-6">
         <p className="text-gray-500 uppercase tracking-wider text-sm font-medium mb-4">
           {t.totalDonation}
         </p>
         
         {/* Big Total Amount */}
-        <div className="bg-gradient-to-r from-primary to-secondary rounded-xl px-8 py-4 inline-block mb-4">
+        <div className="bg-gradient-to-r from-[#6cc4cc] to-[#405196] rounded-xl px-8 py-4 inline-block mb-4">
           <span className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
             {formatAmount(totalAmount)}
           </span>
@@ -227,21 +227,16 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
       {/* Thank you message */}
       {justVoted && (
-        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-center animate-scale-in">
-          <p className="text-primary font-medium flex items-center justify-center gap-2">
-            <Heart className="w-5 h-5 fill-primary" />
+        <div className="bg-[#6cc4cc]/10 border border-[#6cc4cc]/30 rounded-xl p-4 text-center animate-scale-in mb-6">
+          <p className="text-[#6cc4cc] font-medium flex items-center justify-center gap-2">
+            <Heart className="w-5 h-5 fill-[#6cc4cc]" />
             {t.thankYou}
           </p>
         </div>
       )}
 
-      {/* Section Title */}
-      <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
-        {t.chooseYourCause}
-      </h2>
-
       {/* Charity Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {charities.map((charity, index) => {
           const isVotedCharity = votedCharityId === charity.id;
           const wasJustVoted = justVoted === charity.id;
@@ -252,28 +247,28 @@ export function CharityVoting({ language }: CharityVotingProps) {
             <div
               key={charity.id}
               className={cn(
-                "bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300",
+                "bg-gray-50 rounded-xl overflow-hidden transition-all duration-300 border border-gray-100",
                 wasJustVoted && "animate-vote-success",
-                isVotedCharity && "ring-2 ring-primary ring-offset-2"
+                isVotedCharity && "ring-2 ring-[#6cc4cc] ring-offset-2"
               )}
             >
               {/* Colored top bar */}
               <div className={cn("h-2", colors.bg)} />
               
-              <div className="p-6 text-center">
+              <div className="p-5 text-center">
                 {/* Charity name */}
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
                   {charity.name}
                 </h3>
                 
                 {/* Description */}
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-gray-500 text-sm mb-3">
                   {charity.description}
                 </p>
 
                 {/* Amount pill */}
-                <div className={cn("inline-block rounded-full px-6 py-3 mb-4", colors.bg)}>
-                  <span className="text-2xl sm:text-3xl font-bold text-white">
+                <div className={cn("inline-block rounded-full px-5 py-2 mb-4", colors.bg)}>
+                  <span className="text-xl sm:text-2xl font-bold text-white">
                     {formatAmount(charityAmount)}
                   </span>
                   <span className="text-white/90 text-sm ml-1">{t.currency}</span>
@@ -282,20 +277,22 @@ export function CharityVoting({ language }: CharityVotingProps) {
                 {/* Vote button or status */}
                 {hasVoted ? (
                   isVotedCharity ? (
-                    <div className="flex items-center justify-center gap-2 text-primary font-medium">
-                      <Heart className="w-5 h-5 fill-primary" />
+                    <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-medium py-2">
+                      <Heart className="w-5 h-5 fill-[#6cc4cc]" />
                       {t.voted}
                     </div>
-                  ) : null
+                  ) : (
+                    <div className="py-2" />
+                  )
                 ) : (
                   <button
                     onClick={() => handleVote(charity.id)}
                     disabled={voting}
                     className={cn(
                       "w-full py-3 rounded-xl font-semibold transition-all",
-                      "bg-gradient-to-r from-primary to-secondary text-white",
+                      "bg-gradient-to-r from-[#6cc4cc] to-[#405196] text-white",
                       "hover:opacity-90 hover:scale-[1.02]",
-                      "active:scale-95 disabled:opacity-50 shadow-lg"
+                      "active:scale-95 disabled:opacity-50 shadow-md"
                     )}
                   >
                     <span className="flex items-center justify-center gap-2">
