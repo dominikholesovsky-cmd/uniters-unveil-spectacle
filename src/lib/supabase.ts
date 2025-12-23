@@ -7,7 +7,7 @@ if (!globalThis.supabase) {
   globalThis.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
       persistSession: true,
-      detectSessionInUrl: true, // automaticky vyzvedne magic link token z URL
+      detectSessionInUrl: true, // automaticky vyzvedne magic link 
     },
   });
 }
