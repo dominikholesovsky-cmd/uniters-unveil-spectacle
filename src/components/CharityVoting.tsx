@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Check, Sparkles, QrCode } from "lucide-react";
+import { Heart, Check, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,22 +10,17 @@ interface Charity {
   votes: number;
 }
 
-interface VotingToken {
-  id: string;
-  valid: boolean;
-  reason?: "used" | "not_found";
-}
-
 interface CharityVotingProps {
   language: "cs" | "en";
-  votingToken: VotingToken | null;
 }
 
 const AMOUNT_PER_VOTE = 500;
+const LOCAL_STORAGE_KEY = "uniters_charity_vote";
 
-export function CharityVoting({ language, votingToken }: CharityVotingProps) {
+export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
   const [hasVoted, setHasVoted] = useState(false);
+  const [votedCharityId, setVotedCharityId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
   const [justVoted, setJustVoted] = useState<string | null>(null);
@@ -42,9 +37,6 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
       votes: "hlasů",
       alreadyVoted: "Již jste hlasovali",
       thankYou: "Děkujeme za váš hlas!",
-      scanQrCode: "Naskenujte QR kód na vstupence pro hlasování",
-      qrCodeUsed: "Tento QR kód byl již použit",
-      invalidQrCode: "Neplatný QR kód",
     },
     en: {
       title: "Charity Voting",
@@ -56,9 +48,6 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
       votes: "votes",
       alreadyVoted: "You have already voted",
       thankYou: "Thank you for your vote!",
-      scanQrCode: "Scan the QR code on your ticket to vote",
-      qrCodeUsed: "This QR code has already been used",
-      invalidQrCode: "Invalid QR code",
     },
   };
 
@@ -85,21 +74,17 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
       setCharities(charitiesWithVotes);
     }
 
-    // Check if token was already used for voting
-    if (votingToken?.valid && votingToken.id) {
-      const { data: voteData } = await supabase
-        .from("charity_votes")
-        .select("id")
-        .eq("token_id", votingToken.id)
-        .maybeSingle();
-
-      if (voteData) {
-        setHasVoted(true);
-      }
-    }
-
     setLoading(false);
   };
+
+  // Check local storage for existing vote
+  useEffect(() => {
+    const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedVote) {
+      setHasVoted(true);
+      setVotedCharityId(savedVote);
+    }
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -117,27 +102,24 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [votingToken]);
+  }, []);
 
   const handleVote = async (charityId: string) => {
-    if (!votingToken?.valid || hasVoted || voting) return;
+    if (hasVoted || voting) return;
 
     setVoting(true);
 
-    // Insert vote
+    // Insert vote (without token)
     const { error: voteError } = await supabase.from("charity_votes").insert({
       charity_id: charityId,
-      token_id: votingToken.id,
+      token_id: crypto.randomUUID(), // Generate a random ID for the vote
     });
 
     if (!voteError) {
-      // Mark token as used
-      await supabase
-        .from("voting_tokens")
-        .update({ is_used: true, used_at: new Date().toISOString() })
-        .eq("id", votingToken.id);
-
+      // Save to local storage
+      localStorage.setItem(LOCAL_STORAGE_KEY, charityId);
       setHasVoted(true);
+      setVotedCharityId(charityId);
       setJustVoted(charityId);
       setShowConfetti(true);
 
@@ -156,18 +138,17 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
   const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
   const totalAmount = totalVotes * AMOUNT_PER_VOTE;
 
-  // Determine the message to show based on token state
-  const canVote = votingToken?.valid && !hasVoted && !voting;
+  const canVote = !hasVoted && !voting;
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl">
+      <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-xl">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
-          <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />
+          <div className="h-8 bg-muted rounded w-1/2 mx-auto" />
+          <div className="h-4 bg-muted rounded w-3/4 mx-auto" />
           <div className="grid gap-4 mt-6">
-            <div className="h-40 bg-gray-200 rounded-xl" />
-            <div className="h-40 bg-gray-200 rounded-xl" />
+            <div className="h-40 bg-muted rounded-xl" />
+            <div className="h-40 bg-muted rounded-xl" />
           </div>
         </div>
       </div>
@@ -175,7 +156,7 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+    <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
       {/* Confetti animation overlay */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none z-20">
@@ -190,7 +171,7 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
               }}
             >
               <Sparkles
-                className="text-amber-400"
+                className="text-primary"
                 style={{
                   width: `${12 + Math.random() * 12}px`,
                   transform: `rotate(${Math.random() * 360}deg)`,
@@ -203,14 +184,14 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
 
       {/* Header */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+        <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">
           {t.title}
         </h2>
-        <p className="text-gray-500">{t.subtitle}</p>
+        <p className="text-muted-foreground">{t.subtitle}</p>
       </div>
 
       {/* Total Amount Display */}
-      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-6 mb-6 text-center text-white relative overflow-hidden">
+      <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 mb-6 text-center text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 bg-white/10 animate-pulse-slow" />
         <p className="text-sm uppercase tracking-wider opacity-90 mb-1">
           {t.totalCollected}
@@ -221,35 +202,11 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
         </p>
       </div>
 
-      {/* No token - show scan QR message */}
-      {!votingToken && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-center">
-          <div className="flex items-center justify-center gap-2 text-blue-700">
-            <QrCode className="w-5 h-5" />
-            <p>{t.scanQrCode}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Token used - show already used message */}
-      {votingToken && !votingToken.valid && votingToken.reason === "used" && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
-          <p className="text-amber-700">{t.qrCodeUsed}</p>
-        </div>
-      )}
-
-      {/* Invalid token */}
-      {votingToken && !votingToken.valid && votingToken.reason === "not_found" && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-center">
-          <p className="text-red-700">{t.invalidQrCode}</p>
-        </div>
-      )}
-
       {/* Thank you message */}
       {justVoted && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 text-center animate-scale-in">
-          <p className="text-emerald-700 font-medium flex items-center justify-center gap-2">
-            <Heart className="w-5 h-5 fill-emerald-500 text-emerald-500" />
+        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6 text-center animate-scale-in">
+          <p className="text-primary font-medium flex items-center justify-center gap-2">
+            <Heart className="w-5 h-5 fill-primary text-primary" />
             {t.thankYou}
           </p>
         </div>
@@ -259,6 +216,7 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
       <div className="grid gap-4">
         {charities.map((charity) => {
           const wasJustVoted = justVoted === charity.id;
+          const isVotedCharity = votedCharityId === charity.id;
           const charityAmount = charity.votes * AMOUNT_PER_VOTE;
 
           return (
@@ -266,52 +224,56 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
               key={charity.id}
               className={cn(
                 "relative rounded-xl border-2 p-5 transition-all duration-500",
-                wasJustVoted
-                  ? "border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-100"
-                  : "border-gray-200 bg-gray-50 hover:border-gray-300",
+                wasJustVoted || isVotedCharity
+                  ? "border-primary bg-primary/5 shadow-lg"
+                  : "border-border bg-muted/30 hover:border-primary/50",
                 wasJustVoted && "animate-vote-success",
                 canVote && "cursor-pointer hover:scale-[1.02] hover:shadow-md"
               )}
               onClick={() => canVote && handleVote(charity.id)}
             >
               {/* Voted badge */}
-              {wasJustVoted && (
-                <div className="absolute -top-3 -right-3 bg-emerald-500 text-white rounded-full p-2 shadow-lg animate-scale-in">
+              {(wasJustVoted || isVotedCharity) && (
+                <div className="absolute -top-3 -right-3 bg-primary text-primary-foreground rounded-full p-2 shadow-lg animate-scale-in">
                   <Check className="w-4 h-4" />
                 </div>
               )}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-800 mb-1">
+                  <h3 className="text-lg font-bold text-card-foreground mb-1">
                     {charity.name}
                   </h3>
-                  <p className="text-gray-600 text-sm">{charity.description}</p>
+                  <p className="text-muted-foreground text-sm">{charity.description}</p>
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
                   {/* Amount for this charity */}
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-emerald-600">
+                    <p className="text-2xl font-bold text-primary">
                       {charityAmount.toLocaleString(
                         language === "cs" ? "cs-CZ" : "en-US"
                       )}{" "}
                       {t.currency}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {charity.votes} {t.votes}
                     </p>
                   </div>
 
                   {/* Vote button or status */}
                   {hasVoted ? (
-                    <span className="text-gray-400 text-sm">{t.alreadyVoted}</span>
+                    isVotedCharity ? (
+                      <span className="text-primary text-sm font-medium">{t.voted}</span>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">{t.alreadyVoted}</span>
+                    )
                   ) : canVote ? (
                     <button
                       disabled={voting}
                       className={cn(
                         "px-4 py-2 rounded-lg font-medium transition-all",
-                        "bg-emerald-500 text-white hover:bg-emerald-600",
+                        "bg-primary text-primary-foreground hover:bg-primary/90",
                         "active:scale-95 disabled:opacity-50"
                       )}
                     >
@@ -325,11 +287,11 @@ export function CharityVoting({ language, votingToken }: CharityVotingProps) {
               </div>
 
               {/* Progress bar */}
-              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-1000 ease-out",
-                    wasJustVoted ? "bg-emerald-500" : "bg-emerald-400"
+                    wasJustVoted || isVotedCharity ? "bg-primary" : "bg-primary/70"
                   )}
                   style={{
                     width: `${totalVotes > 0 ? (charity.votes / totalVotes) * 100 : 0}%`,
