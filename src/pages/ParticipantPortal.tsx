@@ -25,14 +25,14 @@ const ParticipantPortal = () => {
     cs: {
       title: "Portál pro účastníky",
       subtitle: "Vítejte v portálu pro registrované účastníky akce Uniters",
-      back: "Zpět",
+      back: "Zpět na hlavní stránku",
       metaTitle: "Portál pro účastníky | Uniters Event",
       metaDescription: "Portál pro registrované účastníky akce Uniters ve Vodoojemech Brno.",
     },
     en: {
       title: "Participant Portal",
       subtitle: "Welcome to the portal for registered Uniters event participants",
-      back: "Back",
+      back: "Back to main page",
       metaTitle: "Participant Portal | Uniters Event",
       metaDescription: "Portal for registered participants of the Uniters event at Vodojemy Brno.",
     },
@@ -46,10 +46,16 @@ const ParticipantPortal = () => {
         <title>{t.metaTitle}</title>
         <meta name="description" content={t.metaDescription} />
         <html lang={language} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
 
       <div
-        className="min-h-screen relative overflow-hidden"
+        className="min-h-screen relative overflow-hidden font-['Inter',sans-serif]"
         style={{
           background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)',
         }}
@@ -87,26 +93,30 @@ const ParticipantPortal = () => {
         }} />
 
         {/* Header */}
-        <header className="relative z-10 p-4 sm:p-6 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-1 text-white/70 hover:text-white transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t.back}
-            </button>
-            <img src={logoLight} alt="Uniters" className="h-8 sm:h-10" />
+        <header className="relative z-10 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex flex-col gap-2">
+              <img src={logoLight} alt="Uniters" className="h-8 sm:h-10 w-fit" />
+              <button
+                onClick={() => navigate("/")}
+                className="flex items-center gap-1 text-white/60 hover:text-white transition-colors text-sm w-fit"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {t.back}
+              </button>
+            </div>
+            <div className="self-end sm:self-auto">
+              <LanguageToggle language={language} onToggle={toggleLanguage} />
+            </div>
           </div>
-          <LanguageToggle language={language} onToggle={toggleLanguage} />
         </header>
 
         {/* Content */}
-        <div className="container mx-auto px-4 relative z-10 pt-4 sm:pt-8 pb-8 space-y-8">
+        <div className="container mx-auto px-4 relative z-10 pt-2 sm:pt-6 pb-8 space-y-6">
           {/* Title Section */}
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">{t.title}</h1>
-            <p className="text-white/70">{t.subtitle}</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-white font-['Raleway',sans-serif]">{t.title}</h1>
+            <p className="text-sm sm:text-base text-white/70">{t.subtitle}</p>
           </div>
 
           {/* Chat Section */}
