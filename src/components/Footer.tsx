@@ -26,7 +26,9 @@ const Footer = ({ language }: FooterProps) => {
   const t = content[language as "cs" | "en"] ?? content.cs;
 
   return (
-    <footer className="bg-gradient-to-b from-[#1a1a1a] from-60% via-[#405196]/50 via-85% to-[#6cc4cc]/70 text-white">
+    <footer className="text-white relative overflow-hidden" style={{
+      background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
+    }}>
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto py-4 sm:py-5">
             {/* Mobile layout - vertikální */}
