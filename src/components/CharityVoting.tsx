@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Check, Sparkles, RotateCcw } from "lucide-react";
+import { Heart, Users, Coins, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,11 +14,6 @@ interface CharityVotingProps {
   language: "cs" | "en";
 }
 
-interface StoredVote {
-  charityId: string;
-  voteId: string;
-}
-
 const AMOUNT_PER_VOTE = 500;
 const LOCAL_STORAGE_KEY = "uniters_charity_vote";
 
@@ -26,51 +21,51 @@ export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedCharityId, setVotedCharityId] = useState<string | null>(null);
-  const [voteId, setVoteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [justVoted, setJustVoted] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
 
   const content = {
     cs: {
-      title: "Hlasování o charitu",
-      subtitle: "Váš hlas = 500 Kč pro vybranou charitu",
-      totalCollected: "Celkem vybráno",
-      currency: "Kč",
+      totalDonation: "Celkový příspěvek Uniters",
+      basedOn: "Na základě",
+      attendees: "účastníků",
+      perAttendee: "za účastníka",
+      chooseYourCause: "Vyberte svůj projekt",
       voteButton: "Hlasovat",
       voted: "Váš hlas",
-      votes: "hlasů",
-      alreadyVoted: "Již jste hlasovali",
       thankYou: "Děkujeme za váš hlas!",
-      changeVote: "Změnit hlas",
+      currency: "Kč",
     },
     en: {
-      title: "Charity Voting",
-      subtitle: "Your vote = 500 CZK for the selected charity",
-      totalCollected: "Total collected",
-      currency: "CZK",
+      totalDonation: "Total Uniters Donation",
+      basedOn: "Based on",
+      attendees: "attendees",
+      perAttendee: "per attendee",
+      chooseYourCause: "Choose your cause",
       voteButton: "Vote",
       voted: "Your vote",
-      votes: "votes",
-      alreadyVoted: "You have already voted",
       thankYou: "Thank you for your vote!",
-      changeVote: "Change vote",
+      currency: "CZK",
     },
   };
 
   const t = content[language];
 
+  // Charity colors - teal and coral
+  const charityColors = [
+    { bg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
+    { bg: "bg-[#e07a5f]", text: "text-[#e07a5f]" },
+  ];
+
   const loadData = async () => {
-    // Load charities with vote counts
     const { data: charitiesData } = await supabase
       .from("charities")
       .select("*")
       .order("name");
 
     if (charitiesData) {
-      // Get vote counts for each charity
       const charitiesWithVotes = await Promise.all(
         charitiesData.map(async (charity) => {
           const { count } = await supabase
@@ -86,19 +81,15 @@ export function CharityVoting({ language }: CharityVotingProps) {
     setLoading(false);
   };
 
-  // Check local storage for existing vote
   useEffect(() => {
-    const savedVoteRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedVoteRaw) {
+    const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedVote) {
+      setHasVoted(true);
       try {
-        const savedVote: StoredVote = JSON.parse(savedVoteRaw);
-        setHasVoted(true);
-        setVotedCharityId(savedVote.charityId);
-        setVoteId(savedVote.voteId);
+        const parsed = JSON.parse(savedVote);
+        setVotedCharityId(parsed.charityId || savedVote);
       } catch {
-        // Legacy format (just charityId string)
-        setHasVoted(true);
-        setVotedCharityId(savedVoteRaw);
+        setVotedCharityId(savedVote);
       }
     }
   }, []);
@@ -106,7 +97,6 @@ export function CharityVoting({ language }: CharityVotingProps) {
   useEffect(() => {
     loadData();
 
-    // Subscribe to realtime updates
     const channel = supabase
       .channel("charity_votes_changes")
       .on(
@@ -126,29 +116,19 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
     setVoting(true);
 
-    // Insert vote (without token)
     const { data: voteData, error: voteError } = await supabase
       .from("charity_votes")
-      .insert({
-        charity_id: charityId,
-      })
+      .insert({ charity_id: charityId })
       .select("id")
       .single();
 
     if (!voteError && voteData) {
-      // Save to local storage with vote ID
-      const storedVote: StoredVote = {
-        charityId,
-        voteId: voteData.id,
-      };
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storedVote));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ charityId, voteId: voteData.id }));
       setHasVoted(true);
       setVotedCharityId(charityId);
-      setVoteId(voteData.id);
       setJustVoted(charityId);
       setShowConfetti(true);
 
-      // Reset animations after delay
       setTimeout(() => {
         setJustVoted(null);
         setShowConfetti(false);
@@ -160,52 +140,29 @@ export function CharityVoting({ language }: CharityVotingProps) {
     setVoting(false);
   };
 
-  const handleDeleteVote = async () => {
-    if (!voteId || deleting) return;
-
-    setDeleting(true);
-
-    const { error } = await supabase
-      .from("charity_votes")
-      .delete()
-      .eq("id", voteId);
-
-    if (!error) {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-      setHasVoted(false);
-      setVotedCharityId(null);
-      setVoteId(null);
-      await loadData();
-    }
-
-    setDeleting(false);
-  };
-
   const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
   const totalAmount = totalVotes * AMOUNT_PER_VOTE;
 
-  const canVote = !hasVoted && !voting;
+  const formatAmount = (amount: number) => {
+    return amount.toLocaleString(language === "cs" ? "cs-CZ" : "en-US").replace(/,/g, " ");
+  };
 
   if (loading) {
     return (
-      <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-xl">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/2 mx-auto" />
-          <div className="h-4 bg-muted rounded w-3/4 mx-auto" />
-          <div className="grid gap-4 mt-6">
-            <div className="h-40 bg-muted rounded-xl" />
-            <div className="h-40 bg-muted rounded-xl" />
-          </div>
+      <div className="space-y-6">
+        <div className="bg-white rounded-2xl p-8 shadow-lg animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto mb-4" />
+          <div className="h-16 bg-gray-200 rounded-xl w-48 mx-auto" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+    <div className="space-y-8 relative">
       {/* Confetti animation overlay */}
       {showConfetti && (
-        <div className="absolute inset-0 pointer-events-none z-20">
+        <div className="fixed inset-0 pointer-events-none z-50">
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
@@ -217,7 +174,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
               }}
             >
               <Sparkles
-                className="text-primary"
+                className="text-[#6cc4cc]"
                 style={{
                   width: `${12 + Math.random() * 12}px`,
                   transform: `rotate(${Math.random() * 360}deg)`,
@@ -228,148 +185,131 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </div>
       )}
 
-      {/* Header */}
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">
-          {t.title}
-        </h2>
-        <p className="text-muted-foreground">{t.subtitle}</p>
-      </div>
+      {/* Total Donation Card */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg text-center">
+        <p className="text-gray-500 uppercase tracking-wider text-sm font-medium mb-4">
+          {t.totalDonation}
+        </p>
+        
+        {/* Big Total Amount */}
+        <div className="bg-[#6cc4cc] rounded-xl px-8 py-4 inline-block mb-4">
+          <span className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
+            {formatAmount(totalAmount)}
+          </span>
+          <span className="text-white/90 text-lg ml-2">{t.currency}</span>
+        </div>
 
-      {/* Total Amount Display */}
-      <div className="bg-gradient-to-r from-[#6cc4cc] to-[#312783] rounded-xl p-6 mb-6 text-center text-white relative overflow-hidden shadow-xl">
-        <div className="absolute inset-0 bg-white/10 animate-pulse-slow" />
-        <p className="text-sm uppercase tracking-wider opacity-90 mb-1">
-          {t.totalCollected}
-        </p>
-        <p className="text-4xl sm:text-5xl font-bold tracking-tight">
-          {totalAmount.toLocaleString(language === "cs" ? "cs-CZ" : "en-US")}{" "}
-          <span className="text-2xl">{t.currency}</span>
-        </p>
+        {/* Individual charity amounts */}
+        <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
+          {charities.map((charity, index) => (
+            <div key={charity.id} className="flex items-center gap-3">
+              {index > 0 && <span className="text-gray-400 font-medium">+</span>}
+              <span className={cn("font-semibold", charityColors[index % charityColors.length].text)}>
+                {formatAmount(charity.votes * AMOUNT_PER_VOTE)} {t.currency}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Stats row */}
+        <div className="flex items-center justify-center gap-6 text-gray-500 text-sm flex-wrap">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            <span>{t.basedOn} <strong className="text-gray-700">{totalVotes}</strong> {t.attendees}</span>
+          </div>
+          <span className="text-gray-300">×</span>
+          <div className="flex items-center gap-2">
+            <Coins className="w-4 h-4" />
+            <span><strong className="text-gray-700">{AMOUNT_PER_VOTE}</strong> {t.currency} {t.perAttendee}</span>
+          </div>
+        </div>
       </div>
 
       {/* Thank you message */}
       {justVoted && (
-        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6 text-center animate-scale-in">
-          <p className="text-primary font-medium flex items-center justify-center gap-2">
-            <Heart className="w-5 h-5 fill-primary text-primary" />
+        <div className="bg-[#6cc4cc]/10 border border-[#6cc4cc]/30 rounded-xl p-4 text-center animate-scale-in">
+          <p className="text-[#6cc4cc] font-medium flex items-center justify-center gap-2">
+            <Heart className="w-5 h-5 fill-[#6cc4cc]" />
             {t.thankYou}
           </p>
         </div>
       )}
 
-      {/* Charity Cards */}
-      <div className="grid gap-4">
-        {charities.map((charity) => {
-          const wasJustVoted = justVoted === charity.id;
+      {/* Section Title */}
+      <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
+        {t.chooseYourCause}
+      </h2>
+
+      {/* Charity Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        {charities.map((charity, index) => {
           const isVotedCharity = votedCharityId === charity.id;
+          const wasJustVoted = justVoted === charity.id;
           const charityAmount = charity.votes * AMOUNT_PER_VOTE;
+          const colors = charityColors[index % charityColors.length];
 
           return (
             <div
               key={charity.id}
+              onClick={() => !hasVoted && handleVote(charity.id)}
               className={cn(
-                "relative rounded-xl border-2 p-5 transition-all duration-500",
-                wasJustVoted || isVotedCharity
-                  ? "border-primary bg-primary/5 shadow-lg"
-                  : "border-border bg-muted/30 hover:border-primary/50",
+                "bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300",
+                !hasVoted && "cursor-pointer hover:scale-[1.02] hover:shadow-xl",
                 wasJustVoted && "animate-vote-success",
-                canVote && "cursor-pointer hover:scale-[1.02] hover:shadow-md"
+                isVotedCharity && "ring-2 ring-[#6cc4cc] ring-offset-2"
               )}
-              onClick={() => canVote && handleVote(charity.id)}
             >
-              {/* Voted badge */}
-              {(wasJustVoted || isVotedCharity) && (
-                <div className="absolute -top-3 -right-3 bg-primary text-primary-foreground rounded-full p-2 shadow-lg animate-scale-in">
-                  <Check className="w-4 h-4" />
+              {/* Colored top bar */}
+              <div className={cn("h-2", colors.bg)} />
+              
+              <div className="p-6 text-center">
+                {/* Charity name */}
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                  {charity.name}
+                </h3>
+                
+                {/* Description */}
+                <p className="text-gray-500 text-sm mb-4">
+                  {charity.description}
+                </p>
+
+                {/* Amount pill */}
+                <div className={cn("inline-block rounded-full px-6 py-3 mb-4", colors.bg)}>
+                  <span className="text-2xl sm:text-3xl font-bold text-white">
+                    {formatAmount(charityAmount)}
+                  </span>
+                  <span className="text-white/90 text-sm ml-1">{t.currency}</span>
                 </div>
-              )}
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-card-foreground mb-1">
-                    {charity.name}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">{charity.description}</p>
-                </div>
-
-                <div className="flex flex-col items-end gap-2">
-                  {/* Amount for this charity */}
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-primary">
-                      {charityAmount.toLocaleString(
-                        language === "cs" ? "cs-CZ" : "en-US"
-                      )}{" "}
-                      {t.currency}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {charity.votes} {t.votes}
-                    </p>
-                  </div>
-
-                  {/* Vote button or status */}
-                  {hasVoted ? (
-                    isVotedCharity ? (
-                      <span className="text-primary text-sm font-medium">{t.voted}</span>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">{t.alreadyVoted}</span>
-                    )
-                  ) : canVote ? (
-                    <button
-                      disabled={voting}
-                      className={cn(
-                        "px-4 py-2 rounded-lg font-medium transition-all",
-                        "bg-gradient-to-r from-[#6cc4cc] to-[#312783] text-white",
-                        "hover:from-[#5ab8c0] hover:to-[#3d2f99]",
-                        "active:scale-95 disabled:opacity-50 shadow-lg"
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Heart className="w-4 h-4" />
-                        {t.voteButton}
-                      </span>
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={cn(
-                    "h-full rounded-full transition-all duration-1000 ease-out",
-                    wasJustVoted || isVotedCharity ? "bg-primary" : "bg-primary/70"
-                  )}
-                  style={{
-                    width: `${totalVotes > 0 ? (charity.votes / totalVotes) * 100 : 0}%`,
-                  }}
-                />
+                {/* Vote button or status */}
+                {hasVoted ? (
+                  isVotedCharity ? (
+                    <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-medium">
+                      <Heart className="w-5 h-5 fill-[#6cc4cc]" />
+                      {t.voted}
+                    </div>
+                  ) : null
+                ) : (
+                  <button
+                    disabled={voting}
+                    className={cn(
+                      "w-full py-3 rounded-xl font-medium transition-all border-2",
+                      "border-gray-200 text-gray-600 bg-gray-50",
+                      "hover:border-[#6cc4cc] hover:text-[#6cc4cc] hover:bg-[#6cc4cc]/5",
+                      "active:scale-95 disabled:opacity-50"
+                    )}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <Heart className="w-4 h-4" />
+                      {t.voteButton}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
-
-      {/* Change vote button */}
-      {hasVoted && voteId && (
-        <div className="mt-6 text-center">
-          <button
-            onClick={handleDeleteVote}
-            disabled={deleting}
-            className={cn(
-              "px-4 py-2 rounded-lg font-medium transition-all text-sm",
-              "border border-muted-foreground/30 text-muted-foreground",
-              "hover:border-primary hover:text-primary",
-              "active:scale-95 disabled:opacity-50"
-            )}
-          >
-            <span className="flex items-center gap-2">
-              <RotateCcw className={cn("w-4 h-4", deleting && "animate-spin")} />
-              {t.changeVote}
-            </span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }
