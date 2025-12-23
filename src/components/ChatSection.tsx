@@ -335,30 +335,28 @@ export function ChatSection({ language }: ChatSectionProps) {
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#405196] to-[#6cc4cc]" />
       
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 mb-6 pt-2">
-        <div className="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-[#405196] to-[#6cc4cc] shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <div className="text-center mb-6 pt-2">
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-r from-[#405196] to-[#6cc4cc] shadow-md mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
             <circle cx="9" cy="7" r="4"/>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </div>
-        <div className="text-center sm:text-left">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
-            {t.sectionTitle}
-          </h2>
-          <p className="text-[#405196] font-medium text-sm mb-2">
-            {t.sectionSubtitle}
-          </p>
-          <p className="text-gray-600 text-sm leading-relaxed max-w-md">
-            {t.intro}
-          </p>
-        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+          {t.sectionTitle}
+        </h2>
+        <p className="text-[#405196] font-semibold text-sm uppercase tracking-wide mb-3">
+          {t.sectionSubtitle}
+        </p>
+        <p className="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto">
+          {t.intro}
+        </p>
       </div>
 
       {/* Divider */}
-      <div className="w-full h-px bg-gradient-to-r from-[#405196]/20 via-[#405196]/40 to-[#6cc4cc]/20 mb-6" />
+      <div className="w-16 h-0.5 bg-gradient-to-r from-[#405196] to-[#6cc4cc] mx-auto mb-6" />
 
       {/* Chat s konkrétním účastníkem */}
       {session && targetProfile && (
