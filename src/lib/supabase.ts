@@ -6,8 +6,8 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 if (!globalThis.supabase) {
   globalThis.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
-      persistSession: true,      // uloží session do storage
-      detectSessionInUrl: true,  // přečte token z URL po redirectu
+      persistSession: true,
+      detectSessionInUrl: true, // automaticky vyzvedne magic link 
     },
   });
 }
