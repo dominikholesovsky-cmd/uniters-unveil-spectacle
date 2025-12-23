@@ -377,7 +377,7 @@ export function ChatSection({ language }: ChatSectionProps) {
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              className="flex-grow"
+              className="flex-grow bg-white text-gray-900"
             />
             <Button
               onClick={handleSendMessage}
