@@ -17,6 +17,7 @@ interface CharityVotingProps {
 const AMOUNT_PER_VOTE = 500;
 const LOCAL_STORAGE_KEY = "uniters_charity_vote";
 
+
 export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
   const [hasVoted, setHasVoted] = useState(false);
@@ -57,21 +58,6 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   const t = content[language];
 
-useEffect(() => {
-  console.log("CHARITY VOTING MOUNTED");
-}, []);
-
-console.log("SUPABASE CLIENT", supabase);
-
-const loadCharities = async () => {
-  const { data, error } = await supabase
-    .from("charities")
-    .select("*");
-
-  console.log("CHARITIES DATA:", data);
-  console.log("CHARITIES ERROR:", error);
-};
-
   // Charity colors - teal and navy
   const charityColors = [
     { bg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
@@ -99,6 +85,21 @@ const loadCharities = async () => {
 
     setLoading(false);
   };
+
+  useEffect(() => {
+  console.log("CHARITY VOTING MOUNTED");
+}, []);
+
+console.log("SUPABASE CLIENT", supabase);
+
+const loadCharities = async () => {
+  const { data, error } = await supabase
+    .from("charities")
+    .select("*");
+
+  console.log("CHARITIES DATA:", data);
+  console.log("CHARITIES ERROR:", error);
+};
 
   useEffect(() => {
     const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);
