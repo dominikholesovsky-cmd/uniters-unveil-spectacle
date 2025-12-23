@@ -95,7 +95,7 @@ const ParticipantPortal = () => {
         }} />
 
         {/* Bouncing scroll indicator */}
-        <div className="hidden sm:block absolute left-0 top-1/2 transform -translate-y-1/2 pl-6 sm:pl-16 z-10">
+        <div className="hidden sm:block absolute left-0 top-[30%] transform -translate-y-1/2 pl-6 sm:pl-16 z-10">
           <div className="animate-bounce">
             <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
               <div className="w-1 h-2 sm:h-3 bg-white/50 rounded-full" />
