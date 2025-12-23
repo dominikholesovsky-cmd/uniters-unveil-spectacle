@@ -7,7 +7,7 @@ import ChatSection from "@/components/ChatSection";
 import { CharityVoting } from "@/components/CharityVoting";
 import BackToTop from "@/components/BackToTop";
 import logoLight from "@/assets/full-logo_uniters_light.png";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 const ParticipantPortal = () => {
   const [language, setLanguage] = useState<"cs" | "en">("cs");

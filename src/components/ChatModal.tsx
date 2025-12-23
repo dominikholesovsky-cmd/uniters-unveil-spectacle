@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
-
-if (!REDIRECT_URL) throw new Error("VITE_SUPABASE_REDIRECT_URL není nastaven");
+const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL || window.location.origin + "/portal";
 
 interface Profile {
   id: string;
@@ -125,7 +123,8 @@ export function ChatModal({ language = "cs", open, onOpenChange, onTotalUnreadCh
     }, {});
 
     const profilesWithUnread = (profilesData || []).map(p => ({ ...p, unreadCount: unreadMap[p.id] || 0 }));
-    setTotalUnreadCount(Object.values(unreadMap).reduce((a, b) => a + b, 0));
+    const totalUnread = Object.values(unreadMap).reduce<number>((a, b) => a + (b as number), 0);
+    setTotalUnreadCount(totalUnread);
 
     setProfiles(profilesWithUnread.sort((a, b) => (a.company || "").localeCompare(b.company || "")));
     setLoading(false);

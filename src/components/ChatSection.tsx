@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+interface ChatSectionProps {
+  language?: "cs" | "en";
+}
 
 interface Profile {
   id: string;
@@ -23,7 +27,33 @@ interface Message {
 
 const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
 
-export default function ChatSection() {
+export default function ChatSection({ language = "cs" }: ChatSectionProps) {
+  const t = {
+    cs: {
+      login: "Přihlaste se do chatu (magic link).",
+      search: "Hledat...",
+      loading: "Načítám...",
+      chat: "Chat",
+      chatWith: "Chat s",
+      back: "Zpět",
+      loadingChat: "Načítám chat...",
+      writeMessage: "Napište zprávu...",
+      send: "Odeslat",
+      selectProfile: "Vyberte profil pro zahájení chatu.",
+    },
+    en: {
+      login: "Please login to chat (magic link).",
+      search: "Search...",
+      loading: "Loading...",
+      chat: "Chat",
+      chatWith: "Chat with",
+      back: "Back",
+      loadingChat: "Loading chat...",
+      writeMessage: "Write a message...",
+      send: "Send",
+      selectProfile: "Select a profile to start chatting.",
+    },
+  }[language];
   const [session, setSession] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
@@ -144,19 +174,19 @@ export default function ChatSection() {
     (p.company?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
-  if (!session?.user) return <p>Přihlaste se do chatu (magic link).</p>;
+  if (!session?.user) return <p className="text-center text-white/70">{t.login}</p>;
 
   return (
-    <div className="flex h-[80vh] border rounded">
-      <div className="w-64 border-r p-2 flex flex-col">
-        <Input placeholder="Hledat..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="mb-2" />
-        {loading ? <p>Načítám...</p> : (
-          <ul className="flex-grow overflow-y-auto divide-y">
+    <div className="flex h-[60vh] border border-white/20 rounded-xl overflow-hidden bg-white/5 backdrop-blur-sm">
+      <div className="w-64 border-r border-white/20 p-3 flex flex-col">
+        <Input placeholder={t.search} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="mb-3 bg-white/10 border-white/20 text-white placeholder:text-white/50" />
+        {loading ? <p className="text-white/70">{t.loading}</p> : (
+          <ul className="flex-grow overflow-y-auto divide-y divide-white/10">
             {filteredProfiles.map(p => (
               <li key={p.id} className="flex justify-between items-center py-2">
-                <span>{p.name} {p.company && `(${p.company})`}</span>
-                <Button onClick={() => startChat(p)}>
-                  Chat {p.unreadCount > 0 && `(${p.unreadCount})`}
+                <span className="text-white text-sm">{p.name} {p.company && <span className="text-white/60">({p.company})</span>}</span>
+                <Button size="sm" variant="secondary" onClick={() => startChat(p)}>
+                  {t.chat} {p.unreadCount > 0 && `(${p.unreadCount})`}
                 </Button>
               </li>
             ))}
@@ -164,17 +194,17 @@ export default function ChatSection() {
         )}
       </div>
 
-      <div className="flex-1 flex flex-col p-2">
+      <div className="flex-1 flex flex-col p-3">
         {targetProfile ? (
           <>
-            <div className="flex justify-between items-center border-b p-2">
-              <h2>Chat s {targetProfile.name}</h2>
-              <Button onClick={() => setTargetProfile(null)}>Zpět</Button>
+            <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-3">
+              <h2 className="text-white font-medium">{t.chatWith} {targetProfile.name}</h2>
+              <Button size="sm" variant="outline" onClick={() => setTargetProfile(null)}>{t.back}</Button>
             </div>
-            <div className="flex-grow overflow-y-auto p-2 bg-gray-100 rounded mb-2">
-              {chatLoading ? <p>Načítám chat...</p> : messages.map(msg => (
-                <div key={msg.id} className={`flex ${msg.sender_id === session.user.id ? "justify-end" : "justify-start"} mb-1`}>
-                  <div className={`p-2 rounded-xl max-w-xs ${msg.sender_id === session.user.id ? "bg-blue-600 text-white" : "bg-white"}`}>
+            <div className="flex-grow overflow-y-auto p-3 bg-white/10 rounded-lg mb-3">
+              {chatLoading ? <p className="text-white/70">{t.loadingChat}</p> : messages.map(msg => (
+                <div key={msg.id} className={`flex ${msg.sender_id === session.user.id ? "justify-end" : "justify-start"} mb-2`}>
+                  <div className={`p-2 px-3 rounded-xl max-w-xs ${msg.sender_id === session.user.id ? "bg-primary text-primary-foreground" : "bg-white/20 text-white"}`}>
                     {msg.content}
                   </div>
                 </div>
@@ -182,12 +212,12 @@ export default function ChatSection() {
               <div ref={messagesEndRef} />
             </div>
             <div className="flex gap-2">
-              <Input value={messageInput} onChange={e => setMessageInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="Napište zprávu..." />
-              <Button onClick={sendMessage}>Odeslat</Button>
+              <Input value={messageInput} onChange={e => setMessageInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder={t.writeMessage} className="bg-white/10 border-white/20 text-white placeholder:text-white/50" />
+              <Button onClick={sendMessage}>{t.send}</Button>
             </div>
           </>
         ) : (
-          <p>Vyberte profil pro zahájení chatu.</p>
+          <p className="text-white/70 text-center mt-8">{t.selectProfile}</p>
         )}
       </div>
     </div>
