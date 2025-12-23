@@ -59,9 +59,11 @@ export function ChatSection({ language }: ChatSectionProps) {
 
   const content = {
     cs: {
-      sectionTitle: "Chat s účastníky",
+      sectionTitle: "Networkingový chat",
+      sectionSubtitle: "Propojte se s ostatními",
+      intro: "Toto je naše networkingová platforma! Máte jedinečnou možnost oslovit další účastníky eventu, navázat nové kontakty a rozšířit svou profesní síť.",
       loginTitle: "Přihlášení do chatu",
-      loginNotice: "Zadejte svůj e-mail a my vám pošleme magický odkaz.",
+      loginNotice: "Zadejte svůj e-mail a my vám pošleme magický odkaz pro přihlášení.",
       sendLink: "Odeslat přihlašovací odkaz",
       sending: "Odesílám...",
       emailSent: "Odkaz pro přihlášení byl odeslán na váš e-mail.",
@@ -79,7 +81,9 @@ export function ChatSection({ language }: ChatSectionProps) {
       send: "Odeslat",
     },
     en: {
-      sectionTitle: "Chat with Participants",
+      sectionTitle: "Networking Chat",
+      sectionSubtitle: "Connect with others",
+      intro: "This is our networking platform! You have a unique opportunity to reach out to other event participants, make new connections, and expand your professional network.",
       loginTitle: "Participant Login",
       loginNotice: "Enter your email and we'll send you a magic login link.",
       sendLink: "Send login link",
@@ -326,10 +330,31 @@ export function ChatSection({ language }: ChatSectionProps) {
   });
 
   return (
-    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl">
-      <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-4">
-        {session ? t.listTitle : t.loginTitle}
-      </h2>
+    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+      {/* Accent top bar */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#405196] to-[#6cc4cc]" />
+      
+      {/* Section Header */}
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#405196] to-[#6cc4cc] mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800 leading-tight">
+          {t.sectionTitle}
+          <span className="text-[#405196] font-medium text-sm ml-2">— {t.sectionSubtitle}</span>
+        </h2>
+        <p className="text-gray-600 text-sm mt-1 leading-snug max-w-lg mx-auto">
+          {t.intro}
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-[#405196]/30 to-transparent mb-4" />
 
       {/* Chat s konkrétním účastníkem */}
       {session && targetProfile && (
