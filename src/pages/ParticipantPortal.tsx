@@ -13,6 +13,10 @@ const ParticipantPortal = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const isRegistered = localStorage.getItem("registrationSubmitted") === "true";
     if (!isRegistered) {
       navigate("/");
