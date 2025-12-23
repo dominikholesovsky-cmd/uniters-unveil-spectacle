@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import { CheckCircle2, ExternalLink, Navigation, Calendar } from "lucide-react";
 
 // --- URL pro odesílání dat ---
 const POWER_AUTOMATE_SUBMIT_URL =
@@ -76,6 +76,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       company: "Firma",
       companyPlaceholder: "Název firmy",
       openPortal: "Otevřít portál pro účastníky",
+      openNavigation: "Otevřít navigaci",
+      addToCalendar: "Přidat do kalendáře",
       submitting: "Odesílám...",
     },
     en: {
@@ -101,6 +103,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       company: "Company",
       companyPlaceholder: "Company Name",
       openPortal: "Open Participant Portal",
+      openNavigation: "Open Navigation",
+      addToCalendar: "Add to Calendar",
       submitting: "Submitting...",
     },
   };
@@ -174,6 +178,31 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     navigate("/portal");
   };
 
+  const handleNavigationClick = () => {
+    const coordinates = "49.1956718,16.5913221";
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`,
+      "_blank"
+    );
+  };
+
+  const handleAddToCalendar = () => {
+    const title = encodeURIComponent("Uniters Event - Vodojemy Brno");
+    const details = encodeURIComponent("Vodojemy Žlutý Kopec");
+    const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
+    const start = "20260122T170000Z";
+    const end = "20260122T210000Z";
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
+    const icsUrl = "/uniters-event.ics";
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    if (isIOS) {
+      window.location.href = icsUrl;
+    } else {
+      window.open(gcalUrl, "_blank");
+    }
+  };
+
   // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ (Success State) ---
   if (isSubmitted) {
     return (
@@ -220,14 +249,26 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
               
-            <Button 
-              onClick={handleOpenPortal} 
-              variant="default" 
-              className="w-full sm:w-auto px-8"
-            >
-              <ExternalLink className="w-5 h-5 mr-2" /> 
-              {t.openPortal}
-            </Button>
+            <div className="flex flex-col gap-4">
+              <Button 
+                onClick={handleOpenPortal} 
+                variant="default" 
+                className="w-full sm:w-auto px-8 mx-auto"
+              >
+                <ExternalLink className="w-5 h-5 mr-2" /> 
+                {t.openPortal}
+              </Button>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Button onClick={handleNavigationClick} variant="secondary" className="w-full sm:w-auto">
+                  <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
+                </Button>
+                
+                <Button onClick={handleAddToCalendar} variant="secondary" className="w-full sm:w-auto">
+                  <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
