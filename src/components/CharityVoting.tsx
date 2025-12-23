@@ -53,10 +53,10 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   const t = content[language];
 
-  // Charity colors - teal and coral
+  // Charity colors - teal and purple (from brand)
   const charityColors = [
-    { bg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
-    { bg: "bg-[#e07a5f]", text: "text-[#e07a5f]" },
+    { bg: "bg-primary", text: "text-primary", accent: "#6cc4cc" },
+    { bg: "bg-secondary", text: "text-secondary", accent: "#312783" },
   ];
 
   const loadData = async () => {
@@ -174,7 +174,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
               }}
             >
               <Sparkles
-                className="text-[#6cc4cc]"
+                className="text-primary"
                 style={{
                   width: `${12 + Math.random() * 12}px`,
                   transform: `rotate(${Math.random() * 360}deg)`,
@@ -192,7 +192,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </p>
         
         {/* Big Total Amount */}
-        <div className="bg-[#6cc4cc] rounded-xl px-8 py-4 inline-block mb-4">
+        <div className="bg-gradient-to-r from-primary to-secondary rounded-xl px-8 py-4 inline-block mb-4">
           <span className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
             {formatAmount(totalAmount)}
           </span>
@@ -227,9 +227,9 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
       {/* Thank you message */}
       {justVoted && (
-        <div className="bg-[#6cc4cc]/10 border border-[#6cc4cc]/30 rounded-xl p-4 text-center animate-scale-in">
-          <p className="text-[#6cc4cc] font-medium flex items-center justify-center gap-2">
-            <Heart className="w-5 h-5 fill-[#6cc4cc]" />
+        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-center animate-scale-in">
+          <p className="text-primary font-medium flex items-center justify-center gap-2">
+            <Heart className="w-5 h-5 fill-primary" />
             {t.thankYou}
           </p>
         </div>
@@ -251,12 +251,10 @@ export function CharityVoting({ language }: CharityVotingProps) {
           return (
             <div
               key={charity.id}
-              onClick={() => !hasVoted && handleVote(charity.id)}
               className={cn(
                 "bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300",
-                !hasVoted && "cursor-pointer hover:scale-[1.02] hover:shadow-xl",
                 wasJustVoted && "animate-vote-success",
-                isVotedCharity && "ring-2 ring-[#6cc4cc] ring-offset-2"
+                isVotedCharity && "ring-2 ring-primary ring-offset-2"
               )}
             >
               {/* Colored top bar */}
@@ -284,23 +282,24 @@ export function CharityVoting({ language }: CharityVotingProps) {
                 {/* Vote button or status */}
                 {hasVoted ? (
                   isVotedCharity ? (
-                    <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-medium">
-                      <Heart className="w-5 h-5 fill-[#6cc4cc]" />
+                    <div className="flex items-center justify-center gap-2 text-primary font-medium">
+                      <Heart className="w-5 h-5 fill-primary" />
                       {t.voted}
                     </div>
                   ) : null
                 ) : (
                   <button
+                    onClick={() => handleVote(charity.id)}
                     disabled={voting}
                     className={cn(
-                      "w-full py-3 rounded-xl font-medium transition-all border-2",
-                      "border-gray-200 text-gray-600 bg-gray-50",
-                      "hover:border-[#6cc4cc] hover:text-[#6cc4cc] hover:bg-[#6cc4cc]/5",
-                      "active:scale-95 disabled:opacity-50"
+                      "w-full py-3 rounded-xl font-semibold transition-all",
+                      "bg-gradient-to-r from-primary to-secondary text-white",
+                      "hover:opacity-90 hover:scale-[1.02]",
+                      "active:scale-95 disabled:opacity-50 shadow-lg"
                     )}
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <Heart className="w-4 h-4" />
+                      <Heart className="w-5 h-5" />
                       {t.voteButton}
                     </span>
                   </button>
