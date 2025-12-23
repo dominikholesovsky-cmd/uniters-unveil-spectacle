@@ -19,11 +19,8 @@ const ParticipantPortal = () => {
   }, []);
 
   // Session načtení (pro případ magic linku)
-  useEffect(() => {
-    supabase.auth.getSessionFromUrl().then(({ data: { session } }) => {
-      if (session) setSession(session);
-      else supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    });
+    useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => listener?.subscription.unsubscribe();

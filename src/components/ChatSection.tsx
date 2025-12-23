@@ -37,15 +37,13 @@ export default function ChatSection() {
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
   // Načtení session z URL (magic link) nebo z localStorage
-  useEffect(() => {
-    supabase.auth.getSessionFromUrl().then(({ data: { session } }) => {
-      if (session) setSession(session);
-      else supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    });
+useEffect(() => {
+  // načtení aktuální session
+  supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
-    return () => listener?.subscription.unsubscribe();
-  }, []);
+  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+  return () => listener?.subscription.unsubscribe();
+}, []);
 
   // Načtení profilů a nepřečtených zpráv
   const loadProfiles = useCallback(async () => {
