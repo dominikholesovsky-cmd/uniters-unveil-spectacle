@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Heart, Users, Coins, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Charity {
   id: string;
@@ -16,7 +16,6 @@ interface CharityVotingProps {
 
 const AMOUNT_PER_VOTE = 500;
 const LOCAL_STORAGE_KEY = "uniters_charity_vote";
-
 
 export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
@@ -85,21 +84,6 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
     setLoading(false);
   };
-
-  useEffect(() => {
-  console.log("CHARITY VOTING MOUNTED");
-}, []);
-
-console.log("SUPABASE CLIENT", supabase);
-
-const loadCharities = async () => {
-  const { data, error } = await supabase
-    .from("charities")
-    .select("*");
-
-  console.log("CHARITIES DATA:", data);
-  console.log("CHARITIES ERROR:", error);
-};
 
   useEffect(() => {
     const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);

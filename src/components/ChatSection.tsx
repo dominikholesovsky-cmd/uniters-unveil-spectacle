@@ -1,244 +1,504 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-interface ChatSectionProps {
-  language?: "cs" | "en";
+// --- Supabase konfigurace ---
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error("Supabase URL nebo ANON KEY nejsou nastaveny v .env souboru");
 }
+if (!REDIRECT_URL) {
+  throw new Error("VITE_SUPABASE_REDIRECT_URL není nastaven v .env souboru");
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 interface Profile {
   id: string;
   email: string;
   name: string;
-  company?: string;
+  company: string | null;
   unreadCount: number;
 }
 
 interface Message {
   id: number;
-  chat_id: string;
+  created_at: string;
   sender_id: string;
   recipient_id: string;
   content: string;
   is_read: boolean;
-  created_at: string;
-}
-
-interface DbProfile {
-  id: string;
-  email: string;
-  name: string;
-  company: string | null;
-  created_at: string;
-}
-
-interface DbMessage {
-  id: number;
   chat_id: string;
-  sender_id: string;
-  recipient_id: string;
-  content: string;
-  is_read: boolean;
-  created_at: string;
 }
 
-const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
+interface ChatSectionProps {
+  language: "cs" | "en";
+}
 
-export default function ChatSection({ language = "cs" }: ChatSectionProps) {
-  const t = {
-    cs: {
-      login: "Přihlaste se do chatu (magic link).",
-      search: "Hledat...",
-      loading: "Načítám...",
-      chat: "Chat",
-      chatWith: "Chat s",
-      back: "Zpět",
-      loadingChat: "Načítám chat...",
-      writeMessage: "Napište zprávu...",
-      send: "Odeslat",
-      selectProfile: "Vyberte profil pro zahájení chatu.",
-    },
-    en: {
-      login: "Please login to chat (magic link).",
-      search: "Search...",
-      loading: "Loading...",
-      chat: "Chat",
-      chatWith: "Chat with",
-      back: "Back",
-      loadingChat: "Loading chat...",
-      writeMessage: "Write a message...",
-      send: "Send",
-      selectProfile: "Select a profile to start chatting.",
-    },
-  }[language];
+const getChatId = (id1: string, id2: string): string => {
+  const sortedIds = [id1, id2].sort();
+  return `${sortedIds[0]}_${sortedIds[1]}`;
+};
 
+export function ChatSection({ language }: ChatSectionProps) {
+  const [email, setEmail] = useState("");
   const [session, setSession] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-    };
-    getSession();
+  const content = {
+    cs: {
+      sectionTitle: "Networkingový chat",
+      sectionSubtitle: "Propojte se s ostatními",
+      intro: "Toto je naše networkingová platforma! Máte jedinečnou možnost oslovit další účastníky eventu, navázat nové kontakty a rozšířit svou profesní síť.",
+      loginTitle: "Přihlášení do chatu",
+      loginNotice: "Zadejte svůj e-mail a my vám pošleme magický odkaz pro přihlášení.",
+      sendLink: "Odeslat přihlašovací odkaz",
+      sending: "Odesílám...",
+      emailSent: "Odkaz pro přihlášení byl odeslán na váš e-mail.",
+      emailFailed: "Nepodařilo se odeslat e-mail.",
+      listTitle: "Seznam účastníků",
+      searchPlaceholder: "Hledat podle jména nebo společnosti...",
+      logout: "Odhlásit se",
+      loggingOut: "Odhlašuji...",
+      me: "Já",
+      loadingList: "Načítám seznam...",
+      chatWith: "Chat s:",
+      backToList: "Zpět na seznam",
+      loadingChat: "Načítám chat...",
+      writeMessage: "Napište zprávu...",
+      send: "Odeslat",
+    },
+    en: {
+      sectionTitle: "Networking Chat",
+      sectionSubtitle: "Connect with others",
+      intro: "This is our networking platform! You have a unique opportunity to reach out to other event participants, make new connections, and expand your professional network.",
+      loginTitle: "Participant Login",
+      loginNotice: "Enter your email and we'll send you a magic login link.",
+      sendLink: "Send login link",
+      sending: "Sending...",
+      emailSent: "Login link has been sent to your email.",
+      emailFailed: "Failed to send email.",
+      listTitle: "Participant List",
+      searchPlaceholder: "Search by name or company...",
+      logout: "Log out",
+      loggingOut: "Logging out...",
+      me: "Me",
+      loadingList: "Loading list...",
+      chatWith: "Chat with:",
+      backToList: "Back to list",
+      loadingChat: "Loading chat...",
+      writeMessage: "Write a message...",
+      send: "Send",
+    },
+  };
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
-    return () => listener?.subscription.unsubscribe();
-  }, []);
+  const t = content[language];
 
-  const loadProfiles = useCallback(async () => {
-    if (!session?.user?.id) return;
+  const markMessagesAsRead = useCallback(async (senderId: string) => {
+    const currentUserId = session?.user?.id;
+    if (!currentUserId) return;
+
+    await supabase
+      .from("messages")
+      .update({ is_read: true })
+      .eq("sender_id", senderId)
+      .eq("recipient_id", currentUserId)
+      .eq("is_read", false);
+  }, [session]);
+
+  const loadProfiles = useCallback(async (currentUserId: string | null = session?.user?.id) => {
     setLoading(true);
-    const currentUserId = session.user.id;
 
-    const { data: profilesData } = await (supabase.from("profiles") as any).select("*") as { data: DbProfile[] | null };
-    const { data: unreadData } = await (supabase.from("messages") as any)
+    const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("*");
+
+    if (profilesError) {
+      setProfiles([]);
+      setLoading(false);
+      return;
+    }
+
+    if (!currentUserId) {
+      setProfiles(profilesData || []);
+      setLoading(false);
+      return;
+    }
+
+    const { data: unreadData } = await supabase
+      .from("messages")
       .select("sender_id")
       .eq("recipient_id", currentUserId)
-      .eq("is_read", false) as { data: { sender_id: string }[] | null };
+      .eq("is_read", false);
 
-    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg) => {
+    const unreadMap = (unreadData || []).reduce((acc: Record<string, number>, msg: { sender_id: string }) => {
       acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
       return acc;
     }, {});
 
-    const profilesWithUnread: Profile[] = (profilesData || []).map(p => ({ 
-      id: p.id,
-      email: p.email,
-      name: p.name,
-      company: p.company || undefined,
-      unreadCount: unreadMap[p.id] || 0 
+    const profilesWithUnread: Profile[] = (profilesData || []).map(p => ({
+      ...p,
+      unreadCount: unreadMap[p.id] || 0,
     }));
-    setProfiles(profilesWithUnread);
+
+    const sorted = profilesWithUnread.sort((a, b) => {
+      const aCompany = a.company || "";
+      const bCompany = b.company || "";
+      return aCompany.toLowerCase().localeCompare(bCompany.toLowerCase());
+    });
+
+    setProfiles(sorted);
     setLoading(false);
   }, [session?.user?.id]);
 
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    loadProfiles();
+  const linkProfileToAuth = useCallback(async (user: any) => {
+    if (!user.email) return;
 
-    const currentUserId = session.user.id;
-    const channel = supabase.channel(`notifications_${currentUserId}`);
-    channel.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "messages", filter: `recipient_id=eq.${currentUserId}` },
-      () => loadProfiles()
-    ).subscribe();
+    const { data: profilesData } = await supabase
+      .from('profiles')
+      .select('id, name')
+      .eq('email', user.email);
 
-    return () => { supabase.removeChannel(channel); };
-  }, [session, loadProfiles]);
+    const profileData = profilesData?.[0];
 
-  const loadMessages = useCallback(async (profile: Profile) => {
-    if (!session?.user?.id) return;
-    const currentUserId = session.user.id;
-    const chatId = getChatId(currentUserId, profile.id);
+    if (profileData) {
+      if (!profileData.id || profileData.id !== user.id) {
+        await supabase
+          .from('profiles')
+          .update({ id: user.id })
+          .eq('email', user.email);
+      }
+    } else {
+      await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          name: user.email.split('@')[0],
+          company: language === "cs" ? 'Nový Uživatel' : 'New User'
+        });
+    }
 
-    setChatLoading(true);
-    const { data } = await (supabase.from("messages") as any)
-      .select("*")
-      .eq("chat_id", chatId)
-      .order("created_at", { ascending: true }) as { data: DbMessage[] | null };
-    setMessages((data || []) as Message[]);
-    setChatLoading(false);
-    scrollToBottom();
+    loadProfiles(user.id);
+  }, [loadProfiles, language]);
 
-    await (supabase.from("messages") as any).update({ is_read: true })
-      .eq("sender_id", profile.id)
-      .eq("recipient_id", currentUserId)
-      .eq("is_read", false);
-
-    const channel = supabase.channel(`chat_${chatId}`);
-    channel.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
-      (payload) => setMessages(prev => [...prev, payload.new as Message])
-    ).subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [session]);
-
-  const startChat = async (profile: Profile) => {
-    setTargetProfile(profile);
-    await loadMessages(profile);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const sendMessage = async () => {
+  const handleLogout = async () => {
+    setLoading(true);
+    await supabase.auth.signOut();
+    setLoading(false);
+    setSession(null);
+    setProfiles([]);
+    setSearchQuery('');
+    setTargetProfile(null);
+  };
+
+  const sendMagicLink = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: REDIRECT_URL },
+    });
+    setLoading(false);
+    if (error) {
+      alert(t.emailFailed);
+    } else {
+      alert(t.emailSent);
+    }
+  };
+
+  const startChat = (target: Profile) => {
+    setTargetProfile(target);
+    setMessages([]);
+    markMessagesAsRead(target.id);
+    loadProfiles();
+  };
+
+  const handleSendMessage = async () => {
     if (!messageInput.trim() || !targetProfile || !session?.user) return;
     const currentUserId = session.user.id;
     const chatId = getChatId(currentUserId, targetProfile.id);
+    const content = messageInput.trim();
+    setMessageInput("");
 
-    await (supabase.from("messages") as any).insert([{
+    await supabase.from("messages").insert([{
       chat_id: chatId,
       sender_id: currentUserId,
       recipient_id: targetProfile.id,
-      content: messageInput.trim(),
+      content,
       is_read: false,
     }]);
-
-    setMessageInput("");
   };
 
-  const filteredProfiles = profiles.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.company?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-  );
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      const session = data.session;
+      setSession(session);
+      if (session?.user) {
+        linkProfileToAuth(session.user);
+      }
+    });
 
-  if (!session?.user) return <p className="text-center text-white/70">{t.login}</p>;
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user) {
+        linkProfileToAuth(session.user);
+      } else {
+        setProfiles([]);
+        setTargetProfile(null);
+      }
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, [linkProfileToAuth]);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const channel = supabase.channel(`notifications_${session.user.id}`);
+    channel
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages", filter: `recipient_id=eq.${session.user.id}` },
+        () => loadProfiles()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user?.id, loadProfiles]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (!targetProfile || !session?.user) return;
+
+    const currentUserId = session.user.id;
+    const chatId = getChatId(currentUserId, targetProfile.id);
+    setChatLoading(true);
+
+    const loadMessages = async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("chat_id", chatId)
+        .order("created_at", { ascending: true });
+      setMessages(data || []);
+      setChatLoading(false);
+      scrollToBottom();
+    };
+
+    loadMessages();
+
+    const channel = supabase.channel(`chat_${chatId}`);
+    channel
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
+        (payload) => setMessages((prev) => [...prev, payload.new as Message])
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [targetProfile, session]);
+
+  const filteredProfiles = profiles.filter(p => {
+    const query = searchQuery.toLowerCase();
+    const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
+    const companyMatch = p.company ? p.company.toLowerCase().includes(query) : false;
+    return nameMatch || companyMatch;
+  });
 
   return (
-    <div className="flex h-[60vh] border border-white/20 rounded-xl overflow-hidden bg-white/5 backdrop-blur-sm">
-      <div className="w-64 border-r border-white/20 p-3 flex flex-col">
-        <Input placeholder={t.search} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="mb-3 bg-white/10 border-white/20 text-white placeholder:text-white/50" />
-        {loading ? <p className="text-white/70">{t.loading}</p> : (
-          <ul className="flex-grow overflow-y-auto divide-y divide-white/10">
-            {filteredProfiles.map(p => (
-              <li key={p.id} className="flex justify-between items-center py-2">
-                <span className="text-white text-sm">{p.name} {p.company && <span className="text-white/60">({p.company})</span>}</span>
-                <Button size="sm" variant="secondary" onClick={() => startChat(p)}>
-                  {t.chat} {p.unreadCount > 0 && `(${p.unreadCount})`}
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
+    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+      {/* Accent top bar */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#405196] to-[#6cc4cc]" />
+      
+      {/* Section Header */}
+      <div className="text-center mb-6 pt-2">
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-r from-[#405196] to-[#6cc4cc] shadow-md mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+          {t.sectionTitle}
+        </h2>
+        <p className="text-[#405196] font-semibold text-sm uppercase tracking-wide mb-3">
+          {t.sectionSubtitle}
+        </p>
+        <p className="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto">
+          {t.intro}
+        </p>
       </div>
 
-      <div className="flex-1 flex flex-col p-3">
-        {targetProfile ? (
-          <>
-            <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-3">
-              <h2 className="text-white font-medium">{t.chatWith} {targetProfile.name}</h2>
-              <Button size="sm" variant="outline" onClick={() => setTargetProfile(null)}>{t.back}</Button>
-            </div>
-            <div className="flex-grow overflow-y-auto p-3 bg-white/10 rounded-lg mb-3">
-              {chatLoading ? <p className="text-white/70">{t.loadingChat}</p> : messages.map(msg => (
-                <div key={msg.id} className={`flex ${msg.sender_id === session.user.id ? "justify-end" : "justify-start"} mb-2`}>
-                  <div className={`p-2 px-3 rounded-xl max-w-xs ${msg.sender_id === session.user.id ? "bg-primary text-primary-foreground" : "bg-white/20 text-white"}`}>
-                    {msg.content}
+      {/* Divider */}
+      <div className="w-16 h-0.5 bg-gradient-to-r from-[#405196] to-[#6cc4cc] mx-auto mb-6" />
+
+      {/* Chat s konkrétním účastníkem */}
+      {session && targetProfile && (
+        <div className="flex flex-col h-[400px]">
+          <div className="flex justify-between items-center mb-4 pb-3 border-b">
+            <h3 className="text-lg font-bold">
+              {t.chatWith} <span className="text-blue-600">{targetProfile.name}</span>
+            </h3>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setTargetProfile(null)}
+            >
+              {t.backToList}
+            </Button>
+          </div>
+
+          <div className="flex-grow overflow-y-auto mb-4 p-4 space-y-4 bg-gray-100 rounded-lg">
+            {chatLoading ? (
+              <p className="text-center text-gray-500">{t.loadingChat}</p>
+            ) : (
+              messages.map((msg, index) => {
+                const currentUserId = session.user.id;
+                return (
+                  <div key={index} className={`flex ${msg.sender_id === currentUserId ? "justify-end" : "justify-start"}`}>
+                    <div className={`p-3 max-w-xs rounded-xl shadow-md ${msg.sender_id === currentUserId
+                      ? "bg-blue-600 text-white rounded-br-none"
+                      : "bg-white text-gray-800 rounded-tl-none border"}`}>
+                      <p className="text-sm break-words">{msg.content}</p>
+                      <span className={`text-xs block text-right mt-1 ${msg.sender_id === currentUserId ? "text-blue-200" : "text-gray-500"}`}>
+                        {new Date(msg.created_at).toLocaleTimeString(language)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-            <div className="flex gap-2">
-              <Input value={messageInput} onChange={e => setMessageInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder={t.writeMessage} className="bg-white/10 border-white/20 text-white placeholder:text-white/50" />
-              <Button onClick={sendMessage}>{t.send}</Button>
-            </div>
-          </>
-        ) : (
-          <p className="text-white/70 text-center mt-8">{t.selectProfile}</p>
-        )}
-      </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder={t.writeMessage}
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              className="flex-grow bg-white text-gray-900"
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!messageInput.trim() || chatLoading}
+            >
+              {t.send}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Seznam účastníků */}
+      {session && !targetProfile && (
+        <div className="flex flex-col h-[400px]">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <Input
+              type="text"
+              placeholder={t.searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-grow bg-white text-gray-900"
+            />
+            <Button
+              onClick={handleLogout}
+              disabled={loading}
+              variant="destructive"
+              size="sm"
+            >
+              {loading ? t.loggingOut : t.logout}
+            </Button>
+          </div>
+
+          <div className="flex-grow overflow-y-auto">
+            {loading && profiles.length === 0 ? (
+              <p className="text-center text-gray-500 py-4">{t.loadingList}</p>
+            ) : (
+              <ul className="divide-y divide-gray-200">
+                {filteredProfiles.map((p) => {
+                  const isCurrentUser = p.email && session.user.email && p.email.toLowerCase() === session.user.email.toLowerCase();
+                  return (
+                    <li key={p.id} className="py-3 px-1 flex justify-between items-center hover:bg-gray-50 rounded-md">
+                      <div>
+                        <span className="font-medium text-gray-800">{p.name}</span>
+                        {p.company && (
+                          <span className="text-sm text-gray-500 ml-2">({p.company})</span>
+                        )}
+                      </div>
+                      {isCurrentUser ? (
+                        <span className="text-gray-500 text-sm font-semibold">({t.me})</span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          {p.unreadCount > 0 && (
+                            <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold">
+                              {p.unreadCount}
+                            </span>
+                          )}
+                          <Button size="sm" onClick={() => startChat(p)}>
+                            Chat
+                          </Button>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Přihlašovací formulář */}
+      {!session && (
+        <div className="max-w-md mx-auto">
+          <p className="text-gray-500 text-center mb-4">{t.loginNotice}</p>
+          <div className="flex flex-col gap-4">
+            <Input
+              type="email"
+              placeholder="email@domain.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-white text-gray-900"
+            />
+            <Button
+              onClick={sendMagicLink}
+              disabled={loading || !email}
+              className="w-full"
+            >
+              {loading ? t.sending : t.sendLink}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+export default ChatSection;

@@ -64,60 +64,6 @@ export type Database = {
           },
         ]
       }
-      messages: {
-        Row: {
-          chat_id: string
-          content: string
-          created_at: string | null
-          id: number
-          is_read: boolean | null
-          recipient_id: string
-          sender_id: string
-        }
-        Insert: {
-          chat_id: string
-          content: string
-          created_at?: string | null
-          id?: number
-          is_read?: boolean | null
-          recipient_id: string
-          sender_id: string
-        }
-        Update: {
-          chat_id?: string
-          content?: string
-          created_at?: string | null
-          id?: number
-          is_read?: boolean | null
-          recipient_id?: string
-          sender_id?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          company: string | null
-          created_at: string | null
-          email: string
-          id: string
-          name: string
-        }
-        Insert: {
-          company?: string | null
-          created_at?: string | null
-          email: string
-          id: string
-          name: string
-        }
-        Update: {
-          company?: string | null
-          created_at?: string | null
-          email?: string
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
       voting_tokens: {
         Row: {
           created_at: string | null
