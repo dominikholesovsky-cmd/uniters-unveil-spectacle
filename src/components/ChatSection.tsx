@@ -1,3 +1,4 @@
+// ChatSection.tsx
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Input } from "@/components/ui/input";
@@ -21,9 +22,13 @@ interface Message {
   created_at: string;
 }
 
+interface ChatSectionProps {
+  language: "cs" | "en";
+}
+
 const getChatId = (id1: string, id2: string) => [id1, id2].sort().join("_");
 
-export default function ChatSection() {
+export default function ChatSection({ language }: ChatSectionProps) {
   const [session, setSession] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [targetProfile, setTargetProfile] = useState<Profile | null>(null);
@@ -37,14 +42,12 @@ export default function ChatSection() {
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  // Načtení session
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => listener?.subscription.unsubscribe();
   }, []);
 
-  // Načtení profilů a nepřečtených zpráv
   const loadProfiles = useCallback(async () => {
     if (!session?.user?.id) return;
     setLoading(true);
@@ -72,7 +75,6 @@ export default function ChatSection() {
     if (!session?.user?.id) return;
     loadProfiles();
 
-    // Realtime listener na nové zprávy
     const currentUserId = session.user.id;
     const channel = supabase.channel(`notifications_${currentUserId}`);
     channel.on(
@@ -84,7 +86,6 @@ export default function ChatSection() {
     return () => supabase.removeChannel(channel);
   }, [session, loadProfiles]);
 
-  // Načtení zpráv chatu
   const loadMessages = useCallback(async (profile: Profile) => {
     if (!session?.user?.id) return;
     const currentUserId = session.user.id;
@@ -96,13 +97,11 @@ export default function ChatSection() {
     setChatLoading(false);
     scrollToBottom();
 
-    // Označit zprávy jako přečtené
     await supabase.from("messages").update({ is_read: true })
       .eq("sender_id", profile.id)
       .eq("recipient_id", currentUserId)
       .eq("is_read", false);
 
-    // Realtime listener na chat
     const channel = supabase.channel(`chat_${chatId}`);
     channel.on(
       "postgres_changes",
@@ -143,7 +142,6 @@ export default function ChatSection() {
 
   return (
     <div className="flex h-[80vh] border rounded">
-      {/* Sidebar */}
       <div className="w-64 border-r p-2 flex flex-col">
         <Input placeholder="Hledat..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="mb-2" />
         {loading ? <p>Načítám...</p> : (
@@ -160,7 +158,6 @@ export default function ChatSection() {
         )}
       </div>
 
-      {/* Chat */}
       <div className="flex-1 flex flex-col p-2">
         {targetProfile ? (
           <>
