@@ -99,10 +99,10 @@ const ParticipantPortal = () => {
               <img src={logoLight} alt="Uniters" className="h-8 sm:h-10 w-fit" />
               <button
                 onClick={() => navigate("/")}
-                className="flex items-center gap-1 text-white/60 hover:text-white transition-colors text-sm w-fit"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                aria-label={t.back}
               >
                 <ArrowLeft className="w-4 h-4" />
-                {t.back}
               </button>
             </div>
             <div className="self-end sm:self-auto">
