@@ -327,7 +327,7 @@ export function ChatSection({ language }: ChatSectionProps) {
 
   return (
     <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl">
-      <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-4">
         {session ? t.listTitle : t.loginTitle}
       </h2>
 
@@ -450,8 +450,8 @@ export function ChatSection({ language }: ChatSectionProps) {
 
       {/* Přihlašovací formulář */}
       {!session && (
-        <div className="max-w-md mx-auto py-8">
-          <p className="text-gray-500 text-center mb-6">{t.loginNotice}</p>
+        <div className="max-w-md mx-auto">
+          <p className="text-gray-500 text-center mb-4">{t.loginNotice}</p>
           <div className="flex flex-col gap-4">
             <Input
               type="email"
