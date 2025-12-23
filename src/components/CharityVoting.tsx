@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Check, Sparkles } from "lucide-react";
+import { Heart, Check, Sparkles, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,6 +14,11 @@ interface CharityVotingProps {
   language: "cs" | "en";
 }
 
+interface StoredVote {
+  charityId: string;
+  voteId: string;
+}
+
 const AMOUNT_PER_VOTE = 500;
 const LOCAL_STORAGE_KEY = "uniters_charity_vote";
 
@@ -21,8 +26,10 @@ export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedCharityId, setVotedCharityId] = useState<string | null>(null);
+  const [voteId, setVoteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [justVoted, setJustVoted] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -37,6 +44,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
       votes: "hlasů",
       alreadyVoted: "Již jste hlasovali",
       thankYou: "Děkujeme za váš hlas!",
+      changeVote: "Změnit hlas",
     },
     en: {
       title: "Charity Voting",
@@ -48,6 +56,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
       votes: "votes",
       alreadyVoted: "You have already voted",
       thankYou: "Thank you for your vote!",
+      changeVote: "Change vote",
     },
   };
 
@@ -79,10 +88,18 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   // Check local storage for existing vote
   useEffect(() => {
-    const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedVote) {
-      setHasVoted(true);
-      setVotedCharityId(savedVote);
+    const savedVoteRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedVoteRaw) {
+      try {
+        const savedVote: StoredVote = JSON.parse(savedVoteRaw);
+        setHasVoted(true);
+        setVotedCharityId(savedVote.charityId);
+        setVoteId(savedVote.voteId);
+      } catch {
+        // Legacy format (just charityId string)
+        setHasVoted(true);
+        setVotedCharityId(savedVoteRaw);
+      }
     }
   }, []);
 
@@ -110,16 +127,25 @@ export function CharityVoting({ language }: CharityVotingProps) {
     setVoting(true);
 
     // Insert vote (without token)
-    const { error: voteError } = await supabase.from("charity_votes").insert({
-      charity_id: charityId,
-      token_id: crypto.randomUUID(), // Generate a random ID for the vote
-    });
+    const { data: voteData, error: voteError } = await supabase
+      .from("charity_votes")
+      .insert({
+        charity_id: charityId,
+        token_id: crypto.randomUUID(),
+      })
+      .select("id")
+      .single();
 
-    if (!voteError) {
-      // Save to local storage
-      localStorage.setItem(LOCAL_STORAGE_KEY, charityId);
+    if (!voteError && voteData) {
+      // Save to local storage with vote ID
+      const storedVote: StoredVote = {
+        charityId,
+        voteId: voteData.id,
+      };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storedVote));
       setHasVoted(true);
       setVotedCharityId(charityId);
+      setVoteId(voteData.id);
       setJustVoted(charityId);
       setShowConfetti(true);
 
@@ -133,6 +159,27 @@ export function CharityVoting({ language }: CharityVotingProps) {
     }
 
     setVoting(false);
+  };
+
+  const handleDeleteVote = async () => {
+    if (!voteId || deleting) return;
+
+    setDeleting(true);
+
+    const { error } = await supabase
+      .from("charity_votes")
+      .delete()
+      .eq("id", voteId);
+
+    if (!error) {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      setHasVoted(false);
+      setVotedCharityId(null);
+      setVoteId(null);
+      await loadData();
+    }
+
+    setDeleting(false);
   };
 
   const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
@@ -302,6 +349,27 @@ export function CharityVoting({ language }: CharityVotingProps) {
           );
         })}
       </div>
+
+      {/* Change vote button */}
+      {hasVoted && voteId && (
+        <div className="mt-6 text-center">
+          <button
+            onClick={handleDeleteVote}
+            disabled={deleting}
+            className={cn(
+              "px-4 py-2 rounded-lg font-medium transition-all text-sm",
+              "border border-muted-foreground/30 text-muted-foreground",
+              "hover:border-primary hover:text-primary",
+              "active:scale-95 disabled:opacity-50"
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <RotateCcw className={cn("w-4 h-4", deleting && "animate-spin")} />
+              {t.changeVote}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
