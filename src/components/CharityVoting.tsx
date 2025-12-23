@@ -290,8 +290,8 @@ export function CharityVoting({ language }: CharityVotingProps) {
                     disabled={voting}
                     className={cn(
                       "w-full py-3 rounded-xl font-semibold transition-all",
-                      "bg-gradient-to-r from-[#6cc4cc] to-[#405196] text-white",
-                      "hover:opacity-90 hover:scale-[1.02]",
+                      "bg-[#405196] text-white",
+                      "hover:bg-[#4a5ca8] hover:scale-[1.02]",
                       "active:scale-95 disabled:opacity-50 shadow-md"
                     )}
                   >
