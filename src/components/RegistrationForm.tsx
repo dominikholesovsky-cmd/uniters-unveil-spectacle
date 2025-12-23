@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,10 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, Navigation, Calendar, MessageSquare } from "lucide-react";
-
-// 💡 Import komponenty chatu
-import { ChatModal } from "./ChatModal"; 
+import { CheckCircle2, ExternalLink } from "lucide-react";
 
 // --- URL pro odesílání dat ---
 const POWER_AUTOMATE_SUBMIT_URL =
@@ -46,11 +43,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // Nový stav pro zamezení vícenásobného odeslání
-  
-  // Stav pro ovládání ChatModal
-  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
-  // Stav pro počet nepřečtených zpráv z ChatModal
-  const [unreadCount, setUnreadCount] = useState(0); 
 
   useEffect(() => {
     // Kontrola, zda uživatel již formulář odeslal
@@ -58,7 +50,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     setIsSubmitted(submitted);
   }, []);
 
-  // --- Překlady (Bez změn) ---
+  // --- Překlady ---
   const content = {
     cs: {
       title: "Registrace",
@@ -82,11 +74,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
         "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
       company: "Firma",
       companyPlaceholder: "Název firmy",
-      openNavigation: "Otevřít navigaci",
-      addToCalendar: "Přidat do kalendáře",
-      alreadySubmitted: "Už jste se zaregistrovali. Nemůžete odeslat formulář znovu.",
-      openChatRoom: "Vstoupit do chatovací místnosti",
-      submitting: "Odesílám...", // Nový překlad
+      openPortal: "Otevřít portál pro účastníky",
+      submitting: "Odesílám...",
     },
     en: {
       title: "Registration",
@@ -110,11 +99,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
         "Thank you for registering. We look forward to seeing you on January 22, 2026.",
       company: "Company",
       companyPlaceholder: "Company Name",
-      openNavigation: "Open Navigation",
-      addToCalendar: "Add to Calendar",
-      alreadySubmitted: "You have already registered. You cannot submit again.",
-      openChatRoom: "Enter Chat Room",
-      submitting: "Submitting...", // Nový překlad
+      openPortal: "Open Participant Portal",
+      submitting: "Submitting...",
     },
   };
 
@@ -181,57 +167,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     }
   };
     
-  // --- Navigace a Kalendář ---
-  const handleNavigationClick = () => {
-    const coordinates = "49.1956718,16.5913221";
-    // OPRAVENÁ URL pro správné otevření Google Maps
-    window.open(
-      `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`,
-      "_blank"
-    );
+  const handleOpenPortal = () => {
+    window.open("/portal", "_blank");
   };
-
-  const handleAddToCalendar = () => {
-    const title = encodeURIComponent("Uniters Event - Vodojemy Brno");
-    const details = encodeURIComponent("Vodojemy Žlutý Kopec");
-    const location = encodeURIComponent("Vodojemy Žlutý Kopec, Brno");
-
-    // Časy ve formátu UTC
-    const start = "20260122T170000Z"; 
-    const end = "20260122T210000Z";
-
-    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
-
-    const icsUrl = "/uniters-event.ics"; 
-
-    const ua = navigator.userAgent;
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-
-    if (isIOS) {
-      window.location.href = icsUrl;
-    } else {
-      window.open(gcalUrl, "_blank");
-    }
-  };
-
-  // --- Chat logiky ---
-  const handleOpenChat = useCallback(() => {
-    setIsChatModalOpen(true);
-  }, []);
-    
-  // Funkce pro aktualizaci stavu nepřečtených zpráv z ChatModal
-  const handleUnreadCountChange = useCallback((count: number) => {
-    // Toto je callback volaný z ChatModal, který aktualizuje badge
-    setUnreadCount(count);
-  }, []);
-
 
   // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ (Success State) ---
   if (isSubmitted) {
-      
-    // Třídy pro sjednocení vzhledu všech tří tlačítek (standardní velikost)
-    const commonButtonClasses = "w-full sm:w-80 mx-auto";
-      
     return (
       <section id="submitted" className="py-12 sm:py-16 relative overflow-hidden" style={{
         background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
@@ -276,53 +217,16 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
               
-            <div className="flex flex-col justify-center gap-4"> 
-              
-              {/* 1. TLAČÍTKO CHATU (první řádek) */}
-              <Button 
-                onClick={handleOpenChat} 
-                variant="default" 
-                className={commonButtonClasses + " relative"}
-              >
-                <MessageSquare className="w-5 h-5 mr-2" /> 
-                  
-                {t.openChatRoom}
-                  
-                {/* ZOBRAZENÍ POČTU NEPŘEČTENÝCH ZPRÁV (Badge) - PONECHÁNO BEZ ZMĚN */}
-                {unreadCount > 0 && (
-                  <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
-                                  inline-flex items-center justify-center 
-                                  h-6 w-6 rounded-full bg-red-600 text-white 
-                                  text-xs font-bold shadow-md">
-                      {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
-              </Button>
-              
-              {/* Ostatní tlačítka (druhý řádek - na desktopu vedle sebe) */}
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  
-                <Button onClick={handleNavigationClick} variant="secondary" className={commonButtonClasses}>
-                  <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
-                </Button>
-                  
-                <Button onClick={handleAddToCalendar} variant="secondary" className={commonButtonClasses}>
-                  <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
-                </Button>
-              </div>
-
-            </div>
+            <Button 
+              onClick={handleOpenPortal} 
+              variant="default" 
+              className="w-full sm:w-auto px-8"
+            >
+              <ExternalLink className="w-5 h-5 mr-2" /> 
+              {t.openPortal}
+            </Button>
           </div>
         </div>
-
-        {/* VLOŽENÍ A OVLÁDÁNÍ KOMPONENTY ChatModal */}
-        <ChatModal 
-            language={language}
-            open={isChatModalOpen}
-            onOpenChange={setIsChatModalOpen}
-            onTotalUnreadChange={handleUnreadCountChange}
-        />
-          
       </section>
     );
   }
