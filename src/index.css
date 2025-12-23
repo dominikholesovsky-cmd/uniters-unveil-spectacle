@@ -64,11 +64,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 12%;
 
-    /* Uniters brand colors - teal to purple gradient (#6cc4cc to #312783) */
+    /* Uniters brand colors - teal to navy gradient (#6cc4cc to #405196) */
     --primary: 184 50% 61%;           /* #6cc4cc - teal */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 255 53% 33%;         /* #312783 - purple */
+    --secondary: 249 40% 42%;         /* #405196 - navy */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
@@ -88,7 +88,7 @@
 
     /* Gradient colors for buttons/banners */
     --gradient-start: 184 50% 61%;    /* #6cc4cc */
-    --gradient-end: 255 53% 33%;      /* #312783 */
+    --gradient-end: 249 40% 42%;      /* #405196 */
 
     /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
@@ -115,7 +115,7 @@
     --primary: 184 50% 61%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 255 53% 40%;
+    --secondary: 249 40% 48%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
@@ -132,7 +132,7 @@
     --ring: 184 50% 61%;
 
     --gradient-start: 184 50% 61%;
-    --gradient-end: 255 53% 40%;
+    --gradient-end: 249 40% 48%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
