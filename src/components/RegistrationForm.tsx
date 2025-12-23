@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -167,8 +168,10 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     }
   };
     
+  const navigate = useNavigate();
+  
   const handleOpenPortal = () => {
-    window.open("/portal", "_blank");
+    navigate("/portal");
   };
 
   // --- RENDEROVÁNÍ PO ÚSPĚŠNÉM ODESLÁNÍ (Success State) ---
