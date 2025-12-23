@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,20 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { MessageSquare } from "lucide-react";
-
-// --- Supabase konfigurace ---
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error("Supabase URL nebo ANON KEY nejsou nastaveny v .env souboru");
-}
-if (!REDIRECT_URL) {
-    throw new Error("VITE_SUPABASE_REDIRECT_URL není nastaven v .env souboru");
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase } from "@/integrations/supabase/client";
 
 interface Profile {
     id: string;
