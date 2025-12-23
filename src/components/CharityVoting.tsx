@@ -57,6 +57,21 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   const t = content[language];
 
+useEffect(() => {
+  console.log("CHARITY VOTING MOUNTED");
+}, []);
+
+console.log("SUPABASE CLIENT", supabase);
+
+const loadCharities = async () => {
+  const { data, error } = await supabase
+    .from("charities")
+    .select("*");
+
+  console.log("CHARITIES DATA:", data);
+  console.log("CHARITIES ERROR:", error);
+};
+
   // Charity colors - teal and navy
   const charityColors = [
     { bg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
