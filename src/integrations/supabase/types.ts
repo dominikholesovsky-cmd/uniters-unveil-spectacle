@@ -40,19 +40,19 @@ export type Database = {
           charity_id: string
           created_at: string | null
           id: string
-          token_id: string
+          token_id: string | null
         }
         Insert: {
           charity_id: string
           created_at?: string | null
           id?: string
-          token_id: string
+          token_id?: string | null
         }
         Update: {
           charity_id?: string
           created_at?: string | null
           id?: string
-          token_id?: string
+          token_id?: string | null
         }
         Relationships: [
           {
@@ -60,13 +60,6 @@ export type Database = {
             columns: ["charity_id"]
             isOneToOne: false
             referencedRelation: "charities"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "charity_votes_token_id_fkey"
-            columns: ["token_id"]
-            isOneToOne: true
-            referencedRelation: "voting_tokens"
             referencedColumns: ["id"]
           },
         ]
