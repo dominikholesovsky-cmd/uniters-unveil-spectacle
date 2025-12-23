@@ -398,7 +398,7 @@ export function ChatSection({ language }: ChatSectionProps) {
               placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-grow"
+              className="flex-grow bg-white text-gray-900"
             />
             <Button
               onClick={handleLogout}
@@ -458,6 +458,7 @@ export function ChatSection({ language }: ChatSectionProps) {
               placeholder="email@domain.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="bg-white text-gray-900"
             />
             <Button
               onClick={sendMagicLink}
