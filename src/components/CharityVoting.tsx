@@ -28,22 +28,26 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   const content = {
     cs: {
+      sectionTitle: "Charitativní příspěvek",
+      sectionSubtitle: "Vaše účast má smysl",
+      intro: "Tím, že jste se zúčastnili této akce, pomáháte více, než si možná myslíte. Část z každé registrace putuje přímo na podporu vybraných charitativních projektů. Rozhodněte, kam váš příspěvek poputuje.",
       totalDonation: "Celkový příspěvek Uniters",
       basedOn: "Na základě",
       attendees: "účastníků",
       perAttendee: "za účastníka",
-      chooseYourCause: "Vyberte svůj projekt",
       voteButton: "Hlasovat",
       voted: "Váš hlas",
       thankYou: "Děkujeme za váš hlas!",
       currency: "Kč",
     },
     en: {
+      sectionTitle: "Charity Contribution",
+      sectionSubtitle: "Your participation matters",
+      intro: "By attending this event, you are helping more than you might think. Part of each registration goes directly to support selected charitable projects. Decide where your contribution will go.",
       totalDonation: "Total Uniters Donation",
       basedOn: "Based on",
       attendees: "attendees",
       perAttendee: "per attendee",
-      chooseYourCause: "Choose your cause",
       voteButton: "Vote",
       voted: "Your vote",
       thankYou: "Thank you for your vote!",
@@ -159,7 +163,10 @@ export function CharityVoting({ language }: CharityVotingProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative">
+    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+      {/* Charity accent top bar */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#6cc4cc] to-[#405196]" />
+      
       {/* Confetti animation overlay */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -185,9 +192,28 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </div>
       )}
 
+      {/* Section Header with Heart Icon */}
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-[#6cc4cc] to-[#405196] mb-3">
+          <Heart className="w-6 h-6 text-white fill-white" />
+        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+          {t.sectionTitle}
+        </h2>
+        <p className="text-sm text-[#6cc4cc] font-medium mb-3">
+          {t.sectionSubtitle}
+        </p>
+        <p className="text-gray-600 text-sm max-w-md mx-auto leading-relaxed">
+          {t.intro}
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="w-16 h-0.5 bg-gradient-to-r from-[#6cc4cc] to-[#405196] mx-auto mb-6" />
+
       {/* Total Donation Header */}
       <div className="text-center mb-6">
-        <p className="text-gray-500 uppercase tracking-wider text-sm font-medium mb-4">
+        <p className="text-gray-500 uppercase tracking-wider text-xs font-medium mb-3">
           {t.totalDonation}
         </p>
         

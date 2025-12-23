@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
 import { ChatSection } from "@/components/ChatSection";
 import { CharityVoting } from "@/components/CharityVoting";
+import BackToTop from "@/components/BackToTop";
 import logoLight from "@/assets/full-logo_uniters_light.png";
 
 const ParticipantPortal = () => {
@@ -137,6 +138,8 @@ const ParticipantPortal = () => {
             <ChatSection language={language} />
           </div>
         </div>
+
+        <BackToTop />
       </div>
     </>
   );
