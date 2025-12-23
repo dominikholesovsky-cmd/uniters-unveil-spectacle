@@ -60,6 +60,8 @@ export default function ChatSection() {
     setLoading(false);
   };
 
+  console.log("Magic link result:", { error });
+
   // Načtení profilů a nepřečtených zpráv
   const loadProfiles = useCallback(async () => {
     if (!session?.user?.id) return;
