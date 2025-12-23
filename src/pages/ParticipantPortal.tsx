@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { ArrowLeft } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
 import LanguageToggle from "@/components/LanguageToggle";
 import { ChatSection } from "@/components/ChatSection";
 import { CharityVoting } from "@/components/CharityVoting";
 import logoLight from "@/assets/full-logo_uniters_light.png";
+import { supabase } from "@/integrations/supabase/client";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+interface VotingToken {
+  id: string;
+  valid: boolean;
+  reason?: "used" | "not_found";
+}
 
 const ParticipantPortal = () => {
   const [language, setLanguage] = useState<"cs" | "en">("cs");
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [votingToken, setVotingToken] = useState<VotingToken | null>(null);
+  const [tokenLoading, setTokenLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const isRegistered = localStorage.getItem("registrationSubmitted") === "true";
@@ -24,20 +28,37 @@ const ParticipantPortal = () => {
     }
   }, [navigate]);
 
-  // Listen for auth state to get user email for voting
+  // Check token from URL
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUserEmail(data.session?.user?.email || null);
-    });
+    const checkToken = async () => {
+      const token = searchParams.get("token");
+      
+      if (!token) {
+        setVotingToken(null);
+        setTokenLoading(false);
+        return;
+      }
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserEmail(session?.user?.email || null);
-    });
+      // Verify token in database
+      const { data, error } = await supabase
+        .from("voting_tokens")
+        .select("id, is_used")
+        .eq("token", token)
+        .maybeSingle();
 
-    return () => {
-      listener?.subscription.unsubscribe();
+      if (error || !data) {
+        setVotingToken({ id: "", valid: false, reason: "not_found" });
+      } else if (data.is_used) {
+        setVotingToken({ id: data.id, valid: false, reason: "used" });
+      } else {
+        setVotingToken({ id: data.id, valid: true });
+      }
+
+      setTokenLoading(false);
     };
-  }, []);
+
+    checkToken();
+  }, [searchParams]);
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "cs" ? "en" : "cs"));
@@ -141,7 +162,16 @@ const ParticipantPortal = () => {
 
           {/* Charity Voting Section */}
           <div className="max-w-2xl mx-auto">
-            <CharityVoting language={language} userEmail={userEmail} />
+            {tokenLoading ? (
+              <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />
+                </div>
+              </div>
+            ) : (
+              <CharityVoting language={language} votingToken={votingToken} />
+            )}
           </div>
 
           {/* Chat Section */}

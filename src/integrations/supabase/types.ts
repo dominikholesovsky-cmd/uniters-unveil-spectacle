@@ -14,7 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      charities: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      charity_votes: {
+        Row: {
+          charity_id: string
+          created_at: string | null
+          id: string
+          token_id: string
+        }
+        Insert: {
+          charity_id: string
+          created_at?: string | null
+          id?: string
+          token_id: string
+        }
+        Update: {
+          charity_id?: string
+          created_at?: string | null
+          id?: string
+          token_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charity_votes_charity_id_fkey"
+            columns: ["charity_id"]
+            isOneToOne: false
+            referencedRelation: "charities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "charity_votes_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: true
+            referencedRelation: "voting_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voting_tokens: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_used: boolean | null
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_used?: boolean | null
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_used?: boolean | null
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

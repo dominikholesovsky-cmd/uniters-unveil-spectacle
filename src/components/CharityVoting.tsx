@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-import { Heart, Check, Sparkles } from "lucide-react";
+import { Heart, Check, Sparkles, QrCode } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase } from "@/integrations/supabase/client";
 
 interface Charity {
   id: string;
@@ -14,16 +10,22 @@ interface Charity {
   votes: number;
 }
 
+interface VotingToken {
+  id: string;
+  valid: boolean;
+  reason?: "used" | "not_found";
+}
+
 interface CharityVotingProps {
   language: "cs" | "en";
-  userEmail: string | null;
+  votingToken: VotingToken | null;
 }
 
 const AMOUNT_PER_VOTE = 500;
 
-export function CharityVoting({ language, userEmail }: CharityVotingProps) {
+export function CharityVoting({ language, votingToken }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
-  const [userVote, setUserVote] = useState<string | null>(null);
+  const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
   const [justVoted, setJustVoted] = useState<string | null>(null);
@@ -39,8 +41,10 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
       voted: "Váš hlas",
       votes: "hlasů",
       alreadyVoted: "Již jste hlasovali",
-      loginRequired: "Pro hlasování se musíte přihlásit",
       thankYou: "Děkujeme za váš hlas!",
+      scanQrCode: "Naskenujte QR kód na vstupence pro hlasování",
+      qrCodeUsed: "Tento QR kód byl již použit",
+      invalidQrCode: "Neplatný QR kód",
     },
     en: {
       title: "Charity Voting",
@@ -51,8 +55,10 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
       voted: "Your vote",
       votes: "votes",
       alreadyVoted: "You have already voted",
-      loginRequired: "Please log in to vote",
       thankYou: "Thank you for your vote!",
+      scanQrCode: "Scan the QR code on your ticket to vote",
+      qrCodeUsed: "This QR code has already been used",
+      invalidQrCode: "Invalid QR code",
     },
   };
 
@@ -79,16 +85,16 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
       setCharities(charitiesWithVotes);
     }
 
-    // Check if user already voted
-    if (userEmail) {
+    // Check if token was already used for voting
+    if (votingToken?.valid && votingToken.id) {
       const { data: voteData } = await supabase
         .from("charity_votes")
-        .select("charity_id")
-        .eq("user_email", userEmail)
+        .select("id")
+        .eq("token_id", votingToken.id)
         .maybeSingle();
 
       if (voteData) {
-        setUserVote(voteData.charity_id);
+        setHasVoted(true);
       }
     }
 
@@ -111,20 +117,27 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userEmail]);
+  }, [votingToken]);
 
   const handleVote = async (charityId: string) => {
-    if (!userEmail || userVote || voting) return;
+    if (!votingToken?.valid || hasVoted || voting) return;
 
     setVoting(true);
 
-    const { error } = await supabase.from("charity_votes").insert({
+    // Insert vote
+    const { error: voteError } = await supabase.from("charity_votes").insert({
       charity_id: charityId,
-      user_email: userEmail,
+      token_id: votingToken.id,
     });
 
-    if (!error) {
-      setUserVote(charityId);
+    if (!voteError) {
+      // Mark token as used
+      await supabase
+        .from("voting_tokens")
+        .update({ is_used: true, used_at: new Date().toISOString() })
+        .eq("id", votingToken.id);
+
+      setHasVoted(true);
       setJustVoted(charityId);
       setShowConfetti(true);
 
@@ -142,6 +155,9 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
 
   const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
   const totalAmount = totalVotes * AMOUNT_PER_VOTE;
+
+  // Determine the message to show based on token state
+  const canVote = votingToken?.valid && !hasVoted && !voting;
 
   if (loading) {
     return (
@@ -205,10 +221,27 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
         </p>
       </div>
 
-      {/* Login notice */}
-      {!userEmail && (
+      {/* No token - show scan QR message */}
+      {!votingToken && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-center">
+          <div className="flex items-center justify-center gap-2 text-blue-700">
+            <QrCode className="w-5 h-5" />
+            <p>{t.scanQrCode}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Token used - show already used message */}
+      {votingToken && !votingToken.valid && votingToken.reason === "used" && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
-          <p className="text-amber-700">{t.loginRequired}</p>
+          <p className="text-amber-700">{t.qrCodeUsed}</p>
+        </div>
+      )}
+
+      {/* Invalid token */}
+      {votingToken && !votingToken.valid && votingToken.reason === "not_found" && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-center">
+          <p className="text-red-700">{t.invalidQrCode}</p>
         </div>
       )}
 
@@ -225,9 +258,7 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
       {/* Charity Cards */}
       <div className="grid gap-4">
         {charities.map((charity) => {
-          const isVoted = userVote === charity.id;
           const wasJustVoted = justVoted === charity.id;
-          const canVote = userEmail && !userVote && !voting;
           const charityAmount = charity.votes * AMOUNT_PER_VOTE;
 
           return (
@@ -235,7 +266,7 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
               key={charity.id}
               className={cn(
                 "relative rounded-xl border-2 p-5 transition-all duration-500",
-                isVoted
+                wasJustVoted
                   ? "border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-100"
                   : "border-gray-200 bg-gray-50 hover:border-gray-300",
                 wasJustVoted && "animate-vote-success",
@@ -244,7 +275,7 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
               onClick={() => canVote && handleVote(charity.id)}
             >
               {/* Voted badge */}
-              {isVoted && (
+              {wasJustVoted && (
                 <div className="absolute -top-3 -right-3 bg-emerald-500 text-white rounded-full p-2 shadow-lg animate-scale-in">
                   <Check className="w-4 h-4" />
                 </div>
@@ -273,14 +304,9 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
                   </div>
 
                   {/* Vote button or status */}
-                  {isVoted ? (
-                    <span className="inline-flex items-center gap-1 text-emerald-600 font-medium text-sm">
-                      <Heart className="w-4 h-4 fill-emerald-500" />
-                      {t.voted}
-                    </span>
-                  ) : userVote ? (
+                  {hasVoted ? (
                     <span className="text-gray-400 text-sm">{t.alreadyVoted}</span>
-                  ) : userEmail ? (
+                  ) : canVote ? (
                     <button
                       disabled={voting}
                       className={cn(
@@ -303,7 +329,7 @@ export function CharityVoting({ language, userEmail }: CharityVotingProps) {
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-1000 ease-out",
-                    isVoted ? "bg-emerald-500" : "bg-emerald-400"
+                    wasJustVoted ? "bg-emerald-500" : "bg-emerald-400"
                   )}
                   style={{
                     width: `${totalVotes > 0 ? (charity.votes / totalVotes) * 100 : 0}%`,
