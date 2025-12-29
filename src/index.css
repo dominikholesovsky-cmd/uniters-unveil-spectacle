@@ -64,8 +64,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 12%;
 
-    /* Uniters brand colors - teal to navy gradient (#6cc4cc to #405196) */
-    --primary: 184 50% 61%;           /* #6cc4cc - teal */
+    /* Uniters brand colors - teal to navy gradient (darker teal to #405196) */
+    --primary: 184 50% 52%;           /* darker teal */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 249 40% 42%;         /* #405196 - navy */
@@ -74,7 +74,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 184 50% 61%;
+    --accent: 184 50% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -82,12 +82,12 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 184 50% 61%;
+    --ring: 184 50% 52%;
 
     --radius: 0.75rem;
 
     /* Gradient colors for buttons/banners */
-    --gradient-start: 184 50% 61%;    /* #6cc4cc */
+    --gradient-start: 184 50% 52%;    /* darker teal */
     --gradient-end: 249 40% 42%;      /* #405196 */
 
     /* Sidebar colors */
@@ -112,7 +112,7 @@
     --popover-foreground: 0 0% 98%;
 
     /* Teal to purple gradient */
-    --primary: 184 50% 61%;
+    --primary: 184 50% 52%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 249 40% 48%;
@@ -121,7 +121,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 184 50% 65%;
+    --accent: 184 50% 56%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
@@ -129,9 +129,9 @@
 
     --border: 217.2 32.6% 20%;
     --input: 217.2 32.6% 20%;
-    --ring: 184 50% 61%;
+    --ring: 184 50% 52%;
 
-    --gradient-start: 184 50% 61%;
+    --gradient-start: 184 50% 52%;
     --gradient-end: 249 40% 48%;
 
     --sidebar-background: 240 5.9% 10%;
