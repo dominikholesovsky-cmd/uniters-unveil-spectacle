@@ -207,23 +207,15 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto px-4">
+            <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-3 max-w-4xl mx-auto px-4 text-white/90">
               {t.features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="bg-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 text-center hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/20 flex items-center justify-center mb-4 sm:mb-5 mx-auto">
-                    <feature.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-                  </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-white/75 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </div>
+                <span key={index} className="flex items-center gap-2">
+                  <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
+                  <span className="text-sm sm:text-base font-medium">{feature.title}</span>
+                  {index < t.features.length - 1 && (
+                    <span className="text-white/40 ml-2">•</span>
+                  )}
+                </span>
               ))}
             </div>
           </div>
