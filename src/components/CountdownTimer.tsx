@@ -77,53 +77,49 @@ export const CountdownTimer = ({ language, targetDate, onComplete }: CountdownTi
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center">
       <div className="relative">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center shadow-lg">
-          <span className="text-2xl sm:text-3xl font-bold text-white font-['Raleway',sans-serif]">
+        <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center shadow-lg">
+          <span className="text-xl sm:text-3xl font-bold text-gray-900 font-['Raleway',sans-serif]">
             {value.toString().padStart(2, "0")}
           </span>
         </div>
-        <div className="absolute -inset-1 bg-gradient-to-br from-white/20 to-transparent rounded-xl blur-sm -z-10" />
       </div>
-      <span className="mt-2 text-xs sm:text-sm text-white/70 uppercase tracking-wider">
+      <span className="mt-2 text-[10px] sm:text-sm text-gray-600 uppercase tracking-wider">
         {label}
       </span>
     </div>
   );
 
   return (
-    <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
+    <div className="bg-white rounded-2xl p-4 sm:p-8 border border-gray-200 shadow-xl relative">
       {/* Header */}
-      <div className="flex items-center justify-center gap-3 mb-6">
-        <div className="p-2 bg-amber-500/20 rounded-full">
-          <Lock className="w-5 h-5 text-amber-400" />
+      <div className="flex items-center justify-center gap-3 mb-4 sm:mb-6">
+        <div className="p-2 bg-amber-100 rounded-full">
+          <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
         </div>
-        <span className="text-white/60 text-sm">{t.locked}</span>
+        <span className="text-gray-500 text-xs sm:text-sm">{t.locked}</span>
       </div>
 
       {/* Title */}
-      <div className="text-center mb-6">
-        <h3 className="text-xl sm:text-2xl font-bold text-white font-['Raleway',sans-serif] mb-2">
+      <div className="text-center mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-2xl font-bold text-gray-900 font-['Raleway',sans-serif] mb-2">
           {t.title}
         </h3>
-        <div className="flex items-center justify-center gap-2 text-white/80">
-          <Clock className="w-4 h-4" />
-          <span className="text-sm sm:text-base">{t.date}</span>
+        <div className="flex items-center justify-center gap-2 text-gray-600">
+          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="text-xs sm:text-base">{t.date}</span>
         </div>
       </div>
 
       {/* Countdown blocks */}
-      <div className="flex justify-center gap-3 sm:gap-4">
+      <div className="flex justify-center gap-1 sm:gap-4">
         <TimeBlock value={timeLeft.days} label={t.days} />
-        <div className="flex items-center text-white/40 text-2xl font-light self-start mt-5">:</div>
+        <div className="flex items-center text-gray-300 text-xl sm:text-2xl font-light self-start mt-4 sm:mt-5">:</div>
         <TimeBlock value={timeLeft.hours} label={t.hours} />
-        <div className="flex items-center text-white/40 text-2xl font-light self-start mt-5">:</div>
+        <div className="flex items-center text-gray-300 text-xl sm:text-2xl font-light self-start mt-4 sm:mt-5">:</div>
         <TimeBlock value={timeLeft.minutes} label={t.minutes} />
-        <div className="flex items-center text-white/40 text-2xl font-light self-start mt-5">:</div>
+        <div className="flex items-center text-gray-300 text-xl sm:text-2xl font-light self-start mt-4 sm:mt-5">:</div>
         <TimeBlock value={timeLeft.seconds} label={t.seconds} />
       </div>
-
-      {/* Decorative glow */}
-      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent rounded-2xl pointer-events-none" />
     </div>
   );
 };
