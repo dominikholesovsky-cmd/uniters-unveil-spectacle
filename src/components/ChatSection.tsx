@@ -1,21 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-// --- Supabase konfigurace ---
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const REDIRECT_URL = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error("Supabase URL nebo ANON KEY nejsou nastaveny v .env souboru");
-}
-if (!REDIRECT_URL) {
-  throw new Error("VITE_SUPABASE_REDIRECT_URL není nastaven v .env souboru");
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase, getRedirectUrl } from "@/lib/supabase";
 
 interface Profile {
   id: string;
@@ -210,7 +196,7 @@ export function ChatSection({ language }: ChatSectionProps) {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: REDIRECT_URL },
+      options: { emailRedirectTo: getRedirectUrl() },
     });
     setLoading(false);
     if (error) {
