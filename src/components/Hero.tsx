@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock, Wine, Music, Info, Gift, Heart } from "lucide-react";
+import { Calendar, MapPin, Clock, Wine, Music, Info, Gift, Heart, Users } from "lucide-react";
 import unitersLogo from "@/assets/full-logo_uniters_light.png";
 
 interface HeroProps {
@@ -67,6 +67,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           title: "Pomoc potřebným",
           description: "Vaší účastí podpoříte dobrou věc",
         },
+        {
+          icon: Users,
+          title: "Networking",
+          description: "Navažte nové profesní i osobní kontakty",
+        },
       ],
     },
     en: {
@@ -104,6 +109,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           icon: Heart,
           title: "Support a Good Cause",
           description: "Your participation helps those in need",
+        },
+        {
+          icon: Users,
+          title: "Networking",
+          description: "Build new professional and personal connections",
         },
       ],
     },
@@ -197,7 +207,7 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 max-w-6xl mx-auto px-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto px-4">
               {t.features.map((feature, index) => (
                 <div
                   key={index}
