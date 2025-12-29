@@ -84,6 +84,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       company: "Firma",
       companyPlaceholder: "Název firmy",
       openPortal: "Otevřít portál pro účastníky",
+      portalDescription: "V portálu můžete hlasovat pro charitu a navázat kontakty s ostatními účastníky.",
       openNavigation: "Otevřít navigaci",
       addToCalendar: "Přidat do kalendáře",
       submitting: "Odesílám...",
@@ -111,6 +112,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       company: "Company",
       companyPlaceholder: "Company Name",
       openPortal: "Open Participant Portal",
+      portalDescription: "In the portal, you can vote for a charity and connect with other participants.",
       openNavigation: "Open Navigation",
       addToCalendar: "Add to Calendar",
       submitting: "Submitting...",
@@ -258,6 +260,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <p className="text-lg mb-6">{t.successMessage}</p>
               
             <div className="flex flex-col gap-6">
+              {/* Portal description */}
+              <p className="text-sm text-gray-500 text-center">{t.portalDescription}</p>
+              
               {/* Countdown or Portal Button */}
               {isPortalUnlocked ? (
                 <Button 
