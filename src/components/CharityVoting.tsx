@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
-import { Heart, Users, Coins, Sparkles, LogIn } from "lucide-react";
+import { Heart, Users, Coins, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase, getRedirectUrl } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 interface Charity {
   id: string;
@@ -15,13 +12,12 @@ interface Charity {
 
 interface CharityVotingProps {
   language: "cs" | "en";
-  session?: Session | null;
 }
 
 const AMOUNT_PER_VOTE = 500;
 const LOCAL_STORAGE_KEY = "uniters_charity_vote";
 
-export function CharityVoting({ language, session }: CharityVotingProps) {
+export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedCharityId, setVotedCharityId] = useState<string | null>(null);
@@ -29,14 +25,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
   const [voting, setVoting] = useState(false);
   const [justVoted, setJustVoted] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
-  
-  // Auth state for standalone use (when session not passed as prop)
-  const [localSession, setLocalSession] = useState<Session | null>(null);
-  const [email, setEmail] = useState("");
-  const [authLoading, setAuthLoading] = useState(false);
-  
-  // Use passed session or local session
-  const activeSession = session !== undefined ? session : localSession;
 
   const content = {
     cs: {
@@ -51,12 +39,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
       voted: "Váš hlas",
       thankYou: "Děkujeme za váš hlas!",
       currency: "Kč",
-      loginRequired: "Pro hlasování se musíte přihlásit",
-      loginNotice: "Zadejte svůj e-mail a my vám pošleme magický odkaz pro přihlášení.",
-      sendLink: "Odeslat přihlašovací odkaz",
-      sending: "Odesílám...",
-      emailSent: "Odkaz pro přihlášení byl odeslán na váš e-mail.",
-      emailFailed: "Nepodařilo se odeslat e-mail.",
     },
     en: {
       sectionTitle: "Charity Contribution",
@@ -70,12 +52,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
       voted: "Your vote",
       thankYou: "Thank you for your vote!",
       currency: "CZK",
-      loginRequired: "You must log in to vote",
-      loginNotice: "Enter your email and we'll send you a magic login link.",
-      sendLink: "Send login link",
-      sending: "Sending...",
-      emailSent: "Login link has been sent to your email.",
-      emailFailed: "Failed to send email.",
     },
   };
 
@@ -109,23 +85,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
     setLoading(false);
   };
 
-  // Initialize auth state when session prop is not provided
-  useEffect(() => {
-    if (session !== undefined) return; // Skip if session is managed externally
-    
-    supabase.auth.getSession().then(({ data }) => {
-      setLocalSession(data.session);
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, sess) => {
-      setLocalSession(sess);
-    });
-
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, [session]);
-
   useEffect(() => {
     const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedVote) {
@@ -155,20 +114,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
       supabase.removeChannel(channel);
     };
   }, []);
-
-  const sendMagicLink = async () => {
-    setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: getRedirectUrl() },
-    });
-    setAuthLoading(false);
-    if (error) {
-      alert(t.emailFailed);
-    } else {
-      alert(t.emailSent);
-    }
-  };
 
   const handleVote = async (charityId: string) => {
     if (hasVoted || voting) return;
@@ -316,33 +261,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
         </div>
       )}
 
-      {/* Login form when not authenticated */}
-      {!activeSession && !hasVoted && (
-        <div className="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-100">
-          <div className="flex items-center gap-2 mb-4 justify-center">
-            <LogIn className="w-5 h-5 text-[#405196]" />
-            <p className="text-gray-700 font-medium">{t.loginRequired}</p>
-          </div>
-          <p className="text-gray-500 text-sm text-center mb-4">{t.loginNotice}</p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="email@domain.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-grow bg-white text-gray-900"
-            />
-            <Button
-              onClick={sendMagicLink}
-              disabled={authLoading || !email}
-              className="bg-[#405196] hover:bg-[#4a5ca8]"
-            >
-              {authLoading ? t.sending : t.sendLink}
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* Charity Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {charities.map((charity, index) => {
@@ -392,7 +310,7 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
                   ) : (
                     <div className="py-2" />
                   )
-                ) : activeSession ? (
+                ) : (
                   <button
                     onClick={() => handleVote(charity.id)}
                     disabled={voting}
@@ -408,8 +326,6 @@ export function CharityVoting({ language, session }: CharityVotingProps) {
                       {t.voteButton}
                     </span>
                   </button>
-                ) : (
-                  <div className="py-2 text-gray-400 text-sm">{t.loginRequired}</div>
                 )}
               </div>
             </div>

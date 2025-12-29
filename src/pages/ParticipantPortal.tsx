@@ -5,9 +5,9 @@ import { ArrowLeft } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
 import { ChatSection } from "@/components/ChatSection";
 import { CharityVoting } from "@/components/CharityVoting";
+import { PortalNav } from "@/components/PortalNav";
 import BackToTop from "@/components/BackToTop";
 import logoLight from "@/assets/full-logo_uniters_light.png";
-
 const ParticipantPortal = () => {
   const [language, setLanguage] = useState<"cs" | "en">("cs");
   const navigate = useNavigate();
@@ -127,18 +127,19 @@ const ParticipantPortal = () => {
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10 pt-2 sm:pt-6 pb-8 space-y-6">
           {/* Title Section */}
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-white font-['Raleway',sans-serif]">{t.title}</h1>
             <p className="text-sm sm:text-base text-white/70">{t.subtitle}</p>
+            <PortalNav language={language} />
           </div>
 
           {/* Charity Voting Section */}
-          <div className="max-w-2xl mx-auto">
+          <div id="charity-voting" className="max-w-2xl mx-auto scroll-mt-4">
             <CharityVoting language={language} />
           </div>
 
           {/* Chat Section */}
-          <div className="max-w-2xl mx-auto">
+          <div id="networking-chat" className="max-w-2xl mx-auto scroll-mt-4">
             <ChatSection language={language} />
           </div>
         </div>
