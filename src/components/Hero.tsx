@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock, Wine, Music, Info, Gift } from "lucide-react"; // přidán Gift
+import { Calendar, MapPin, Clock, Wine, Music, Info, Gift, Heart } from "lucide-react";
 import unitersLogo from "@/assets/full-logo_uniters_light.png";
 
 interface HeroProps {
@@ -62,6 +62,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           title: "Dárek na památku",
           description: "Nikdo neodejde s prázdnou",
         },
+        {
+          icon: Heart,
+          title: "Pomoc potřebným",
+          description: "Vaší účastí podpoříte dobrou věc",
+        },
       ],
     },
     en: {
@@ -94,6 +99,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
           icon: Gift,
           title: "Special Gift",
           description: "Everyone leaves with a little surprise",
+        },
+        {
+          icon: Heart,
+          title: "Support a Good Cause",
+          description: "Your participation helps those in need",
         },
       ],
     },
