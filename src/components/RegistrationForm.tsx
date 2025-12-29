@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, ExternalLink, Navigation, Calendar } from "lucide-react";
+import { CountdownTimer } from "@/components/CountdownTimer";
+
+// Portal unlock date: January 22, 2026 at 18:00 CET
+const PORTAL_UNLOCK_DATE = new Date("2026-01-22T18:00:00+01:00");
 
 // --- URL pro odesílání dat ---
 const POWER_AUTOMATE_SUBMIT_URL =
@@ -43,12 +47,16 @@ const formSchema = z.object({
 const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Nový stav pro zamezení vícenásobného odeslání
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPortalUnlocked, setIsPortalUnlocked] = useState(false);
 
   useEffect(() => {
     // Kontrola, zda uživatel již formulář odeslal
     const submitted = localStorage.getItem("registrationSubmitted") === "true";
     setIsSubmitted(submitted);
+    
+    // Check if portal is already unlocked
+    setIsPortalUnlocked(new Date() >= PORTAL_UNLOCK_DATE);
   }, []);
 
   // --- Překlady ---
@@ -249,15 +257,24 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
             <p className="text-lg mb-6">{t.successMessage}</p>
               
-            <div className="flex flex-col gap-4">
-              <Button 
-                onClick={handleOpenPortal} 
-                variant="default" 
-                className="w-full sm:w-auto px-8 mx-auto"
-              >
-                <ExternalLink className="w-5 h-5 mr-2" /> 
-                {t.openPortal}
-              </Button>
+            <div className="flex flex-col gap-6">
+              {/* Countdown or Portal Button */}
+              {isPortalUnlocked ? (
+                <Button 
+                  onClick={handleOpenPortal} 
+                  variant="default" 
+                  className="w-full sm:w-auto px-8 mx-auto"
+                >
+                  <ExternalLink className="w-5 h-5 mr-2" /> 
+                  {t.openPortal}
+                </Button>
+              ) : (
+                <CountdownTimer 
+                  language={language} 
+                  targetDate={PORTAL_UNLOCK_DATE}
+                  onComplete={() => setIsPortalUnlocked(true)}
+                />
+              )}
               
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button onClick={handleNavigationClick} variant="secondary" className="w-full sm:w-auto">
