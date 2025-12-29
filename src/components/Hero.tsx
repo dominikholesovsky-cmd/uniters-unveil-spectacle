@@ -207,15 +207,15 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
             </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-3 max-w-4xl mx-auto px-4 text-white/90">
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-4xl mx-auto px-4">
               {t.features.map((feature, index) => (
-                <span key={index} className="flex items-center gap-2">
-                  <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
-                  <span className="text-sm sm:text-base font-medium">{feature.title}</span>
-                  {index < t.features.length - 1 && (
-                    <span className="text-white/40 ml-2">•</span>
-                  )}
-                </span>
+                <div
+                  key={index}
+                  className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base text-white/90"
+                >
+                  <feature.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="font-medium">{feature.title}</span>
+                </div>
               ))}
             </div>
           </div>
