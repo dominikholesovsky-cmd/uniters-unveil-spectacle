@@ -197,20 +197,20 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4 max-w-7xl mx-auto px-4 lg:flex-nowrap">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 max-w-6xl mx-auto px-4">
               {t.features.map((feature, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-5 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 flex-1 min-w-[140px] max-w-[200px]"
+                  className="bg-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 text-center hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
-                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/20 flex items-center justify-center mb-4 sm:mb-5 mx-auto">
+                    <feature.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                   </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
+                  <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-white/80">
+                  <p className="text-sm text-white/75 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
