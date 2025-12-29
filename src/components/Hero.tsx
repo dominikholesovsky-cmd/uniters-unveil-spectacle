@@ -197,11 +197,11 @@ const Hero = ({ language, onRegisterClick }: HeroProps) => {
 
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto px-4">
+            <div className="flex flex-wrap justify-center gap-4 max-w-7xl mx-auto px-4 lg:flex-nowrap">
               {t.features.map((feature, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1"
+                  className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-5 text-left hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 flex-1 min-w-[140px] max-w-[200px]"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 sm:mb-4">
