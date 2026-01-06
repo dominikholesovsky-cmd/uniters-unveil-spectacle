@@ -199,52 +199,30 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </p>
       </div>
 
-      {/* Money Jar / Pile Visual */}
-      <div className="relative mb-8">
-        <div className="relative bg-gradient-to-b from-amber-50 to-amber-100/50 rounded-2xl p-6 border-2 border-dashed border-amber-300/60 overflow-hidden">
-          {/* Falling coins animation */}
-          {showCoins && (
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
-              {coins.map((coin) => (
-                <FallingCoin key={coin.id} delay={coin.delay} left={coin.left} size={coin.size} />
-              ))}
-            </div>
-          )}
+      {/* Falling coins animation */}
+      {showCoins && (
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-50">
+          {coins.map((coin) => (
+            <FallingCoin key={coin.id} delay={coin.delay} left={coin.left} size={coin.size} />
+          ))}
+        </div>
+      )}
 
-          {/* Coin pile visual */}
-          <div className="relative z-10 text-center">
-            {/* Coin stack emoji visual */}
-            <div className="flex items-end justify-center gap-1 mb-4">
-              <span className="text-3xl opacity-60">🪙</span>
-              <span className="text-4xl opacity-70">🪙</span>
-              <span className="text-5xl">💰</span>
-              <span className="text-4xl opacity-70">🪙</span>
-              <span className="text-3xl opacity-60">🪙</span>
-            </div>
-
-            {/* Amount display */}
-            <p className="text-gray-600 uppercase tracking-wider text-xs font-medium mb-1">
-              {t.totalCollected}
-            </p>
-            <div className={cn(
-              "text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6cc4cc] to-[#405196] bg-clip-text text-transparent transition-transform",
-              justDonated && "animate-bounce"
-            )}>
-              {formatAmount(totalAmount)}
-              <span className="text-xl ml-1">{t.currency}</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-gray-500 text-sm mt-2">
-              <Users className="w-4 h-4" />
-              <span><strong className="text-gray-700">{totalDonors}</strong> {t.donors}</span>
-            </div>
-          </div>
-
-          {/* Decorative coins at the bottom */}
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-0.5 opacity-40">
-            {[...Array(8)].map((_, i) => (
-              <span key={i} className="text-lg" style={{ transform: `rotate(${(i - 4) * 15}deg)` }}>🪙</span>
-            ))}
-          </div>
+      {/* Amount display */}
+      <div className="text-center mb-8">
+        <p className="text-gray-600 uppercase tracking-wider text-xs font-medium mb-1">
+          {t.totalCollected}
+        </p>
+        <div className={cn(
+          "text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6cc4cc] to-[#405196] bg-clip-text text-transparent transition-transform",
+          justDonated && "animate-bounce"
+        )}>
+          {formatAmount(totalAmount)}
+          <span className="text-xl ml-1">{t.currency}</span>
+        </div>
+        <div className="flex items-center justify-center gap-2 text-gray-500 text-sm mt-2">
+          <Users className="w-4 h-4" />
+          <span><strong className="text-gray-700">{totalDonors}</strong> {t.donors}</span>
         </div>
       </div>
 
