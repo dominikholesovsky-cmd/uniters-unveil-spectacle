@@ -25,7 +25,7 @@ const Schedule = ({ language }: ScheduleProps) => {
         },
         {
           time: "18:30",
-          title: "První prohlídka vodojemů",
+          title: "Prohlídka vodojemů",
           description: "Soukromá komentovaná prohlídka s průvodcem",
           icon: Info,
         },
@@ -37,12 +37,6 @@ const Schedule = ({ language }: ScheduleProps) => {
         },
         {
           time: "19:30",
-          title: "Druhá prohlídka vodojemů",
-          description: "Soukromá komentovaná prohlídka s průvodcem",
-          icon: Info,
-        },
-        {
-          time: "20:00",
           title: "Volný program",
           description: "Networking, hudba, degustace",
           icon: Music,
@@ -62,7 +56,7 @@ const Schedule = ({ language }: ScheduleProps) => {
         },
         {
           time: "18:30",
-          title: "First Tour",
+          title: "Reservoir Tour",
           description: "Private guided tour of the water reservoirs",
           icon: Info,
         },
@@ -74,12 +68,6 @@ const Schedule = ({ language }: ScheduleProps) => {
         },
         {
           time: "19:30",
-          title: "Second Tour",
-          description: "Private guided tour of the water reservoirs",
-          icon: Info,
-        },
-        {
-          time: "20:00",
           title: "Free Program",
           description: "Networking, music, tasting",
           icon: Music,
