@@ -38,6 +38,48 @@
   }
 }
 
+/* Falling coin animation */
+@keyframes coin-fall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(350px) rotate(720deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Coin wiggle on hover */
+@keyframes coin-wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg) scale(1.1);
+  }
+  75% {
+    transform: rotate(15deg) scale(1.1);
+  }
+}
+
+/* Coin drop into jar */
+@keyframes coin-drop {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(30px) rotate(360deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
 .animate-confetti {
   animation: confetti 2s ease-out forwards;
 }
@@ -48,6 +90,18 @@
 
 .animate-pulse-slow {
   animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-coin-fall {
+  animation: coin-fall 1.5s ease-in forwards;
+}
+
+.animate-coin-wiggle {
+  animation: coin-wiggle 0.5s ease-in-out;
+}
+
+.animate-coin-drop {
+  animation: coin-drop 0.8s ease-in forwards;
 }
 
 @layer base {
