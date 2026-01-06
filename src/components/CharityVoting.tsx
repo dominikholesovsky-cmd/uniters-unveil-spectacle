@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Users, TrendingUp } from "lucide-react";
+import { Heart, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 
@@ -16,7 +16,21 @@ interface CharityVotingProps {
 
 const AMOUNT_PER_DONOR = 500;
 const LOCAL_STORAGE_KEY = "uniters_charity_donated";
-const GOAL_AMOUNT = 50000; // Target goal for visual
+
+// Falling coin component
+const FallingCoin = ({ delay, left, size }: { delay: number; left: number; size: number }) => (
+  <div
+    className="absolute pointer-events-none animate-coin-fall"
+    style={{
+      left: `${left}%`,
+      animationDelay: `${delay}s`,
+      top: "-20px",
+      fontSize: `${size}rem`,
+    }}
+  >
+    🪙
+  </div>
+);
 
 export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
@@ -24,33 +38,33 @@ export function CharityVoting({ language }: CharityVotingProps) {
   const [loading, setLoading] = useState(true);
   const [donating, setDonating] = useState(false);
   const [justDonated, setJustDonated] = useState(false);
+  const [showCoins, setShowCoins] = useState(false);
+  const [coinKey, setCoinKey] = useState(0);
 
   const content = {
     cs: {
       sectionTitle: "Charitativní příspěvek",
       sectionSubtitle: "Vaše účast má smysl",
       intro: "Tím, že jste se zúčastnili této akce, pomáháte více, než si možná myslíte. Část z každé registrace putuje přímo na podporu vybraných charitativních projektů.",
-      totalCollected: "Vybrali jsme",
+      totalCollected: "V kasičce máme",
       donors: "dárců",
-      donateButton: "Přispět do kasičky",
+      donateButton: "Hodit do kasičky",
       donated: "Děkujeme za váš příspěvek!",
-      thankYou: "Váš dar byl přidán!",
+      thankYou: "Vaše mince přistála v kasičce!",
       currency: "Kč",
       splitInfo: "Příspěvek rozdělíme rovnoměrně mezi obě charity",
-      goal: "Cíl",
     },
     en: {
       sectionTitle: "Charity Contribution",
       sectionSubtitle: "Your participation matters",
       intro: "By attending this event, you are helping more than you might think. Part of each registration goes directly to support selected charitable projects.",
-      totalCollected: "We collected",
+      totalCollected: "In the jar we have",
       donors: "donors",
       donateButton: "Drop into the jar",
       donated: "Thank you for your contribution!",
-      thankYou: "Your donation was added!",
+      thankYou: "Your coin landed in the jar!",
       currency: "CZK",
       splitInfo: "Your contribution will be split equally between both charities",
-      goal: "Goal",
     },
   };
 
@@ -106,6 +120,8 @@ export function CharityVoting({ language }: CharityVotingProps) {
     if (hasDonated || donating || charities.length < 2) return;
 
     setDonating(true);
+    setShowCoins(true);
+    setCoinKey(prev => prev + 1);
 
     const insertPromises = charities.map((charity) =>
       supabase
@@ -125,6 +141,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
       setTimeout(() => {
         setJustDonated(false);
+        setShowCoins(false);
       }, 3000);
 
       await loadData();
@@ -137,11 +154,18 @@ export function CharityVoting({ language }: CharityVotingProps) {
   const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
   const totalDonors = Math.floor(totalVotes / 2);
   const totalAmount = totalDonors * AMOUNT_PER_DONOR;
-  const progressPercent = Math.min((totalAmount / GOAL_AMOUNT) * 100, 100);
 
   const formatAmount = (amount: number) => {
     return amount.toLocaleString(language === "cs" ? "cs-CZ" : "en-US").replace(/,/g, " ");
   };
+
+  // Generate random coins for animation
+  const coins = [...Array(10)].map((_, i) => ({
+    id: `${coinKey}-${i}`,
+    delay: Math.random() * 0.6,
+    left: 15 + Math.random() * 70,
+    size: 0.8 + Math.random() * 0.8,
+  }));
 
   if (loading) {
     return (
@@ -175,45 +199,36 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </p>
       </div>
 
-      {/* Rising Chart Visual */}
+      {/* Money Jar / Pile Visual */}
       <div className="relative mb-8">
-        <div className="bg-gradient-to-b from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
-          {/* Chart container */}
-          <div className="flex items-end justify-center gap-2 h-32 mb-4">
-            {/* Chart bars - simulating rising effect */}
-            {[15, 25, 35, 50, 65, 80, progressPercent].map((height, i) => {
-              const isLast = i === 6;
-              return (
-                <div
-                  key={i}
-                  className={cn(
-                    "w-6 sm:w-8 rounded-t-lg transition-all duration-1000",
-                    isLast
-                      ? "bg-gradient-to-t from-[#6cc4cc] to-[#405196] shadow-lg"
-                      : "bg-gray-200/60"
-                  )}
-                  style={{
-                    height: `${Math.max(height * 0.9, 8)}%`,
-                    animationDelay: `${i * 0.1}s`,
-                  }}
-                />
-              );
-            })}
-            
-            {/* Rising arrow indicator */}
-            <div className="absolute right-4 top-4 flex items-center gap-1 text-[#6cc4cc]">
-              <TrendingUp className="w-5 h-5" />
+        <div className="relative bg-gradient-to-b from-amber-50 to-amber-100/50 rounded-2xl p-6 border-2 border-dashed border-amber-300/60 overflow-hidden">
+          {/* Falling coins animation */}
+          {showCoins && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
+              {coins.map((coin) => (
+                <FallingCoin key={coin.id} delay={coin.delay} left={coin.left} size={coin.size} />
+              ))}
             </div>
-          </div>
+          )}
 
-          {/* Amount display */}
-          <div className="text-center">
-            <p className="text-gray-500 uppercase tracking-wider text-xs font-medium mb-1">
+          {/* Coin pile visual */}
+          <div className="relative z-10 text-center">
+            {/* Coin stack emoji visual */}
+            <div className="flex items-end justify-center gap-1 mb-4">
+              <span className="text-3xl opacity-60">🪙</span>
+              <span className="text-4xl opacity-70">🪙</span>
+              <span className="text-5xl">💰</span>
+              <span className="text-4xl opacity-70">🪙</span>
+              <span className="text-3xl opacity-60">🪙</span>
+            </div>
+
+            {/* Amount display */}
+            <p className="text-gray-600 uppercase tracking-wider text-xs font-medium mb-1">
               {t.totalCollected}
             </p>
             <div className={cn(
-              "text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6cc4cc] to-[#405196] bg-clip-text text-transparent",
-              justDonated && "animate-pulse"
+              "text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6cc4cc] to-[#405196] bg-clip-text text-transparent transition-transform",
+              justDonated && "animate-bounce"
             )}>
               {formatAmount(totalAmount)}
               <span className="text-xl ml-1">{t.currency}</span>
@@ -223,59 +238,44 @@ export function CharityVoting({ language }: CharityVotingProps) {
               <span><strong className="text-gray-700">{totalDonors}</strong> {t.donors}</span>
             </div>
           </div>
+
+          {/* Decorative coins at the bottom */}
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-0.5 opacity-40">
+            {[...Array(8)].map((_, i) => (
+              <span key={i} className="text-lg" style={{ transform: `rotate(${(i - 4) * 15}deg)` }}>🪙</span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Charities - Clear Separation */}
-      <div className="space-y-4 mb-6">
+      {/* Charities - Simple cards */}
+      <div className="space-y-3 mb-6">
         {charities.map((charity, index) => {
           const charityAmount = (charity.votes / 2) * AMOUNT_PER_DONOR;
           const isFirst = index === 0;
           const color = isFirst ? "#6cc4cc" : "#405196";
-          const bgGradient = isFirst 
-            ? "from-[#6cc4cc]/10 to-[#6cc4cc]/5" 
-            : "from-[#405196]/10 to-[#405196]/5";
-          const borderColor = isFirst ? "border-[#6cc4cc]/30" : "border-[#405196]/30";
+          const bgColor = isFirst ? "bg-[#6cc4cc]/10" : "bg-[#405196]/10";
+          const borderColor = isFirst ? "border-[#6cc4cc]/40" : "border-[#405196]/40";
 
           return (
             <div
               key={charity.id}
               className={cn(
-                "relative bg-gradient-to-r rounded-xl p-5 border-2 transition-all",
-                bgGradient,
+                "rounded-xl p-4 border-l-4 transition-all",
+                bgColor,
                 borderColor
               )}
             >
-              {/* Charity icon */}
-              <div 
-                className="absolute -top-3 left-4 w-8 h-8 rounded-full flex items-center justify-center shadow-md"
-                style={{ backgroundColor: color }}
-              >
-                <Heart className="w-4 h-4 text-white fill-white" />
-              </div>
-
-              <div className="pt-2">
-                <h3 className="font-bold text-gray-800 text-lg mb-1">{charity.name}</h3>
-                <p className="text-sm text-gray-600 mb-3 leading-relaxed">{charity.description}</p>
-                
-                {/* Amount for this charity */}
-                <div className="flex items-center justify-between">
-                  <div 
-                    className="text-2xl font-bold"
-                    style={{ color }}
-                  >
-                    {formatAmount(charityAmount)} {t.currency}
-                  </div>
-                  {/* Mini bar */}
-                  <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-1000"
-                      style={{ 
-                        width: `${Math.min((charityAmount / (GOAL_AMOUNT / 2)) * 100, 100)}%`,
-                        backgroundColor: color 
-                      }}
-                    />
-                  </div>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-800 mb-1">{charity.name}</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed">{charity.description}</p>
+                </div>
+                <div 
+                  className="text-lg sm:text-xl font-bold whitespace-nowrap"
+                  style={{ color }}
+                >
+                  {formatAmount(charityAmount)} {t.currency}
                 </div>
               </div>
             </div>
@@ -297,7 +297,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
       <div className="text-center">
         {hasDonated ? (
           <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-            <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-semibold text-lg mb-1">
+            <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-semibold text-lg">
               <Heart className="w-6 h-6 fill-[#6cc4cc]" />
               {t.donated}
             </div>
@@ -315,7 +315,13 @@ export function CharityVoting({ language }: CharityVotingProps) {
                 "flex items-center justify-center gap-3 mx-auto overflow-hidden"
               )}
             >
-              <span className="text-2xl">🪙</span>
+              {/* Coin with drop animation */}
+              <span className={cn(
+                "text-2xl transition-transform",
+                donating ? "animate-coin-drop" : "group-hover:animate-coin-wiggle"
+              )}>
+                🪙
+              </span>
               {donating ? "..." : t.donateButton}
             </button>
             <p className="text-xs text-gray-500">{t.splitInfo}</p>
