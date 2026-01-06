@@ -40,6 +40,7 @@ export function ChatSection({ language }: ChatSectionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +48,7 @@ export function ChatSection({ language }: ChatSectionProps) {
     cs: {
       sectionTitle: "Networkingový chat",
       sectionSubtitle: "Propojte se s ostatními",
+      unreadBadge: "nepřečtených",
       intro: "Toto je naše networkingová platforma! Máte jedinečnou možnost oslovit další účastníky eventu, navázat nové kontakty a rozšířit svou profesní síť.",
       loginTitle: "Přihlášení do chatu",
       loginNotice: "Zadejte svůj e-mail a my vám pošleme magický odkaz pro přihlášení.",
@@ -69,6 +71,7 @@ export function ChatSection({ language }: ChatSectionProps) {
     en: {
       sectionTitle: "Networking Chat",
       sectionSubtitle: "Connect with others",
+      unreadBadge: "unread",
       intro: "This is our networking platform! You have a unique opportunity to reach out to other event participants, make new connections, and expand your professional network.",
       loginTitle: "Participant Login",
       loginNotice: "Enter your email and we'll send you a magic login link.",
@@ -131,6 +134,10 @@ export function ChatSection({ language }: ChatSectionProps) {
       acc[msg.sender_id] = (acc[msg.sender_id] || 0) + 1;
       return acc;
     }, {});
+
+    // Calculate total unread count
+    const totalUnread = unreadData?.length || 0;
+    setTotalUnreadCount(totalUnread);
 
     const profilesWithUnread: Profile[] = (profilesData || []).map(p => ({
       ...p,
@@ -330,9 +337,16 @@ export function ChatSection({ language }: ChatSectionProps) {
             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </div>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-          {t.sectionTitle}
-        </h2>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+            {t.sectionTitle}
+          </h2>
+          {session && totalUnreadCount > 0 && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-500 text-white text-xs font-bold animate-pulse">
+              {totalUnreadCount} {t.unreadBadge}
+            </span>
+          )}
+        </div>
         <p className="text-[#405196] font-semibold text-sm uppercase tracking-wide mb-3">
           {t.sectionSubtitle}
         </p>
