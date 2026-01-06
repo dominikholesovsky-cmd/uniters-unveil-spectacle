@@ -14,44 +14,43 @@ interface CharityVotingProps {
   language: "cs" | "en";
 }
 
-const AMOUNT_PER_VOTE = 500;
-const LOCAL_STORAGE_KEY = "uniters_charity_vote";
+const AMOUNT_PER_DONOR = 500;
+const LOCAL_STORAGE_KEY = "uniters_charity_donated";
 
 export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
-  const [hasVoted, setHasVoted] = useState(false);
-  const [votedCharityId, setVotedCharityId] = useState<string | null>(null);
+  const [hasDonated, setHasDonated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [voting, setVoting] = useState(false);
-  const [justVoted, setJustVoted] = useState<string | null>(null);
+  const [donating, setDonating] = useState(false);
+  const [justDonated, setJustDonated] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
   const content = {
     cs: {
       sectionTitle: "Charitativní příspěvek",
       sectionSubtitle: "Vaše účast má smysl",
-      intro: "Tím, že jste se zúčastnili této akce, pomáháte více, než si možná myslíte. Část z každé registrace putuje přímo na podporu vybraných charitativních projektů. Rozhodněte, kam váš příspěvek poputuje.",
+      intro: "Tím, že jste se zúčastnili této akce, pomáháte více, než si možná myslíte. Část z každé registrace putuje přímo na podporu vybraných charitativních projektů.",
       totalDonation: "Celkový příspěvek Uniters",
-      basedOn: "Na základě",
-      attendees: "účastníků",
-      perAttendee: "za účastníka",
-      voteButton: "Hlasovat",
-      voted: "Váš hlas",
-      thankYou: "Děkujeme za váš hlas!",
+      donors: "dárců",
+      perDonor: "za dárce",
+      donateButton: "Darovat a podpořit",
+      donated: "Děkujeme za váš příspěvek!",
+      thankYou: "Váš dar byl úspěšně přidán!",
       currency: "Kč",
+      splitInfo: "Váš příspěvek bude rozdělen rovnoměrně mezi obě charity",
     },
     en: {
       sectionTitle: "Charity Contribution",
       sectionSubtitle: "Your participation matters",
-      intro: "By attending this event, you are helping more than you might think. Part of each registration goes directly to support selected charitable projects. Decide where your contribution will go.",
+      intro: "By attending this event, you are helping more than you might think. Part of each registration goes directly to support selected charitable projects.",
       totalDonation: "Total Uniters Donation",
-      basedOn: "Based on",
-      attendees: "attendees",
-      perAttendee: "per attendee",
-      voteButton: "Vote",
-      voted: "Your vote",
-      thankYou: "Thank you for your vote!",
+      donors: "donors",
+      perDonor: "per donor",
+      donateButton: "Donate & Support",
+      donated: "Thank you for your contribution!",
+      thankYou: "Your donation has been added!",
       currency: "CZK",
+      splitInfo: "Your contribution will be split equally between both charities",
     },
   };
 
@@ -59,8 +58,8 @@ export function CharityVoting({ language }: CharityVotingProps) {
 
   // Charity colors - teal and navy
   const charityColors = [
-    { bg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
-    { bg: "bg-[#405196]", text: "text-[#405196]" },
+    { bg: "bg-[#6cc4cc]", barBg: "bg-[#6cc4cc]", text: "text-[#6cc4cc]" },
+    { bg: "bg-[#405196]", barBg: "bg-[#405196]", text: "text-[#405196]" },
   ];
 
   const loadData = async () => {
@@ -86,15 +85,9 @@ export function CharityVoting({ language }: CharityVotingProps) {
   };
 
   useEffect(() => {
-    const savedVote = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedVote) {
-      setHasVoted(true);
-      try {
-        const parsed = JSON.parse(savedVote);
-        setVotedCharityId(parsed.charityId || savedVote);
-      } catch {
-        setVotedCharityId(savedVote);
-      }
+    const savedDonation = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedDonation) {
+      setHasDonated(true);
     }
   }, []);
 
@@ -115,37 +108,45 @@ export function CharityVoting({ language }: CharityVotingProps) {
     };
   }, []);
 
-  const handleVote = async (charityId: string) => {
-    if (hasVoted || voting) return;
+  const handleDonate = async () => {
+    if (hasDonated || donating || charities.length < 2) return;
 
-    setVoting(true);
+    setDonating(true);
 
-    const { data: voteData, error: voteError } = await supabase
-      .from("charity_votes")
-      .insert({ charity_id: charityId })
-      .select("id")
-      .single();
+    // Insert votes for both charities (equal split)
+    const insertPromises = charities.map((charity) =>
+      supabase
+        .from("charity_votes")
+        .insert({ charity_id: charity.id })
+        .select("id")
+        .single()
+    );
 
-    if (!voteError && voteData) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ charityId, voteId: voteData.id }));
-      setHasVoted(true);
-      setVotedCharityId(charityId);
-      setJustVoted(charityId);
+    const results = await Promise.all(insertPromises);
+    const allSuccessful = results.every((r) => !r.error && r.data);
+
+    if (allSuccessful) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ donatedAt: new Date().toISOString() }));
+      setHasDonated(true);
+      setJustDonated(true);
       setShowConfetti(true);
 
       setTimeout(() => {
-        setJustVoted(null);
+        setJustDonated(false);
         setShowConfetti(false);
-      }, 3000);
+      }, 4000);
 
       await loadData();
     }
 
-    setVoting(false);
+    setDonating(false);
   };
 
+  // Calculate totals - each donor creates 2 votes (one per charity)
   const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
-  const totalAmount = totalVotes * AMOUNT_PER_VOTE;
+  const totalDonors = Math.floor(totalVotes / 2);
+  const totalAmount = totalDonors * AMOUNT_PER_DONOR;
+  const maxVotes = Math.max(...charities.map((c) => c.votes), 1);
 
   const formatAmount = (amount: number) => {
     return amount.toLocaleString(language === "cs" ? "cs-CZ" : "en-US").replace(/,/g, " ");
@@ -170,20 +171,20 @@ export function CharityVoting({ language }: CharityVotingProps) {
       {/* Confetti animation overlay */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(30)].map((_, i) => (
             <div
               key={i}
               className="absolute animate-confetti"
               style={{
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 0.5}s`,
-                animationDuration: `${1 + Math.random()}s`,
+                animationDuration: `${1.5 + Math.random()}s`,
               }}
             >
               <Sparkles
-                className="text-[#6cc4cc]"
+                className={i % 2 === 0 ? "text-[#6cc4cc]" : "text-[#405196]"}
                 style={{
-                  width: `${12 + Math.random() * 12}px`,
+                  width: `${14 + Math.random() * 14}px`,
                   transform: `rotate(${Math.random() * 360}deg)`,
                 }}
               />
@@ -218,42 +219,64 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </p>
         
         {/* Big Total Amount */}
-        <div className="bg-gradient-to-r from-[#6cc4cc] to-[#405196] rounded-xl px-8 py-4 inline-block mb-4">
+        <div className="bg-gradient-to-r from-[#6cc4cc] to-[#405196] rounded-xl px-8 py-5 inline-block mb-4 shadow-lg">
           <span className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
             {formatAmount(totalAmount)}
           </span>
-          <span className="text-white/90 text-lg ml-2">{t.currency}</span>
-        </div>
-
-        {/* Individual charity amounts */}
-        <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
-          {charities.map((charity, index) => (
-            <div key={charity.id} className="flex items-center gap-3">
-              {index > 0 && <span className="text-gray-400 font-medium">+</span>}
-              <span className={cn("font-semibold", charityColors[index % charityColors.length].text)}>
-                {formatAmount(charity.votes * AMOUNT_PER_VOTE)} {t.currency}
-              </span>
-            </div>
-          ))}
+          <span className="text-white/90 text-xl ml-2">{t.currency}</span>
         </div>
 
         {/* Stats row */}
-        <div className="flex items-center justify-center gap-6 text-gray-500 text-sm flex-wrap">
+        <div className="flex items-center justify-center gap-6 text-gray-500 text-sm flex-wrap mb-6">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4" />
-            <span>{t.basedOn} <strong className="text-gray-700">{totalVotes}</strong> {t.attendees}</span>
+            <span><strong className="text-gray-700 text-lg">{totalDonors}</strong> {t.donors}</span>
           </div>
           <span className="text-gray-300">×</span>
           <div className="flex items-center gap-2">
             <Coins className="w-4 h-4" />
-            <span><strong className="text-gray-700">{AMOUNT_PER_VOTE}</strong> {t.currency} {t.perAttendee}</span>
+            <span><strong className="text-gray-700">{AMOUNT_PER_DONOR}</strong> {t.currency} {t.perDonor}</span>
           </div>
         </div>
       </div>
 
+      {/* Charity Progress Bars */}
+      <div className="space-y-5 mb-8">
+        {charities.map((charity, index) => {
+          const charityAmount = (charity.votes / 2) * AMOUNT_PER_DONOR;
+          const progress = (charity.votes / maxVotes) * 100;
+          const colors = charityColors[index % charityColors.length];
+
+          return (
+            <div key={charity.id} className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-semibold text-gray-800">{charity.name}</h3>
+                  <p className="text-xs text-gray-500">{charity.description}</p>
+                </div>
+                <div className={cn("font-bold text-lg", colors.text)}>
+                  {formatAmount(charityAmount)} {t.currency}
+                </div>
+              </div>
+              
+              {/* Progress bar */}
+              <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all duration-1000 ease-out",
+                    colors.barBg
+                  )}
+                  style={{ width: `${Math.max(progress, 3)}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Thank you message */}
-      {justVoted && (
-        <div className="bg-[#6cc4cc]/10 border border-[#6cc4cc]/30 rounded-xl p-4 text-center animate-scale-in mb-6">
+      {justDonated && (
+        <div className="bg-gradient-to-r from-[#6cc4cc]/10 to-[#405196]/10 border border-[#6cc4cc]/30 rounded-xl p-4 text-center animate-scale-in mb-6">
           <p className="text-[#6cc4cc] font-medium flex items-center justify-center gap-2">
             <Heart className="w-5 h-5 fill-[#6cc4cc]" />
             {t.thankYou}
@@ -261,76 +284,34 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </div>
       )}
 
-      {/* Charity Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {charities.map((charity, index) => {
-          const isVotedCharity = votedCharityId === charity.id;
-          const wasJustVoted = justVoted === charity.id;
-          const charityAmount = charity.votes * AMOUNT_PER_VOTE;
-          const colors = charityColors[index % charityColors.length];
-
-          return (
-            <div
-              key={charity.id}
+      {/* Donate Button or Thank You */}
+      <div className="text-center">
+        {hasDonated ? (
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-semibold text-lg mb-1">
+              <Heart className="w-6 h-6 fill-[#6cc4cc]" />
+              {t.donated}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <button
+              onClick={handleDonate}
+              disabled={donating || charities.length < 2}
               className={cn(
-                "bg-gray-50 rounded-xl overflow-hidden transition-all duration-300 border border-gray-100",
-                wasJustVoted && "animate-vote-success",
-                isVotedCharity && "ring-2 ring-[#6cc4cc] ring-offset-2"
+                "w-full max-w-sm py-4 px-8 rounded-xl font-bold text-lg transition-all",
+                "bg-gradient-to-r from-[#6cc4cc] to-[#405196] text-white",
+                "hover:shadow-xl hover:scale-[1.02] hover:brightness-110",
+                "active:scale-95 disabled:opacity-50 shadow-lg",
+                "flex items-center justify-center gap-3 mx-auto"
               )}
             >
-              {/* Colored top bar */}
-              <div className={cn("h-2", colors.bg)} />
-              
-              <div className="p-5 text-center">
-                {/* Charity name */}
-                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
-                  {charity.name}
-                </h3>
-                
-                {/* Description */}
-                <p className="text-gray-500 text-sm mb-3">
-                  {charity.description}
-                </p>
-
-                {/* Amount pill */}
-                <div className={cn("inline-block rounded-full px-5 py-2 mb-4", colors.bg)}>
-                  <span className="text-xl sm:text-2xl font-bold text-white">
-                    {formatAmount(charityAmount)}
-                  </span>
-                  <span className="text-white/90 text-sm ml-1">{t.currency}</span>
-                </div>
-
-                {/* Vote button or status */}
-                {hasVoted ? (
-                  isVotedCharity ? (
-                    <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-medium py-2">
-                      <Heart className="w-5 h-5 fill-[#6cc4cc]" />
-                      {t.voted}
-                    </div>
-                  ) : (
-                    <div className="py-2" />
-                  )
-                ) : (
-                  <button
-                    onClick={() => handleVote(charity.id)}
-                    disabled={voting}
-                    className={cn(
-                      "w-full py-3 rounded-xl font-semibold transition-all",
-                      "bg-[#405196] text-white",
-                      "hover:bg-[#4a5ca8] hover:scale-[1.02]",
-                      "active:scale-95 disabled:opacity-50 shadow-md"
-                    )}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <Heart className="w-5 h-5" />
-                      {t.voteButton}
-                    </span>
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+              <Heart className="w-6 h-6" />
+              {donating ? "..." : t.donateButton}
+            </button>
+            <p className="text-xs text-gray-500">{t.splitInfo}</p>
+          </div>
+        )}
       </div>
     </div>
   );
