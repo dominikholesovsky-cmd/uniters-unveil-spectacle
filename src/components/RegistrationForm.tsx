@@ -15,10 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, ExternalLink, Navigation, Calendar } from "lucide-react";
+import { CheckCircle2, ExternalLink, Navigation, Calendar, Clock } from "lucide-react";
 import { CountdownTimer } from "@/components/CountdownTimer";
 
-// Portal unlock date: January 22, 2026 at 18:00 CET
+// Portal unlock date & Registration deadline: January 22, 2026 at 18:00 CET
 const PORTAL_UNLOCK_DATE = new Date("2026-01-22T18:00:00+01:00");
 
 // --- URL pro odesílání dat ---
@@ -51,19 +51,21 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   const [isPortalUnlocked, setIsPortalUnlocked] = useState(false);
 
   useEffect(() => {
-    // Kontrola, zda uživatel již formulář odeslal
     const submitted = localStorage.getItem("registrationSubmitted") === "true";
     setIsSubmitted(submitted);
-    
-    // Check if portal is already unlocked
     setIsPortalUnlocked(new Date() >= PORTAL_UNLOCK_DATE);
   }, []);
+
+  // Pomocná proměnná pro zjištění, zda registrace již skončila
+  const isEventStarted = new Date() >= PORTAL_UNLOCK_DATE;
 
   // --- Překlady ---
   const content = {
     cs: {
       title: "Registrace",
       subtitle: "Zarezervujte si místo na akci a komentované prohlídce",
+      registrationClosed: "Registrace byla ukončena",
+      eventInProgress: "Akce právě probíhá. Těšíme se na vás v prostorách vodojemů!",
       name: "Jméno a příjmení",
       namePlaceholder: "Jan Novák",
       email: "E-mail",
@@ -71,16 +73,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       phone: "Telefon",
       phonePlaceholder: "+420 123 456 789",
       guidedTour: "Mám zájem o komentovanou prohlídku v 18:30",
-      guidedTourNote:
-        "Doporučujeme se zúčastnit, komentovaná prohlídka je omezená kapacitou.",
-      gdprConsent:
-        "Souhlasím se zpracováním osobních údajů pro účely registrace.",
-      photoVideoConsent:
-        "Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters.",
+      guidedTourNote: "Doporučujeme se zúčastnit, komentovaná prohlídka je omezená kapacitou.",
+      gdprConsent: "Souhlasím se zpracováním osobních údajů pro účely registrace.",
+      photoVideoConsent: "Souhlasím s pořizováním fotografií a videí během akce pro marketingové účely společnosti Uniters.",
       submit: "Potvrdit registraci",
       successTitle: "Registrace potvrzena!",
-      successMessage:
-        "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
+      successMessage: "Děkujeme za registraci. Těšíme se na vás 22. ledna 2026.",
       company: "Firma",
       companyPlaceholder: "Název firmy",
       openPortal: "Otevřít portál pro účastníky",
@@ -92,6 +90,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     en: {
       title: "Registration",
       subtitle: "Reserve your spot at the event and tour",
+      registrationClosed: "Registration is closed",
+      eventInProgress: "The event is now in progress. We look forward to seeing you at the reservoirs!",
       name: "Full Name",
       namePlaceholder: "John Doe",
       email: "Email",
@@ -99,16 +99,12 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       phone: "Phone",
       phonePlaceholder: "+420 123 456 789",
       guidedTour: "I am interested in a guided tour at 6:30 PM",
-      guidedTourNote:
-        "We recommend attending, guided tour is limited in capacity.",
-      gdprConsent:
-        "I agree to the processing of my personal data for registration purposes.",
-      photoVideoConsent:
-        "I agree to photo and video recording during the event for marketing purposes of Uniters.",
+      guidedTourNote: "We recommend attending, guided tour is limited in capacity.",
+      gdprConsent: "I agree to the processing of my personal data for registration purposes.",
+      photoVideoConsent: "I agree to photo and video recording during the event for marketing purposes of Uniters.",
       submit: "Confirm Registration",
       successTitle: "Registration Confirmed!",
-      successMessage:
-        "Thank you for registering. We look forward to seeing you on January 22, 2026.",
+      successMessage: "Thank you for registering. We look forward to seeing you on January 22, 2026.",
       company: "Company",
       companyPlaceholder: "Company Name",
       openPortal: "Open Participant Portal",
@@ -134,9 +130,17 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     },
   });
 
-  // --- Logika Odeslání (S kontrolou isSubmitting) ---
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (isSubmitting) return; // Zabrání vícenásobnému odeslání
+    // Backend/Time guard
+    if (new Date() >= PORTAL_UNLOCK_DATE) {
+      toast({
+        title: t.registrationClosed,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
@@ -161,7 +165,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
         className: "bg-white text-black shadow-xl rounded-2xl",
       });
 
-      const element = document.getElementById("registration-form");
+      const element = document.getElementById("submitted");
       if (element) element.scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       toast({
@@ -172,13 +176,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             : "Failed to send registration. Please try again.",
         variant: "destructive",
       });
-      setIsSubmitting(false); // Povolit odeslání znovu v případě chyby
-    } finally {
-      // V případě úspěchu necháme setIsSubmitting = true (přechod do Success state)
-      // V případě chyby jsme to již resetovali v catch bloku
-      if (isSubmitted) {
-        setIsSubmitting(false); // Reset po úspešném přechodu do success state
-      }
+      setIsSubmitting(false);
     }
   };
     
@@ -190,10 +188,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
 
   const handleNavigationClick = () => {
     const coordinates = "49.1956718,16.5913221";
-    window.open(
-      `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`,
-      "_blank"
-    );
+    window.open(`https://www.google.com/maps/search/?api=1&query=${coordinates}`, "_blank");
   };
 
   const handleAddToCalendar = () => {
@@ -219,40 +214,8 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
       <section id="submitted" className="py-12 sm:py-16 relative overflow-hidden" style={{
         background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
       }}>
-        {/* Underground atmosphere layers */}
-        <div className="absolute inset-0 opacity-40" style={{
-          backgroundImage: `
-            radial-gradient(circle at 30% 20%, rgba(70, 70, 70, 0.6) 0%, transparent 40%),
-            radial-gradient(circle at 70% 80%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)
-          `
-        }} />
-        {/* Concrete texture */}
-        <div className="absolute inset-0 opacity-[0.08]" style={{
-          backgroundImage: `repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 3px,
-            rgba(255, 255, 255, 0.15) 3px,
-            rgba(255, 255, 255, 0.15) 6px
-          ),
-          repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 3px,
-            rgba(255, 255, 255, 0.15) 3px,
-            rgba(255, 255, 255, 0.15) 6px
-          )`
-        }} />
-        {/* Water droplets */}
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: `radial-gradient(circle at 25% 30%, rgba(120, 180, 220, 0.15) 0%, transparent 4%),
-                            radial-gradient(circle at 75% 60%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
-                            radial-gradient(circle at 50% 85%, rgba(120, 180, 220, 0.12) 0%, transparent 3.5%)`
-        }} />
-        {/* Atmospheric glow */}
-        <div className="absolute inset-0 opacity-20" style={{
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
-        }} />
+        {/* Background Effects (same as original) */}
+        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(70, 70, 70, 0.6) 0%, transparent 40%), radial-gradient(circle at 70% 80%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)' }} />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -260,32 +223,18 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <p className="text-lg mb-6">{t.successMessage}</p>
               
             <div className="flex flex-col gap-6">
-              {/* Portal description */}
               <p className="text-sm text-gray-500 text-center">{t.portalDescription}</p>
-              
-              {/* Countdown or Portal Button */}
               {isPortalUnlocked ? (
-                <Button 
-                  onClick={handleOpenPortal} 
-                  variant="default" 
-                  className="w-full sm:w-auto px-8 mx-auto"
-                >
-                  <ExternalLink className="w-5 h-5 mr-2" /> 
-                  {t.openPortal}
+                <Button onClick={handleOpenPortal} variant="default" className="w-full sm:w-auto px-8 mx-auto">
+                  <ExternalLink className="w-5 h-5 mr-2" /> {t.openPortal}
                 </Button>
               ) : (
-                <CountdownTimer 
-                  language={language} 
-                  targetDate={PORTAL_UNLOCK_DATE}
-                  onComplete={() => setIsPortalUnlocked(true)}
-                />
+                <CountdownTimer language={language} targetDate={PORTAL_UNLOCK_DATE} onComplete={() => setIsPortalUnlocked(true)} />
               )}
-              
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button onClick={handleNavigationClick} variant="secondary" className="w-full sm:w-auto">
                   <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
                 </Button>
-                
                 <Button onClick={handleAddToCalendar} variant="secondary" className="w-full sm:w-auto">
                   <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
                 </Button>
@@ -297,165 +246,102 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
     );
   }
 
-  // --- RENDEROVÁNÍ PŘI NEODESLANÉM FORMULÁŘI (Form State) ---
+  // --- RENDEROVÁNÍ FORMULÁŘE (Form State) ---
   return (
-    <section
-      id="registration-form"
-      className="py-10 relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(180deg, #000000 0%, #2d2d2d 50%, #1a1a1a 100%)',
-      }}
-    >
-      {/* Underground atmosphere layers */}
-      <div className="absolute inset-0 opacity-40" style={{
-        backgroundImage: `
-          radial-gradient(circle at 20% 30%, rgba(70, 70, 70, 0.6) 0%, transparent 40%),
-          radial-gradient(circle at 80% 70%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)
-        `
-      }} />
-      {/* Concrete texture - more visible */}
-      <div className="absolute inset-0 opacity-[0.08]" style={{
-        backgroundImage: `repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 3px,
-          rgba(255, 255, 255, 0.15) 3px,
-          rgba(255, 255, 255, 0.15) 6px
-        ),
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 3px,
-          rgba(255, 255, 255, 0.15) 3px,
-          rgba(255, 255, 255, 0.15) 6px
-        )`
-      }} />
-      {/* Water droplets effect - more visible */}
-      <div className="absolute inset-0 opacity-30" style={{
-        backgroundImage: `radial-gradient(circle at 15% 20%, rgba(120, 180, 220, 0.15) 0%, transparent 4%),
-                          radial-gradient(circle at 85% 40%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
-                          radial-gradient(circle at 40% 80%, rgba(120, 180, 220, 0.15) 0%, transparent 3.5%),
-                          radial-gradient(circle at 70% 15%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
-                          radial-gradient(circle at 25% 60%, rgba(120, 180, 220, 0.12) 0%, transparent 2.5%)`
-      }} />
-      {/* Atmospheric glow */}
-      <div className="absolute inset-0 opacity-20" style={{
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
-      }} />
+    <section id="registration-form" className="py-10 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #000000 0%, #2d2d2d 50%, #1a1a1a 100%)' }}>
+      <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(70, 70, 70, 0.6) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)' }} />
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 shadow-xl relative z-10">
           <h2 className="text-4xl font-bold text-center mb-4">{t.title}</h2>
-          <p className="text-center text-gray-600 mb-8">{t.subtitle}</p>
+          
+          {/* LOGIKA PRO SKRYTÍ FORMULÁŘE PO 18:00 */}
+          {isEventStarted ? (
+            <div className="text-center py-8 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-2">
+                <Clock className="w-10 h-10 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">{t.registrationClosed}</h3>
+              <p className="text-gray-600 max-w-sm mx-auto">{t.eventInProgress}</p>
+              <div className="pt-4">
+                 <Button onClick={handleNavigationClick} variant="outline" className="w-full sm:w-auto">
+                    <Navigation className="w-5 h-5 mr-2" /> {t.openNavigation}
+                 </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-center text-gray-600 mb-8">{t.subtitle}</p>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  {["name", "email", "phone", "company"].map((fieldName) => (
+                    <FormField
+                      key={fieldName}
+                      control={form.control}
+                      name={fieldName as "name" | "email" | "phone" | "company"}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t[fieldName as keyof typeof t]}{" "}
+                            {["name", "email", "company"].includes(fieldName) && <span className="text-red-500">*</span>}
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder={t[`${fieldName}Placeholder` as keyof typeof t]} className="bg-white text-black border-gray-300" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
-              {/* Textová pole */}
-              {["name", "email", "phone", "company"].map((fieldName) => (
-                <FormField
-                  key={fieldName}
-                  control={form.control}
-                  name={fieldName as "name" | "email" | "phone" | "company"}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t[fieldName as keyof typeof t]}{" "}
-                        {/* Povinné hvězdičky */}
-                        {["name", "email", "company"].includes(fieldName) && (
-                          <span className="text-red-500">*</span>
-                        )}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder={t[
-                            `${fieldName}Placeholder` as keyof typeof t
-                          ]}
-                          className="bg-white text-black border-gray-300"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
+                  <FormField
+                    control={form.control}
+                    name="guidedTour"
+                    render={({ field }) => (
+                      <FormItem className="p-4 border-2 border-primary rounded-xl bg-primary/5 flex items-center gap-4">
+                        <FormControl><Checkbox checked={field.value} onCheckedChange={(v) => field.onChange(!!v)} /></FormControl>
+                        <div className="flex flex-col m-0">
+                          <FormLabel className="font-semibold text-primary m-0">{t.guidedTour}</FormLabel>
+                          <p className="text-sm text-primary/80 mt-1 m-0">{t.guidedTourNote}</p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Checkbox Prohlídka */}
-              <FormField
-                control={form.control}
-                name="guidedTour"
-                render={({ field }) => (
-                  <FormItem className="p-4 border-2 border-primary rounded-xl bg-primary/5 flex items-center gap-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(v) => field.onChange(!!v)}
-                      />
-                    </FormControl>
-                    <div className="flex flex-col m-0">
-                      <FormLabel className="font-semibold text-primary m-0">
-                        {t.guidedTour}
-                      </FormLabel>
-                      <p className="text-sm text-primary/80 mt-1 m-0">
-                        {t.guidedTourNote}
-                      </p>
-                    </div>
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="gdprConsent"
+                    render={({ field }) => (
+                      <FormItem className="flex items-start space-x-3 space-y-0">
+                        <FormControl><Checkbox checked={field.value} onCheckedChange={(v) => field.onChange(!!v)} className="mt-1" /></FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel><span className="text-red-500">*</span> {t.gdprConsent}</FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
-              {/* GDPR Souhlas */}
-              <FormField
-                control={form.control}
-                name="gdprConsent"
-                render={({ field }) => (
-                  <FormItem className="flex items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(v) => field.onChange(!!v)}
-                        className="mt-1"
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        <span className="text-red-500">*</span> {t.gdprConsent}
-                      </FormLabel>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="photoVideoConsent"
+                    render={({ field }) => (
+                      <FormItem className="flex items-start space-x-3 space-y-0">
+                        <FormControl><Checkbox checked={field.value} onCheckedChange={(v) => field.onChange(!!v)} className="mt-1" /></FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel><span className="text-red-500">*</span> {t.photoVideoConsent}</FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Photo/Video Souhlas */}
-              <FormField
-                control={form.control}
-                name="photoVideoConsent"
-                render={({ field }) => (
-                  <FormItem className="flex items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(v) => field.onChange(!!v)}
-                        className="mt-1"
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        <span className="text-red-500">*</span> {t.photoVideoConsent}
-                      </FormLabel>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              {/* Tlačítko Odeslat */}
-              <Button type="submit" className="w-full text-lg h-14" disabled={isSubmitting}>
-                {isSubmitting ? t.submitting : t.submit}
-              </Button>
-            </form>
-          </Form>
+                  <Button type="submit" className="w-full text-lg h-14" disabled={isSubmitting}>
+                    {isSubmitting ? t.submitting : t.submit}
+                  </Button>
+                </form>
+              </Form>
+            </>
+          )}
         </div>
       </div>
     </section>
