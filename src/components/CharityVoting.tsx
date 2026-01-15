@@ -140,15 +140,17 @@ export function CharityVoting({ language }: CharityVotingProps) {
           {formatAmount(displayAmount)}
           <span className="text-xl ml-1">{t.currency}</span>
         </div>
+        <p className="text-gray-500 text-sm mt-2">
+          500 × {REGISTRATION_COUNT} {language === "cs" ? "účastníků" : "participants"}
+        </p>
       </div>
 
-      {/* Charities - Simple cards */}
+      {/* Charities - Centered cards */}
       <div className="space-y-3 mb-4">
         {charities.map((charity, index) => {
           const isFirst = index === 0;
           const color = isFirst ? "#6cc4cc" : "#405196";
           const bgColor = isFirst ? "bg-[#6cc4cc]/10" : "bg-[#405196]/10";
-          const borderColor = isFirst ? "border-[#6cc4cc]/40" : "border-[#405196]/40";
 
           // Animate individual charity amounts too
           const charityDisplayAmount = charities.length > 0 
@@ -158,19 +160,15 @@ export function CharityVoting({ language }: CharityVotingProps) {
           return (
             <div
               key={charity.id}
-              className={`rounded-xl p-4 border-l-4 transition-all ${bgColor} ${borderColor}`}
+              className={`rounded-xl p-4 text-center transition-all ${bgColor}`}
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-800 mb-1">{charity.name}</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">{charity.description}</p>
-                </div>
-                <div 
-                  className="text-lg sm:text-xl font-bold whitespace-nowrap"
-                  style={{ color }}
-                >
-                  {formatAmount(charityDisplayAmount)} {t.currency}
-                </div>
+              <h3 className="font-bold text-gray-800 mb-1">{charity.name}</h3>
+              <p className="text-xs text-gray-600 leading-relaxed mb-2">{charity.description}</p>
+              <div 
+                className="text-lg sm:text-xl font-bold"
+                style={{ color }}
+              >
+                {formatAmount(charityDisplayAmount)} {t.currency}
               </div>
             </div>
           );
