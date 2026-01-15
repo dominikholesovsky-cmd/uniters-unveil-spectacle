@@ -96,9 +96,6 @@ const ParticipantPortal = () => {
           background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
         }} />
 
-        {/* Bouncing scroll indicator */}
-        <div className="hidden sm:block absolute left-0 top-[30%] transform -translate-y-1/2 pl-6 sm:pl-16 z-10">
-
         {/* Header */}
         <header className="relative z-10 p-4 sm:p-6">
           <div className="flex justify-between items-center">
