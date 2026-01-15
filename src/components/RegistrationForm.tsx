@@ -225,6 +225,14 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
               
             <div className="flex flex-col gap-6">
               <p className="text-sm text-gray-500 text-center">{t.portalDescription}</p>
+              
+              {/* Charity Section - visible only after event starts */}
+              {isPortalUnlocked && (
+                <div className="mt-2">
+                  <CharityVoting language={language} />
+                </div>
+              )}
+              
               {isPortalUnlocked ? (
                 <Button onClick={handleOpenPortal} variant="default" className="w-full sm:w-auto px-8 mx-auto">
                   <ExternalLink className="w-5 h-5 mr-2" /> {t.openPortal}
@@ -239,11 +247,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                 <Button onClick={handleAddToCalendar} variant="secondary" className="w-full sm:w-auto">
                   <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
                 </Button>
-              </div>
-              
-              {/* Charity Section - always visible */}
-              <div className="mt-2">
-                <CharityVoting language={language} />
               </div>
             </div>
           </div>
