@@ -184,10 +184,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                       <AccordionTrigger className="p-6 sm:p-8 hover:no-underline [&[data-state=open]>div]:mb-4 [&>svg]:text-white">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full">
                           {/* Time Badge */}
-                          <div className="flex items-center gap-3 sm:min-w-[160px]">
-                            <div className="w-12 h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
-                              <Clock className="w-6 h-6 text-white" />
-                            </div>
+                          <div className="sm:min-w-[160px]">
                             <span className="text-xl sm:text-2xl font-bold text-white">
                               {item.time}
                             </span>
@@ -237,10 +234,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     {/* Time Badge */}
-                    <div className="flex items-center gap-3 sm:min-w-[160px]">
-                      <div className="w-12 h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
-                        <Clock className="w-6 h-6 text-white" />
-                      </div>
+                    <div className="sm:min-w-[160px]">
                       <span className="text-xl sm:text-2xl font-bold text-white">
                         {item.time}
                       </span>
