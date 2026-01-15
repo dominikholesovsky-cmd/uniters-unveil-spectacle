@@ -1,56 +1,40 @@
-import { useState, useEffect } from "react";
-import { Heart, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState, useEffect, useRef } from "react";
+import { Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface Charity {
   id: string;
   name: string;
   description: string;
-  votes: number;
 }
 
 interface CharityVotingProps {
   language: "cs" | "en";
 }
 
-const AMOUNT_PER_DONOR = 500;
-const LOCAL_STORAGE_KEY = "uniters_charity_donated";
+// Amount per registration - will be multiplied by registration count
+const AMOUNT_PER_REGISTRATION = 500;
+// This will be the total number of registrations - update manually
+const REGISTRATION_COUNT = 50; // <- Change this number based on actual registrations
 
-// Falling coin component
-const FallingCoin = ({ delay, left, size }: { delay: number; left: number; size: number }) => (
-  <div
-    className="absolute pointer-events-none animate-coin-fall"
-    style={{
-      left: `${left}%`,
-      animationDelay: `${delay}s`,
-      top: "-20px",
-      fontSize: `${size}rem`,
-    }}
-  >
-    🪙
-  </div>
-);
+// Easing function for smooth animation
+const easeOutQuart = (t: number): number => {
+  return 1 - Math.pow(1 - t, 4);
+};
 
 export function CharityVoting({ language }: CharityVotingProps) {
   const [charities, setCharities] = useState<Charity[]>([]);
-  const [hasDonated, setHasDonated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [donating, setDonating] = useState(false);
-  const [justDonated, setJustDonated] = useState(false);
-  const [showCoins, setShowCoins] = useState(false);
-  const [coinKey, setCoinKey] = useState(0);
+  const [displayAmount, setDisplayAmount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const content = {
     cs: {
       sectionTitle: "Charitativní příspěvek",
       sectionSubtitle: "Vaše účast má smysl",
       intro: "Tím, že jste se zúčastnili této akce, pomáháte více, než si možná myslíte. Část z každé registrace putuje přímo na podporu vybraných charitativních projektů.",
-      totalCollected: "Díky vám darujeme",
-      donors: "dárců",
-      donateButton: "Hodit do kasičky",
-      donated: "Děkujeme za váš příspěvek!",
-      thankYou: "Vaše mince přistála v kasičce!",
+      totalLabel: "Vaším jménem darujeme",
       currency: "Kč",
       splitInfo: "Příspěvek rozdělíme rovnoměrně mezi obě charity",
     },
@@ -58,114 +42,76 @@ export function CharityVoting({ language }: CharityVotingProps) {
       sectionTitle: "Charity Contribution",
       sectionSubtitle: "Your participation matters",
       intro: "By attending this event, you are helping more than you might think. Part of each registration goes directly to support selected charitable projects.",
-      totalCollected: "Thanks to you, we donate",
-      donors: "donors",
-      donateButton: "Drop into the jar",
-      donated: "Thank you for your contribution!",
-      thankYou: "Your coin landed in the jar!",
+      totalLabel: "In your name, we donate",
       currency: "CZK",
-      splitInfo: "Your contribution will be split equally between both charities",
+      splitInfo: "The contribution will be split equally between both charities",
     },
   };
 
   const t = content[language];
 
+  const totalAmount = REGISTRATION_COUNT * AMOUNT_PER_REGISTRATION;
+  const amountPerCharity = charities.length > 0 ? Math.floor(totalAmount / charities.length) : 0;
+
   const loadData = async () => {
     const { data: charitiesData } = await supabase
       .from("charities")
-      .select("*")
+      .select("id, name, description")
       .order("name");
 
     if (charitiesData) {
-      const charitiesWithVotes = await Promise.all(
-        charitiesData.map(async (charity) => {
-          const { count } = await supabase
-            .from("charity_votes")
-            .select("*", { count: "exact", head: true })
-            .eq("charity_id", charity.id);
-          return { ...charity, votes: count || 0 };
-        })
-      );
-      setCharities(charitiesWithVotes);
+      setCharities(charitiesData);
     }
-
     setLoading(false);
   };
 
   useEffect(() => {
-    const savedDonation = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedDonation) {
-      setHasDonated(true);
-    }
-  }, []);
-
-  useEffect(() => {
     loadData();
-
-    const channel = supabase
-      .channel("charity_votes_changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "charity_votes" },
-        () => loadData()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
-  const handleDonate = async () => {
-    if (hasDonated || donating || charities.length < 2) return;
+  // Intersection Observer for triggering animation when visible
+  useEffect(() => {
+    if (loading || hasAnimated) return;
 
-    setDonating(true);
-    setShowCoins(true);
-    setCoinKey(prev => prev + 1);
-
-    const insertPromises = charities.map((charity) =>
-      supabase
-        .from("charity_votes")
-        .insert({ charity_id: charity.id })
-        .select("id")
-        .single()
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          animateCount();
+        }
+      },
+      { threshold: 0.3 }
     );
 
-    const results = await Promise.all(insertPromises);
-    const allSuccessful = results.every((r) => !r.error && r.data);
-
-    if (allSuccessful) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ donatedAt: new Date().toISOString() }));
-      setHasDonated(true);
-      setJustDonated(true);
-
-      setTimeout(() => {
-        setJustDonated(false);
-        setShowCoins(false);
-      }, 3000);
-
-      await loadData();
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
     }
 
-    setDonating(false);
-  };
+    return () => observer.disconnect();
+  }, [loading, hasAnimated]);
 
-  // Calculate totals
-  const totalVotes = charities.reduce((sum, c) => sum + c.votes, 0);
-  const totalDonors = Math.floor(totalVotes / 2);
-  const totalAmount = totalDonors * AMOUNT_PER_DONOR;
+  const animateCount = () => {
+    const duration = 3000; // 3 seconds animation
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutQuart(progress);
+      
+      setDisplayAmount(Math.floor(easedProgress * totalAmount));
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
 
   const formatAmount = (amount: number) => {
     return amount.toLocaleString(language === "cs" ? "cs-CZ" : "en-US").replace(/,/g, " ");
   };
-
-  // Generate random coins for animation
-  const coins = [...Array(10)].map((_, i) => ({
-    id: `${coinKey}-${i}`,
-    delay: Math.random() * 0.6,
-    left: 15 + Math.random() * 70,
-    size: 0.8 + Math.random() * 0.8,
-  }));
 
   if (loading) {
     return (
@@ -179,7 +125,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+    <div ref={containerRef} className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
       {/* Charity accent top bar */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#6cc4cc] to-[#405196]" />
 
@@ -199,50 +145,34 @@ export function CharityVoting({ language }: CharityVotingProps) {
         </p>
       </div>
 
-      {/* Falling coins animation */}
-      {showCoins && (
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-50">
-          {coins.map((coin) => (
-            <FallingCoin key={coin.id} delay={coin.delay} left={coin.left} size={coin.size} />
-          ))}
-        </div>
-      )}
-
-      {/* Amount display */}
+      {/* Animated Amount display */}
       <div className="text-center mb-8">
         <p className="text-gray-600 uppercase tracking-wider text-xs font-medium mb-1">
-          {t.totalCollected}
+          {t.totalLabel}
         </p>
-        <div className={cn(
-          "text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6cc4cc] to-[#405196] bg-clip-text text-transparent transition-transform",
-          justDonated && "animate-bounce"
-        )}>
-          {formatAmount(totalAmount)}
+        <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6cc4cc] to-[#405196] bg-clip-text text-transparent transition-all duration-100">
+          {formatAmount(displayAmount)}
           <span className="text-xl ml-1">{t.currency}</span>
-        </div>
-        <div className="flex items-center justify-center gap-2 text-gray-500 text-sm mt-2">
-          <Users className="w-4 h-4" />
-          <span><strong className="text-gray-700">{totalDonors}</strong> {t.donors}</span>
         </div>
       </div>
 
       {/* Charities - Simple cards */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-4">
         {charities.map((charity, index) => {
-          const charityAmount = (charity.votes / 2) * AMOUNT_PER_DONOR;
           const isFirst = index === 0;
           const color = isFirst ? "#6cc4cc" : "#405196";
           const bgColor = isFirst ? "bg-[#6cc4cc]/10" : "bg-[#405196]/10";
           const borderColor = isFirst ? "border-[#6cc4cc]/40" : "border-[#405196]/40";
 
+          // Animate individual charity amounts too
+          const charityDisplayAmount = charities.length > 0 
+            ? Math.floor((displayAmount / totalAmount) * amountPerCharity) 
+            : 0;
+
           return (
             <div
               key={charity.id}
-              className={cn(
-                "rounded-xl p-4 border-l-4 transition-all",
-                bgColor,
-                borderColor
-              )}
+              className={`rounded-xl p-4 border-l-4 transition-all ${bgColor} ${borderColor}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -253,7 +183,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
                   className="text-lg sm:text-xl font-bold whitespace-nowrap"
                   style={{ color }}
                 >
-                  {formatAmount(charityAmount)} {t.currency}
+                  {formatAmount(charityDisplayAmount)} {t.currency}
                 </div>
               </div>
             </div>
@@ -261,51 +191,8 @@ export function CharityVoting({ language }: CharityVotingProps) {
         })}
       </div>
 
-      {/* Thank you message */}
-      {justDonated && (
-        <div className="bg-gradient-to-r from-[#6cc4cc]/10 to-[#405196]/10 border border-[#6cc4cc]/30 rounded-xl p-4 text-center animate-scale-in mb-6">
-          <p className="text-[#6cc4cc] font-medium flex items-center justify-center gap-2">
-            <span className="text-xl">🎉</span>
-            {t.thankYou}
-          </p>
-        </div>
-      )}
-
-      {/* Donate Button or Thank You */}
-      <div className="text-center">
-        {hasDonated ? (
-          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-            <div className="flex items-center justify-center gap-2 text-[#6cc4cc] font-semibold text-lg">
-              <Heart className="w-6 h-6 fill-[#6cc4cc]" />
-              {t.donated}
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <button
-              onClick={handleDonate}
-              disabled={donating || charities.length < 2}
-              className={cn(
-                "group relative w-full max-w-sm py-4 px-8 rounded-xl font-bold text-lg transition-all",
-                "bg-gradient-to-r from-[#6cc4cc] to-[#405196] text-white",
-                "hover:shadow-xl hover:scale-[1.02] hover:brightness-110",
-                "active:scale-95 disabled:opacity-50 shadow-lg",
-                "flex items-center justify-center gap-3 mx-auto overflow-hidden"
-              )}
-            >
-              {/* Coin with drop animation */}
-              <span className={cn(
-                "text-2xl transition-transform",
-                donating ? "animate-coin-drop" : "group-hover:animate-coin-wiggle"
-              )}>
-                🪙
-              </span>
-              {donating ? "..." : t.donateButton}
-            </button>
-            <p className="text-xs text-gray-500">{t.splitInfo}</p>
-          </div>
-        )}
-      </div>
+      {/* Info text */}
+      <p className="text-xs text-gray-500 text-center">{t.splitInfo}</p>
     </div>
   );
 }
