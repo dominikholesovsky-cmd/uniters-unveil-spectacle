@@ -213,10 +213,49 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   if (isSubmitted) {
     return (
       <section id="submitted" className="py-12 sm:py-16 relative overflow-hidden" style={{
-        background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
+        background: 'linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%)'
       }}>
-        {/* Background Effects (same as original) */}
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(70, 70, 70, 0.6) 0%, transparent 40%), radial-gradient(circle at 70% 80%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)' }} />
+        {/* Underground atmosphere layers */}
+        <div className="absolute inset-0 opacity-40" style={{
+          backgroundImage: `
+            radial-gradient(circle at 60% 40%, rgba(70, 70, 70, 0.6) 0%, transparent 40%),
+            radial-gradient(circle at 30% 70%, rgba(70, 70, 70, 0.6) 0%, transparent 40%)
+          `
+        }} />
+        {/* Concrete texture */}
+        <div className="absolute inset-0 opacity-[0.08]" style={{
+          backgroundImage: `repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 3px,
+            rgba(255, 255, 255, 0.15) 3px,
+            rgba(255, 255, 255, 0.15) 6px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(255, 255, 255, 0.15) 3px,
+            rgba(255, 255, 255, 0.15) 6px
+          )`
+        }} />
+        {/* Water tank circles pattern */}
+        <div className="absolute inset-0 opacity-[0.08]" style={{
+          backgroundImage: `radial-gradient(circle, transparent 40%, rgba(255,255,255,0.12) 41%, transparent 42%),
+                            radial-gradient(circle, transparent 40%, rgba(255,255,255,0.12) 41%, transparent 42%)`,
+          backgroundSize: '150px 150px',
+          backgroundPosition: '0 0, 75px 75px'
+        }} />
+        {/* Water droplets */}
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `radial-gradient(circle at 45% 25%, rgba(120, 180, 220, 0.15) 0%, transparent 4%),
+                            radial-gradient(circle at 80% 50%, rgba(120, 180, 220, 0.15) 0%, transparent 3%),
+                            radial-gradient(circle at 20% 75%, rgba(120, 180, 220, 0.12) 0%, transparent 3.5%)`
+        }} />
+        {/* Atmospheric glow */}
+        <div className="absolute inset-0 opacity-20" style={{
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(100, 120, 150, 0.3) 0%, transparent 60%)'
+        }} />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
