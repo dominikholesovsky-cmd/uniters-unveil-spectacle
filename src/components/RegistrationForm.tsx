@@ -224,6 +224,13 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
             <p className="text-lg mb-6">{t.successMessage}</p>
               
             <div className="flex flex-col gap-6">
+              {/* Charity Voting Section - only visible when portal is unlocked (event started) */}
+              {isPortalUnlocked && (
+                <div className="mb-2">
+                  <CharityVoting language={language} />
+                </div>
+              )}
+
               <p className="text-sm text-gray-500 text-center">{t.portalDescription}</p>
               {isPortalUnlocked ? (
                 <Button onClick={handleOpenPortal} variant="default" className="w-full sm:w-auto px-8 mx-auto">
@@ -240,11 +247,6 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
                 </Button>
               </div>
-            </div>
-            
-            {/* Charity Voting Section */}
-            <div className="mt-8">
-              <CharityVoting language={language} />
             </div>
           </div>
         </div>
