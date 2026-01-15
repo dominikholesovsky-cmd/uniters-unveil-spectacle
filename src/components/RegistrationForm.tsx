@@ -260,12 +260,19 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
         }} />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl p-10 shadow-xl">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
-            <p className="text-lg mb-6">{t.successMessage}</p>
+            {/* Hide success message when event starts */}
+            {!isPortalUnlocked && (
+              <>
+                <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-3xl font-bold mb-4">{t.successTitle}</h2>
+                <p className="text-lg mb-6">{t.successMessage}</p>
+              </>
+            )}
               
             <div className="flex flex-col gap-6">
-              <p className="text-sm text-gray-500 text-center">{t.portalDescription}</p>
+              {!isPortalUnlocked && (
+                <p className="text-sm text-gray-500 text-center">{t.portalDescription}</p>
+              )}
               
               {/* Charity Section - visible only after event starts */}
               {isPortalUnlocked && (
