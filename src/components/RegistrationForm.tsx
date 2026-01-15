@@ -17,6 +17,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, ExternalLink, Navigation, Calendar, Clock } from "lucide-react";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { CharityVoting } from "@/components/CharityVoting";
 
 // Portal unlock date & Registration deadline: January 22, 2026 at 18:00 CET
 const PORTAL_UNLOCK_DATE = new Date("2026-01-22T18:00:00+01:00");
@@ -239,6 +240,11 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
                   <Calendar className="w-5 h-5 mr-2" /> {t.addToCalendar}
                 </Button>
               </div>
+            </div>
+            
+            {/* Charity Voting Section */}
+            <div className="mt-8">
+              <CharityVoting language={language} />
             </div>
           </div>
         </div>
