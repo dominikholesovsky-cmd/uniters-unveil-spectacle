@@ -213,7 +213,7 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   if (isSubmitted) {
     return (
       <section id="submitted" className="py-12 sm:py-16 relative overflow-hidden" style={{
-        background: 'linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%)'
+        background: 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)'
       }}>
         {/* Underground atmosphere layers */}
         <div className="absolute inset-0 opacity-40" style={{
