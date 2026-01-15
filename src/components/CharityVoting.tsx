@@ -14,7 +14,7 @@ interface CharityVotingProps {
 // Amount per registration - will be multiplied by registration count
 const AMOUNT_PER_REGISTRATION = 500;
 // This will be the total number of registrations - update manually
-const REGISTRATION_COUNT = 50; // <- Change this number based on actual registrations
+const REGISTRATION_COUNT = 63; // <- Change this number based on actual registrations
 
 // Hardcoded charities
 const CHARITIES: Charity[] = [
