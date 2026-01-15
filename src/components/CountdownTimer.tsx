@@ -20,22 +20,22 @@ export const CountdownTimer = ({ language, targetDate, onComplete }: CountdownTi
 
   const content = {
     cs: {
-      title: "Portál se otevře",
+      title: "Chatovací místnost se otevře",
       date: "22. ledna 2026 v 18:00",
       days: "Dní",
       hours: "Hodin",
       minutes: "Minut",
       seconds: "Sekund",
-      locked: "Portál je zatím uzamčen",
+      locked: "Chatovací místnost je zatím uzamčena",
     },
     en: {
-      title: "Portal opens",
+      title: "Chat room opens",
       date: "January 22, 2026 at 6:00 PM",
       days: "Days",
       hours: "Hours",
       minutes: "Minutes",
       seconds: "Seconds",
-      locked: "Portal is currently locked",
+      locked: "Chat room is currently locked",
     },
   };
 
