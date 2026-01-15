@@ -185,7 +185,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full">
                           {/* Time Badge */}
                           <div className="sm:min-w-[160px]">
-                            <span className="text-xl sm:text-2xl font-bold text-white">
+                            <span className="text-xl sm:text-2xl font-bold text-white font-[Raleway]">
                               {item.time}
                             </span>
                           </div>
@@ -235,7 +235,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     {/* Time Badge */}
                     <div className="sm:min-w-[160px]">
-                      <span className="text-xl sm:text-2xl font-bold text-white">
+                      <span className="text-xl sm:text-2xl font-bold text-white font-[Raleway]">
                         {item.time}
                       </span>
                     </div>
