@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Heart } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 
 interface Charity {
   id: string;
@@ -17,17 +16,31 @@ const AMOUNT_PER_REGISTRATION = 500;
 // This will be the total number of registrations - update manually
 const REGISTRATION_COUNT = 50; // <- Change this number based on actual registrations
 
+// Hardcoded charities
+const CHARITIES: Charity[] = [
+  {
+    id: "1",
+    name: "Klub svobodných matek",
+    description: "Pomozte rodinám samoživitelů a jejich dětem",
+  },
+  {
+    id: "2",
+    name: "Donio",
+    description: "Vybereme něco hezkého",
+  },
+];
+
 // Easing function for smooth animation
 const easeOutQuart = (t: number): number => {
   return 1 - Math.pow(1 - t, 4);
 };
 
 export function CharityVoting({ language }: CharityVotingProps) {
-  const [charities, setCharities] = useState<Charity[]>([]);
-  const [loading, setLoading] = useState(true);
   const [displayAmount, setDisplayAmount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const charities = CHARITIES;
 
   const content = {
     cs: {
@@ -51,27 +64,11 @@ export function CharityVoting({ language }: CharityVotingProps) {
   const t = content[language];
 
   const totalAmount = REGISTRATION_COUNT * AMOUNT_PER_REGISTRATION;
-  const amountPerCharity = charities.length > 0 ? Math.floor(totalAmount / charities.length) : 0;
-
-  const loadData = async () => {
-    const { data: charitiesData } = await supabase
-      .from("charities")
-      .select("id, name, description")
-      .order("name");
-
-    if (charitiesData) {
-      setCharities(charitiesData);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  const amountPerCharity = Math.floor(totalAmount / charities.length);
 
   // Intersection Observer for triggering animation when visible
   useEffect(() => {
-    if (loading || hasAnimated) return;
+    if (hasAnimated) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -88,7 +85,7 @@ export function CharityVoting({ language }: CharityVotingProps) {
     }
 
     return () => observer.disconnect();
-  }, [loading, hasAnimated]);
+  }, [hasAnimated]);
 
   const animateCount = () => {
     const duration = 3000; // 3 seconds animation
@@ -112,17 +109,6 @@ export function CharityVoting({ language }: CharityVotingProps) {
   const formatAmount = (amount: number) => {
     return amount.toLocaleString(language === "cs" ? "cs-CZ" : "en-US").replace(/,/g, " ");
   };
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="bg-white rounded-2xl p-8 shadow-lg animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto mb-4" />
-          <div className="h-16 bg-gray-200 rounded-xl w-48 mx-auto" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div ref={containerRef} className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
