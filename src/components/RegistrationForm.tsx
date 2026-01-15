@@ -54,7 +54,9 @@ const RegistrationForm = ({ language }: RegistrationFormProps) => {
   useEffect(() => {
     const submitted = localStorage.getItem("registrationSubmitted") === "true";
     setIsSubmitted(submitted);
-    setIsPortalUnlocked(new Date() >= PORTAL_UNLOCK_DATE);
+    // TEMPORARY: Force unlock for preview - remove before event!
+    setIsPortalUnlocked(true);
+    // setIsPortalUnlocked(new Date() >= PORTAL_UNLOCK_DATE);
   }, []);
 
   // Pomocná proměnná pro zjištění, zda registrace již skončila
