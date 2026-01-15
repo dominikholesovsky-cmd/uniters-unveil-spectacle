@@ -181,11 +181,11 @@ const Schedule = ({ language }: ScheduleProps) => {
                       className="bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-xl sm:rounded-2xl overflow-hidden hover:bg-white/15 dark:hover:bg-white/10 transition-all duration-300"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <AccordionTrigger className="p-6 sm:p-8 hover:no-underline [&[data-state=open]>div]:mb-4 [&>svg]:text-white">
+                      <AccordionTrigger className="p-6 sm:p-8 hover:no-underline [&[data-state=open]>div]:mb-4 [&>svg]:text-white w-full">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full">
                           {/* Time Badge */}
-                          <div className="sm:min-w-[160px]">
-                            <span className="text-xl sm:text-2xl font-bold text-white font-[Raleway]">
+                          <div className="sm:min-w-[140px] text-left">
+                            <span className="text-lg sm:text-xl font-bold text-white font-[Raleway]">
                               {item.time}
                             </span>
                           </div>
@@ -234,8 +234,8 @@ const Schedule = ({ language }: ScheduleProps) => {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     {/* Time Badge */}
-                    <div className="sm:min-w-[160px]">
-                      <span className="text-xl sm:text-2xl font-bold text-white font-[Raleway]">
+                    <div className="sm:min-w-[140px] text-left">
+                      <span className="text-lg sm:text-xl font-bold text-white font-[Raleway]">
                         {item.time}
                       </span>
                     </div>
@@ -245,7 +245,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                       <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-1 text-left">
                         <h3 className="text-lg sm:text-xl font-semibold text-white">{item.title}</h3>
                         <p className="text-sm sm:text-base text-white/80">{item.description}</p>
                       </div>
