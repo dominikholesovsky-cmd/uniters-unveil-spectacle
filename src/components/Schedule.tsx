@@ -18,28 +18,46 @@ const Schedule = ({ language }: ScheduleProps) => {
       subtitle: "Program večera",
       schedule: [
         {
-          time: "18:00",
-          title: "Příchod hostů",
-          description: "Vítací drink a začátek smyčcového kvartetu. Rozklikněte pro ukázku hudby.",
-          icon: Music,
+          time: "18:00–18:30",
+          title: "Příchod + úvodní proslov",
+          description: "Vítací drink a zahájení večera",
+          icon: Info,
+          hasDropdown: false,
         },
         {
-          time: "18:30",
+          time: "18:30–19:30",
           title: "Prohlídka vodojemů",
           description: "Soukromá komentovaná prohlídka s průvodcem",
           icon: Info,
+          hasDropdown: false,
         },
         {
-          time: "19:00",
-          title: "Catering & networking",
-          description: "Ochutnávka vín a specialit, networking s hudbou",
+          time: "20:00–20:15",
+          title: "1. část Fashion Strings",
+          description: "Smyčcový kvartet. Rozklikněte pro ukázku hudby.",
+          icon: Music,
+          hasDropdown: true,
+        },
+        {
+          time: "20:15–20:30",
+          title: "Uniters děkovná řeč",
+          description: "Poděkování partnerům a hostům",
           icon: Gift,
+          hasDropdown: false,
         },
         {
-          time: "19:30",
-          title: "Volný program",
+          time: "20:30–21:30",
+          title: "2. část Fashion Strings",
+          description: "Pokračování hudebního vystoupení. Rozklikněte pro ukázku.",
+          icon: Music,
+          hasDropdown: true,
+        },
+        {
+          time: "21:30–22:00",
+          title: "Volný program / Networking",
           description: "Networking, hudba, degustace",
           icon: Music,
+          hasDropdown: false,
         },
       ],
       partner: "S podporou kombucha",
@@ -49,28 +67,46 @@ const Schedule = ({ language }: ScheduleProps) => {
       subtitle: "Evening Program",
       schedule: [
         {
-          time: "18:00",
-          title: "Guest Arrival",
-          description: "Welcome drink and string quartet performance begins. Click to hear a music preview.",
-          icon: Music,
+          time: "18:00–18:30",
+          title: "Arrival + Opening Speech",
+          description: "Welcome drink and evening opening",
+          icon: Info,
+          hasDropdown: false,
         },
         {
-          time: "18:30",
+          time: "18:30–19:30",
           title: "Reservoir Tour",
           description: "Private guided tour of the water reservoirs",
           icon: Info,
+          hasDropdown: false,
         },
         {
-          time: "19:00",
-          title: "Catering & Networking",
-          description: "Wine tasting and specialties, networking with music",
+          time: "20:00–20:15",
+          title: "1st Part Fashion Strings",
+          description: "String quartet. Click to hear a music preview.",
+          icon: Music,
+          hasDropdown: true,
+        },
+        {
+          time: "20:15–20:30",
+          title: "Uniters Thank You Speech",
+          description: "Thanking partners and guests",
           icon: Gift,
+          hasDropdown: false,
         },
         {
-          time: "19:30",
-          title: "Free Program",
+          time: "20:30–21:30",
+          title: "2nd Part Fashion Strings",
+          description: "Continuation of the music performance. Click for preview.",
+          icon: Music,
+          hasDropdown: true,
+        },
+        {
+          time: "21:30–22:00",
+          title: "Free Program / Networking",
           description: "Networking, music, tasting",
           icon: Music,
+          hasDropdown: false,
         },
       ],
       partner: "Supported by kombucha",
@@ -137,22 +173,22 @@ const Schedule = ({ language }: ScheduleProps) => {
           {/* Schedule Timeline */}
           <div className="space-y-6">
             {t.schedule.map((item, index) => (
-              index === 0 ? (
-                // First item with dropdown
+              item.hasDropdown ? (
+                // Items with dropdown (Fashion Strings)
                 <Accordion key={index} type="single" collapsible>
-                  <AccordionItem value="item-0" className="border-none">
+                  <AccordionItem value={`item-${index}`} className="border-none">
                     <div
                       className="bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-xl sm:rounded-2xl overflow-hidden hover:bg-white/15 dark:hover:bg-white/10 transition-all duration-300"
-                      style={{ animationDelay: '0s' }}
+                      style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <AccordionTrigger className="p-6 sm:p-8 hover:no-underline [&[data-state=open]>div]:mb-4 [&>svg]:text-white">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full">
                           {/* Time Badge */}
-                          <div className="flex items-center gap-3 sm:min-w-[140px]">
+                          <div className="flex items-center gap-3 sm:min-w-[160px]">
                             <div className="w-12 h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
                               <Clock className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-2xl sm:text-3xl font-bold text-white">
+                            <span className="text-xl sm:text-2xl font-bold text-white">
                               {item.time}
                             </span>
                           </div>
@@ -180,7 +216,7 @@ const Schedule = ({ language }: ScheduleProps) => {
                             <iframe
                               className="w-full h-full"
                               src="https://www.youtube.com/embed/XqElpYoTSMk?si=5DbWRCyE6B1tmg-p"
-                              title="YouTube video player"
+                              title="Fashion Strings"
                               frameBorder="0"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                               referrerPolicy="strict-origin-when-cross-origin"
@@ -201,11 +237,11 @@ const Schedule = ({ language }: ScheduleProps) => {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     {/* Time Badge */}
-                    <div className="flex items-center gap-3 sm:min-w-[140px]">
+                    <div className="flex items-center gap-3 sm:min-w-[160px]">
                       <div className="w-12 h-12 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
                         <Clock className="w-6 h-6 text-white" />
                       </div>
-                      <span className="text-2xl sm:text-3xl font-bold text-white">
+                      <span className="text-xl sm:text-2xl font-bold text-white">
                         {item.time}
                       </span>
                     </div>
