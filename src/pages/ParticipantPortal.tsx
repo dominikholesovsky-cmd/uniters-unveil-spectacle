@@ -124,11 +124,6 @@ const ParticipantPortal = () => {
 
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10 pt-2 sm:pt-6 pb-8 space-y-6">
-          {/* Title Section */}
-          <div className="text-center space-y-4 mb-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-white font-['Raleway',sans-serif]">{t.title}</h1>
-            <p className="text-sm sm:text-base text-white/70">{t.subtitle}</p>
-          </div>
 
           {/* Chat Section - Main Content */}
           <div className="max-w-2xl mx-auto">
