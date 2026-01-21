@@ -25,8 +25,8 @@ const CHARITIES: Charity[] = [
   },
   {
     id: "2",
-    name: "Donio",
-    description: "Vybereme něco hezkého",
+    name: "Nadační fond Radost dětem",
+    description: "Dlouhodobě pomáhají vážně nemocným dětem a dětem z dětských domovů po celém Česku",
   },
 ];
 
